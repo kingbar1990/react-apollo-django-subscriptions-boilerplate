@@ -270,11 +270,6 @@ export const resetPassword = gql`
 
 export const countSeconds = gql`
   subscription {
-    newUsersSubscription(arg1: "g", arg2: "o") {
-      user {
-        id
-        email
-      }
-    }
+    countSeconds
   }
 `

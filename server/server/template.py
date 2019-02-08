@@ -118,7 +118,7 @@ def render_graphiql():
 </html>''').substitute(
         GRAPHIQL_VERSION='0.11.10',
         SUBSCRIPTIONS_TRANSPORT_VERSION='0.7.0',
-        subscriptionsEndpoint='ws://localhost:8000/xhr/',
+        subscriptionsEndpoint='ws://localhost:8000/subscriptions',
         # subscriptionsEndpoint='ws://localhost:5000/',
-        endpointURL='/graphql/',
+        endpointURL='/graphql',
     )

@@ -39,6 +39,3 @@ docker-compose up
   http://localhost:3000/
   Backend:
   http://localhost:8000/
-
-10. Vendor file for template
-https://github.com/graphql-java-kickstart/graphql-spring-boot/tree/master/graphiql-spring-boot-autoconfigure/src/main/resources/static/vendor

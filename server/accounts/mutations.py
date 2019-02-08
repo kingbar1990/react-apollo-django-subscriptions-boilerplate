@@ -5,7 +5,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.files.base import ContentFile
 from graphql_jwt.shortcuts import get_token
 from serious_django_graphene import FormMutation, ValidationErrors
-from server.Schema.Subscription import NewUsersSubscription
 from server.tasks import reset_password_email
 
 from .forms import (SendConfirmationEmailForm, SetNewPasswordForm,
@@ -41,14 +40,6 @@ class LoginMutation(FormMutation):
 
     @classmethod
     def perform_mutate(cls, form, info):
-        NewUsersSubscription.broadcast(
-            # Subscription group to notify clients in.
-            group='group42',
-
-            # Dict delivered to the `publish` method.
-            # Can not pass objects, So pass id And resolve it on Subscription
-            payload=user.id
-        )
         user = form.get_user()
         token = get_token(user)
         return cls(user=user, token=token)
