@@ -13,35 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from channels.routing import route_class
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.http import HttpResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
-from graphql_ws.django_channels import GraphQLSubscriptionConsumer
-
-from .template import render_graphiql
-
-
-def graphiql(request):
-    response = HttpResponse(content=render_graphiql())
-    return response
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
     path('gql/', csrf_exempt(GraphQLView.as_view(batch=True))),
-    path('graphiql/', graphiql),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-
-channel_routing = [
-    route_class(GraphQLSubscriptionConsumer, path=r"^/subscriptions"),
-]

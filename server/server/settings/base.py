@@ -44,11 +44,12 @@ INSTALLED_APPS = [
     'core',
 
     # third-party
-    'django_extensions',
+    'graphql_ws_django.django',
+    'channels',
     'graphene_django',
+    'django_extensions',
     'corsheaders',
-    'serious_django_graphene',
-    'channels'
+    'serious_django_graphene'
 ]
 
 MIDDLEWARE = [
@@ -81,7 +82,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
-ASGI_APPLICATION = 'server.urls.application'
+ASGI_APPLICATION = 'graphql_ws_django.django.routing.application'
 
 
 # Database
@@ -146,16 +147,10 @@ MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'accounts.User'
 
 # Channel layer definitions
-CHANNELS_WS_PROTOCOLS = ["graphql-ws", ]
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis://redis", 6379)],
-        },
-        "ROUTING": "server.urls.channel_routing",
-    },
-
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }
 
 
