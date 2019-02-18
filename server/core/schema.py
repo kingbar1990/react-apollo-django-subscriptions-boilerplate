@@ -1,32 +1,32 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 
-from .models import Task
+from .models import Message, Room
 from .utils import get_paginator
 
 
-class Status(graphene.Interface):
-    status = graphene.Int()
-
-
-class TaskType(DjangoObjectType):
+class MessageType(DjangoObjectType):
     class Meta:
-        model = Task
-        interfaces = (Status,)
+        model = Message
 
 
-class TaskPaginatedType(graphene.ObjectType):
+class RoomType(DjangoObjectType):
+    class Meta:
+        model = Room
+
+
+class MessagePaginatedType(graphene.ObjectType):
     page = graphene.Int()
     pages = graphene.Int()
     has_next = graphene.Boolean()
     has_prev = graphene.Boolean()
-    objects = graphene.List(TaskType)
+    objects = graphene.List(MessageType)
 
 
 class Query:
-    tasks = graphene.Field(TaskPaginatedType, page=graphene.Int())
+    messages = graphene.Field(MessagePaginatedType, page=graphene.Int())
 
-    def resolve_tasks(self, info, page):
+    def resolve_messages(self, info, page):
         page_size = 10
-        qs = Task.objects.all()
-        return get_paginator(qs, page_size, page, TaskPaginatedType)
+        qs = Message.objects.all()
+        return get_paginator(qs, page_size, page, MessagePaginatedType)

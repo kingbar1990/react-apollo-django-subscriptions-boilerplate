@@ -5,8 +5,8 @@ from accounts.mutations import (LoginMutation, RegisterMutation,
                                 SendConfirmationEmailMutation,
                                 UserEditMutation)
 from accounts.schema import Query as AccountsQuery
-from core.mutations import (TaskCreateMutation, TaskMutationDelete,
-                            TaskUpdateMutation)
+from core.mutations import (MessageCreateMutation, MessageMutationDelete,
+                            MessageUpdateMutation)
 from core.schema import Query as CoreQuery
 from rx import Observable
 
@@ -22,9 +22,9 @@ class Mutation(graphene.ObjectType):
     register = RegisterMutation.Field()
     login = LoginMutation.Field()
     edit_user = UserEditMutation.Field()
-    delete_task = TaskMutationDelete.Field()
-    create_task = TaskCreateMutation.Field()
-    update_task = TaskUpdateMutation.Field()
+    delete_message = MessageMutationDelete.Field()
+    create_message = MessageCreateMutation.Field()
+    update_message = MessageUpdateMutation.Field()
     confirm_email = SendConfirmationEmailMutation.Field()
     reset_password = ResetPasswordMutation.Field()
 

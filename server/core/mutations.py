@@ -1,61 +1,61 @@
 import graphene
 from serious_django_graphene import FormMutation
 
-from .forms import TaskForm
-from .models import Task
-from .schema import TaskType
+from .forms import MessageForm
+from .models import Message
+from .schema import MessageType
 
 
-class TaskMutationDelete(graphene.Mutation):
+class MessageMutationDelete(graphene.Mutation):
     class Arguments:
-        task_id = graphene.String()
+        message_id = graphene.String()
 
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
 
     @staticmethod
     def mutate(root, info, **args):
-        task_id = args.get('task_id')
+        message_id = args.get('message_id')
         errors = []
         success = False
 
-        if not task_id:
-            errors.task_id('Task must be specified')
+        if not message_id:
+            errors.message_id('Message must be specified')
 
         if not errors:
             try:
-                Task.objects.get(id=task_id).delete()
+                Message.objects.get(id=message_id).delete()
                 success = True
-            except Task.DoesNotExist:
-                errors.append('Task with provided ID does not exist')
+            except Message.DoesNotExist:
+                errors.append('Message with provided ID does not exist')
 
-        return TaskMutationDelete(errors=errors, success=success)
+        return MessageMutationDelete(errors=errors, success=success)
 
 
-class TaskCreateMutation(FormMutation):
+class MessageCreateMutation(FormMutation):
     class Meta:
-        form_class = TaskForm
+        form_class = MessageForm
 
-    task = graphene.Field(lambda: TaskType)
+    message = graphene.Field(lambda: MessageType)
 
     @classmethod
     def perform_mutate(cls, form, info):
-        task = form.save()
-        task_id = task.id
-        task = Task.objects.get(id=task_id)
-        return cls(task=task)
+        message = form.save()
+        message_id = message.id
+        message = Message.objects.get(id=message_id)
+        return cls(message=message)
 
 
-class TaskUpdateMutation(FormMutation):
+class MessageUpdateMutation(FormMutation):
     class Meta:
-        form_class = TaskForm
+        form_class = MessageForm
 
-    task = graphene.Field(lambda: TaskType)
+    message = graphene.Field(lambda: MessageType)
 
     @classmethod
     def perform_mutate(cls, form, info):
-        task = Task.objects.get(id=form.cleaned_data.pop('task_id'))
+        message = Message.objects.get(id=form.cleaned_data.pop('message_id'))
         for key, value in form.cleaned_data.items():
-            setattr(task, key, value)
-        task.save()
-        return cls(task=task)
+            setattr(message, key, value)
+        message.save()
+        return cls(message=message)

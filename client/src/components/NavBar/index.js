@@ -6,10 +6,7 @@ import {
   MDBNavItem,
   MDBNavLink,
   MDBCollapse,
-  MDBNavbarNav,
-  NavbarNav,
-  Collapse,
-  NavItem
+  MDBNavbarNav
 } from 'mdbreact'
 
 import { DASHBOARD, PROFILE } from '../../constants/routes'
@@ -59,17 +56,13 @@ export default class NavBar extends Component {
             <MDBNavItem>
               <MDBNavLink to={PROFILE}>Profile</MDBNavLink>
             </MDBNavItem>
-          </MDBNavbarNav>
-        </MDBCollapse>
-        <Collapse navbar>
-          <NavbarNav right>
-            <NavItem>
+            <MDBNavItem>
               <MDBNavLink to={PROFILE} onClick={this.handleLogout}>
                 Log out
               </MDBNavLink>
-            </NavItem>
-          </NavbarNav>
-        </Collapse>
+            </MDBNavItem>
+          </MDBNavbarNav>
+        </MDBCollapse>
       </Navbar>
     )
   }

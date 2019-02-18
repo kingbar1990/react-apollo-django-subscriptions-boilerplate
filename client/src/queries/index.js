@@ -95,49 +95,45 @@ export const getUsers = gql`
   }
 `
 
-export const getTasks = gql`
-  query getTasks($page: Int) {
-    tasks(page: $page) {
+export const getMessages = gql`
+  query getMessages($page: Int) {
+    messages(page: $page) {
       page
       pages
       hasNext
       hasPrev
       objects {
         id
-        name
-        description
-        status
-        dueDate
-        estimatedTime
-        assignedTo {
-          id
-          email
+        text
+        sender {
           fullName
         }
+        recipient {
+          fullName
+        }
+        time
       }
     }
   }
 `
 
-export const createTask = gql`
-  mutation createTask(
-    $taskId: Int!
-    $name: String!
-    $description: String
-    $status: String!
-    $dueDate: Date
-    $assignedTo: ID
-    $estimatedTime: Int!
+export const createMessage = gql`
+  mutation createMessage(
+    $text: String!
+    $sender: ID!
+    $recipient: ID!
+    $room: ID!
   ) {
-    createTask(
-      taskId: $taskId
-      name: $name
-      description: $description
-      status: $status
-      dueDate: $dueDate
-      estimatedTime: $estimatedTime
-      assignedTo: $assignedTo
+    createMessage(
+      text: $text
+      sender: $sender
+      recipient: $recipient
+      room: $room
     ) {
+      message {
+        id
+        text
+      }
       error {
         __typename
         ... on ValidationErrors {
@@ -145,17 +141,6 @@ export const createTask = gql`
             field
             messages
           }
-        }
-      }
-      task {
-        id
-        name
-        description
-        status
-        dueDate
-        estimatedTime
-        assignedTo {
-          id
         }
       }
     }

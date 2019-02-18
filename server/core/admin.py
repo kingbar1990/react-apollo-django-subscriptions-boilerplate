@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import Task
+from .models import Message, Room
 
 
-admin.site.register(Task)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('text', 'time')
+
+
+admin.site.register(Message, MessageAdmin)
+admin.site.register(Room)

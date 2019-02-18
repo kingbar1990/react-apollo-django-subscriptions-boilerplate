@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 
-import GetTasks from '../../components/Statistics/GetTasks'
+import Room from '../../components/Room'
 import UserInfo from '../../components/UserProfile'
 
 const user = {
@@ -11,7 +11,7 @@ const user = {
 
 const Main = () => (
   <Fragment>
-    <GetTasks />
+    <Room />
     <div className="bar-right position-fixed">
       <UserInfo profile={user} />
     </div>

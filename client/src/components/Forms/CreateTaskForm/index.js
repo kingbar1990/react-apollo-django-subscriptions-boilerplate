@@ -1,18 +1,24 @@
 import React from 'react'
 import { Mutation } from 'react-apollo'
 
-import { createTask } from '../../../queries'
+import { createMessage } from '../../../queries'
 
 const CreateTaskForm = () => {
   let input
 
   return (
-    <Mutation mutation={createTask}>
-      {(createTask, { data }) => (
+    <Mutation mutation={createMessage}>
+      {createTask => (
         <form
-          onSubmit={e => {
-            e.preventDefault()
-            createTask({ variables: { type: input.value } })
+          onSubmit={() => {
+            createTask({
+              variables: {
+                text: input.value,
+                sender: '1',
+                recipient: '2',
+                room: '2'
+              }
+            })
             input.value = ''
           }}
         >
