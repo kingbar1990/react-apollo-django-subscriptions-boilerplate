@@ -44,8 +44,8 @@ INSTALLED_APPS = [
     'core',
 
     # third-party
-    'graphql_ws_django.django',
     'channels',
+    'graphql_ws_django.django',
     'graphene_django',
     'django_extensions',
     'corsheaders',
@@ -82,7 +82,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
-ASGI_APPLICATION = 'graphql_ws_django.django.routing.application'
+ASGI_APPLICATION = 'server.urls.application'
 
 
 # Database
