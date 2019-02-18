@@ -1,24 +1,23 @@
-import React from "react";
+import React from 'react'
+import { MDBContainer } from 'mdbreact'
 
-import NavBar from "../../components/NavBar";
-import SideBar from "../../components/SideBar";
-import Footer from "../../components/Footer";
+import NavBar from '../../components/NavBar'
+import SideBar from '../../components/SideBar'
+import Footer from '../../components/Footer'
 
-import { withAuth } from '../../hocs/PrivateRoute';
+import { withAuth } from '../../hocs/PrivateRoute'
 
-import "../../index.css";
+import '../../index.css'
 
 const Dashboard = ({ children }) => (
   <div className="flexible-content">
     <SideBar />
-    <div className="main-container">
+    <main className="main-container">
       <NavBar />
-      <main id="content" className="p-5">
-        {children}
-      </main>
+      <MDBContainer>{children}</MDBContainer>
       <Footer />
-    </div>
+    </main>
   </div>
-);
+)
 
-export default withAuth(Dashboard);
+export default withAuth(Dashboard)

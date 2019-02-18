@@ -1,31 +1,29 @@
-body{
+body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol';
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
   text-align: left;
-  background-color: #EDEDEE;
+  background-color: #ededee;
 }
 
-a{
+a {
   color: inherit;
 }
 
-.list-group-flush{
+.list-group-flush {
   color: #495057;
 }
 
-.active{
+.active {
   background-color: #e9ecef !;
 }
 
-main {
-  background-color: #EDEDEE;
-}
-
-.navbar-brand{
+.navbar-brand {
   margin-left: 15px;
   color: #2196f3 !important;
 }
@@ -39,9 +37,21 @@ main {
   z-index: 1050;
   background-color: #fff;
   padding: 1.5rem;
-  padding-top: 0;
 }
 
+.styles-card {
+  width: 22rem;
+}
+
+.bar-right {
+  right: 0;
+  top: 65px;
+  height: 100vh;
+  width: 250px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  z-index: 1050;
+  background-color: #fff;
+}
 
 .flexible-navbar {
   transition: padding-left 0.5s;
@@ -49,12 +59,7 @@ main {
   background: #fff;
 }
 
-#content{
-  margin-left: 270px;
-}
-
-
-.sidebar-fixed .logo-wrapper img{
+.sidebar-fixed .logo-wrapper img {
   width: 100%;
   padding: 2.5rem;
   min-height: 180px;
@@ -66,29 +71,28 @@ main {
 }
 
 .list-group-item:hover {
-  color: #49505B;
+  color: #49505b;
   text-decoration: none;
-  background-color: #f8f9fa
+  background-color: #f8f9fa;
 }
 
 .list-group-item:hover {
-  color: #49505B;
+  color: #49505b;
   text-decoration: none;
-  background-color: #f8f9fa
+  background-color: #f8f9fa;
 }
-
 
 .list-group .active {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   border-radius: 5px;
 }
 
-.card-title{
+.card-title {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.card-subtitle{
+.card-subtitle {
   font-size: 1.25rem;
   font-weight: 600;
 }
@@ -106,13 +110,13 @@ main {
   transform: translate(-50%, -50%);
 }
 
-
 .card .view.gradient-card-header {
   padding: 1rem 1rem;
   text-align: center;
 }
 
-.card h3, .card.card-cascade h4 {
+.card h3,
+.card.card-cascade h4 {
   margin-bottom: 0px;
 }
 
@@ -158,11 +162,11 @@ main {
   margin-top: 10px;
 }
 
-.form-inline{
-  flex-flow: unset
+.form-inline {
+  flex-flow: unset;
 }
 
-.breadcrumb{
+.breadcrumb {
   margin: 0;
 }
 
@@ -175,7 +179,7 @@ main {
   background-color: #007bff !important;
 }
 
-.page-footer{
+.page-footer {
   margin-left: 270px;
 }
 
@@ -190,11 +194,7 @@ main {
     padding-left: 10px;
   }
 
-  #content{
-    margin-left: 0px;
-  }
-
-  .page-footer{
+  .page-footer {
     margin-left: 0px;
   }
 
@@ -208,7 +208,7 @@ main {
     margin-top: 2.5rem;
   }
 
-  #breadcrumb{
+  #breadcrumb {
     flex-direction: column;
   }
 }
@@ -223,7 +223,7 @@ main {
   padding-bottom: 213px;
 }
 
-.main-container .page-footer  {
+.main-container .page-footer {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -233,8 +233,4 @@ main {
 .table {
   text-align: center;
   margin: 0 !important;
-}
-
-.sc-bdVaJa {
-  cursor: pointer;
 }

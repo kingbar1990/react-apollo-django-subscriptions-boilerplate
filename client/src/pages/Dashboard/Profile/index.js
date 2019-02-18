@@ -1,36 +1,36 @@
-import React from "react";
-import { graphql, compose } from "react-apollo";
+import React from 'react'
+import { graphql, compose } from 'react-apollo'
 
-import { User, editUser } from "../../../queries";
+import { User, editUser } from '../../../queries'
 
-import UserProfile from "../../../components/UserProfile";
-import UserEditForm from "../../../components/Forms/UserEditForm";
-import { getBase64 } from "../../../utils";
+import UserProfile from '../../../components/UserProfile'
+import UserEditForm from '../../../components/Forms/UserEditForm'
+import { getBase64 } from '../../../utils'
 
 class EditUser extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
-      avatar: "",
+      avatar: '',
       imageError: null
-    };
+    }
   }
 
   handleImageChange = e => {
     if (!e.target.files) {
-      return;
+      return
     }
-    let file = e.target.files[0];
+    let file = e.target.files[0]
     if (file.size <= 1048576) {
       getBase64(file)
         .then(image => (file = image))
-        .then(() => this.setState({ avatar: file, imageError: null }));
+        .then(() => this.setState({ avatar: file, imageError: null }))
     }
-    return this.setState({ imageError: "max size 1MB" });
-  };
+    return this.setState({ imageError: 'max size 1MB' })
+  }
 
   handleEditUser = (values, { setErrors }) => {
-    let { fullName, email } = values;
+    let { fullName, email } = values
     this.props
       .edit({
         variables: {
@@ -42,25 +42,25 @@ class EditUser extends React.Component {
       })
       .then(response => {
         if (response.data.editUser.error.validationErrors.length) {
-          let errors = {};
+          let errors = {}
           response.data.editUser.error.validationErrors.map(error => {
-            if (error["field"] === "email") {
-              errors["email"] = error["messages"].join(" ");
+            if (error['field'] === 'email') {
+              errors['email'] = error['messages'].join(' ')
             } else {
-              errors[error] = error["messages"];
+              errors[error] = error['messages']
             }
-            return null;
-          });
-          setErrors(errors);
+            return null
+          })
+          setErrors(errors)
         }
-      });
-  };
+      })
+  }
 
   render() {
-    const user = this.props.user.me;
-    if (this.props.user.loading) return null;
+    const user = this.props.user.me
+    if (this.props.user.loading) return null
     return (
-      <div className="row">
+      <article className="row mt-3">
         <UserProfile profile={user} />
         <UserEditForm
           initialValues={user}
@@ -68,12 +68,12 @@ class EditUser extends React.Component {
           handleImageChange={this.handleImageChange}
           error={this.state.imageError}
         />
-      </div>
-    );
+      </article>
+    )
   }
 }
 
 export default compose(
-  graphql(editUser, { name: "edit" }),
-  graphql(User, { name: "user" })
-)(EditUser);
+  graphql(editUser, { name: 'edit' }),
+  graphql(User, { name: 'user' })
+)(EditUser)
