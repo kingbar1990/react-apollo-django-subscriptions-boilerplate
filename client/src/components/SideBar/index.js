@@ -21,7 +21,11 @@ const Sidebar = () => (
           if (error) return `Error! ${error.message}`
 
           return data.rooms.map(i => (
-            <NavLink to={i.id} activeClassName="activeClass" key={i.id}>
+            <NavLink
+              to={`/dashboard/${i.id}`}
+              activeClassName="activeClass"
+              key={i.id}
+            >
               <ListGroupItem>{i.lastMessage.text}</ListGroupItem>
             </NavLink>
           ))

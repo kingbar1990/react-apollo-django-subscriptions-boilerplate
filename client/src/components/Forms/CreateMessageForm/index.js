@@ -18,7 +18,6 @@ const CreateMessageForm = ({ currentRoom, users }) => {
                 variables: {
                   text: input.value,
                   sender: users[0].id,
-                  recipient: users[1].id,
                   room: currentRoom
                 }
               })

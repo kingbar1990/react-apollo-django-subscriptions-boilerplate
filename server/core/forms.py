@@ -8,5 +8,5 @@ class MessageForm(ModelForm):
     class Meta:
         model = Message
         fields = [
-            'text', 'sender', 'recipient', 'room'
+            'text', 'sender', 'room'
         ]

@@ -109,10 +109,6 @@ export const getRoom = gql`
           id
           fullName
         }
-        recipient {
-          id
-          fullName
-        }
         time
       }
     }
@@ -120,18 +116,8 @@ export const getRoom = gql`
 `
 
 export const createMessage = gql`
-  mutation createMessage(
-    $text: String!
-    $sender: ID!
-    $recipient: ID!
-    $room: ID!
-  ) {
-    createMessage(
-      text: $text
-      sender: $sender
-      recipient: $recipient
-      room: $room
-    ) {
+  mutation createMessage($text: String!, $sender: ID!, $room: ID!) {
+    createMessage(text: $text, sender: $sender, room: $room) {
       message {
         id
         text

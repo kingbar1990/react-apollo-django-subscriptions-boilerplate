@@ -25,12 +25,6 @@ class Message(models.Model):
         null=True,
         on_delete=models.SET_NULL
     )
-    recipient = models.ForeignKey(
-        User,
-        related_name='recieved_messages',
-        null=True,
-        on_delete=models.SET_NULL
-    )
     room = models.ForeignKey(
         Room, related_name='messages', on_delete=models.CASCADE
     )

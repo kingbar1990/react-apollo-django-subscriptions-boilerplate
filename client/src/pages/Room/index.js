@@ -8,7 +8,7 @@ import UserInfo from '../../components/UserProfile'
 import CreateMessageForm from '../../components/Forms/CreateMessageForm'
 
 const Room = props => {
-  const currentRoom = props.match.path.replace(/[^\d.]/g, '')
+  const currentRoom = props.match.params.id
 
   return (
     <Query query={getRoom} variables={{ id: currentRoom }}>
@@ -23,12 +23,11 @@ const Room = props => {
               <MDBCard className="card-body mt-3" key={i.id}>
                 <h4>{i.text}</h4>
                 <p>{i.sender.fullName}</p>
-                <p>{i.recipient.fullName}</p>
                 <i>{i.time}</i>
               </MDBCard>
             ))}
             <div className="bar-right position-fixed">
-              <UserInfo profile={data.room.users[0]} />
+              <UserInfo profile={data.room.users[1]} />
             </div>
           </Fragment>
         )

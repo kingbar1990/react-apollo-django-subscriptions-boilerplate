@@ -38,7 +38,7 @@ class Login extends Component {
           const token = response.data.login.token
 
           this.props.islogin(token, true)
-          this.props.history.push(path.HOME)
+          this.props.history.push(path.DASHBOARD)
         } else {
           let errors = {}
           response.data.login.error.validationErrors.map(error => {

@@ -26,31 +26,21 @@ const App = props => (
         <Route
           exact
           path={path.DASHBOARD}
-          render={() => <Dashboard {...props} />}
+          render={props => <Dashboard {...props} />}
         />
+        <Route exact path={path.ROOM} render={props => <Room {...props} />} />
+        <Route path={path.PROFILE} render={props => <Profile {...props} />} />
         <Route
-          exact
-          path={props.location.pathname}
-          render={props => <Room {...props} />}
-        />
-        <Route
-          exact
-          path={path.PROFILE}
-          render={props => <Profile {...props} />}
-        />
-        <Route
-          exact
           path={path.CONFIRM_EMAIL}
           render={props => <ConfirmEmail {...props} />}
         />
         <Route
-          exact
           path={path.RESET_PASSWORD}
           render={props => <ResetPassword {...props} />}
         />
       </Suspense>
     </Main>
-    <Route exact component={PageNotFound} />
+    <Route component={PageNotFound} />
   </Switch>
 )
 

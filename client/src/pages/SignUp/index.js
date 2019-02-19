@@ -42,7 +42,7 @@ class SignUp extends React.Component {
           const token = response.data.register.token
 
           this.props.islogin(token, true)
-          this.props.history.push(path.HOME)
+          this.props.history.push(path.DASHBOARD)
         } else {
           let errors = {}
           response.data.register.error.validationErrors.map(
