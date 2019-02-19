@@ -95,20 +95,22 @@ export const getUsers = gql`
   }
 `
 
-export const getMessages = gql`
-  query getMessages($page: Int) {
-    messages(page: $page) {
-      page
-      pages
-      hasNext
-      hasPrev
-      objects {
+export const getRoom = gql`
+  query getRoom($id: Int) {
+    room(id: $id) {
+      users {
+        id
+        fullName
+      }
+      messages {
         id
         text
         sender {
+          id
           fullName
         }
         recipient {
+          id
           fullName
         }
         time
@@ -256,5 +258,20 @@ export const resetPassword = gql`
 export const countSeconds = gql`
   subscription {
     countSeconds
+  }
+`
+
+export const getRooms = gql`
+  query getRooms {
+    rooms {
+      id
+      lastMessage {
+        text
+        sender {
+          fullName
+          id
+        }
+      }
+    }
   }
 `

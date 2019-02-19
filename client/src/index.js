@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ApolloClient from 'apollo-client'
+import { ApolloClient } from 'apollo-client'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
@@ -12,7 +12,6 @@ import { split } from 'apollo-link'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 
-import 'font-awesome/css/font-awesome.min.css'
 import 'bootstrap-css-only/css/bootstrap.min.css'
 import 'mdbreact/dist/css/mdb.css'
 
@@ -21,9 +20,7 @@ import App from './App'
 import { TOKEN } from './constants'
 import './index.css'
 
-const cache = new InMemoryCache({
-  dataIdFromObject: o => `${o.__typename}-${o.id}`
-})
+const cache = new InMemoryCache()
 
 const httpLink = new HttpLink({
   uri: 'http://localhost:8000/graphql/'
@@ -63,14 +60,11 @@ const link = split(
 )
 
 const client = new ApolloClient({
-  link,
-  cache: cache.restore(window.__APOLLO_STATE__ || {})
+  cache,
+  link
 })
 
-const devTools =
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-
-const store = createStore(rootReducer, devTools)
+const store = createStore(rootReducer)
 
 ReactDOM.render(
   <Provider store={store}>

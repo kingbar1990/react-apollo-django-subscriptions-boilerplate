@@ -3,21 +3,19 @@ import { MDBContainer } from 'mdbreact'
 
 import NavBar from '../../components/NavBar'
 import SideBar from '../../components/SideBar'
-import Footer from '../../components/Footer'
 
 import { withAuth } from '../../hocs/PrivateRoute'
 
 import '../../index.css'
 
-const Dashboard = ({ children }) => (
+const Main = props => (
   <div className="flexible-content">
     <SideBar />
     <main className="main-container">
       <NavBar />
-      <MDBContainer>{children}</MDBContainer>
-      <Footer />
+      <MDBContainer>{props.children}</MDBContainer>
     </main>
   </div>
 )
 
-export default withAuth(Dashboard)
+export default withAuth(Main)

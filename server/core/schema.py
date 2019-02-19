@@ -24,9 +24,21 @@ class MessagePaginatedType(graphene.ObjectType):
 
 
 class Query:
-    messages = graphene.Field(MessagePaginatedType, page=graphene.Int())
+    messages = graphene.Field(
+        MessagePaginatedType,
+        page=graphene.Int(),
+        room=graphene.Int()
+    )
+    rooms = graphene.List(RoomType)
+    room = graphene.Field(RoomType, id=graphene.Int())
 
-    def resolve_messages(self, info, page):
+    def resolve_messages(self, info, page, room):
         page_size = 10
-        qs = Message.objects.all()
+        qs = Message.objects.filter(room_id=room)
         return get_paginator(qs, page_size, page, MessagePaginatedType)
+
+    def resolve_room(self, info, id):
+        return Room.objects.get(id=id)
+
+    def resolve_rooms(self, info):
+        return Room.objects.all()

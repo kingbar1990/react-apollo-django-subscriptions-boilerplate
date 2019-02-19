@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 
-import { User, editUser } from '../../../queries'
+import { User, editUser } from '../../queries'
 
-import UserProfile from '../../../components/UserProfile'
-import UserEditForm from '../../../components/Forms/UserEditForm'
-import { getBase64 } from '../../../utils'
+import UserProfile from '../../components/UserProfile'
+import UserEditForm from '../../components/Forms/UserEditForm'
+import { getBase64 } from '../../utils'
 
-class EditUser extends React.Component {
+class EditUser extends Component {
   constructor() {
     super()
     this.state = {

@@ -1,10 +1,10 @@
 import React from 'react'
-import { ListGroup, ListGroupItem, Fa } from 'mdbreact'
+import { ListGroup, ListGroupItem } from 'mdbreact'
 import { NavLink } from 'react-router-dom'
-import { Subscription } from 'react-apollo'
+import { Subscription, Query } from 'react-apollo'
 
-import { DASHBOARD, PROFILE } from '../../constants/routes'
-import { countSeconds } from '../../queries'
+import { DASHBOARD } from '../../constants/routes'
+import { countSeconds, getRooms } from '../../queries'
 
 const Sidebar = () => (
   <div className="sidebar-fixed position-fixed">
@@ -15,18 +15,18 @@ const Sidebar = () => (
       {({ data, loading }) => <p>Online: {!loading && data.countSeconds}</p>}
     </Subscription>
     <ListGroup className="list-group-flush">
-      <NavLink exact={true} to={DASHBOARD} activeClassName="activeClass">
-        <ListGroupItem>
-          <Fa icon="pie-chart" className="mr-3" />
-          Dashboard
-        </ListGroupItem>
-      </NavLink>
-      <NavLink to={PROFILE} activeClassName="activeClass">
-        <ListGroupItem>
-          <Fa icon="user" className="mr-3" />
-          Profile
-        </ListGroupItem>
-      </NavLink>
+      <Query query={getRooms}>
+        {({ loading, error, data }) => {
+          if (loading) return 'Loading...'
+          if (error) return `Error! ${error.message}`
+
+          return data.rooms.map(i => (
+            <NavLink to={i.id} activeClassName="activeClass" key={i.id}>
+              <ListGroupItem>{i.lastMessage.text}</ListGroupItem>
+            </NavLink>
+          ))
+        }}
+      </Query>
     </ListGroup>
   </div>
 )

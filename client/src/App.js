@@ -10,10 +10,11 @@ import Main from './components/Main'
 import Loader from './components/Loader'
 import PageNotFound from './components/PageNotFound'
 
-const Dashboard = lazy(() => import('./pages/Dashboard'))
-const Profile = lazy(() => import('./pages/Dashboard/Profile'))
+const Room = lazy(() => import('./pages/Room'))
+const Profile = lazy(() => import('./pages/Profile'))
 const ConfirmEmail = lazy(() => import('./pages/ConfirmEmail'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
 
 const App = props => (
   <Switch>
@@ -25,7 +26,12 @@ const App = props => (
         <Route
           exact
           path={path.DASHBOARD}
-          render={props => <Dashboard {...props} />}
+          render={() => <Dashboard {...props} />}
+        />
+        <Route
+          exact
+          path={props.location.pathname}
+          render={props => <Room {...props} />}
         />
         <Route
           exact

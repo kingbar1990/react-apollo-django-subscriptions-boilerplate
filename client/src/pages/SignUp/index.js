@@ -1,33 +1,33 @@
-import React from "react";
-import { graphql, compose } from "react-apollo";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+import React from 'react'
+import { graphql, compose } from 'react-apollo'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
-import * as path from "../../constants/routes";
-import { islogin } from "../../actions";
-import { Container } from "reactstrap";
+import * as path from '../../constants/routes'
+import { islogin } from '../../actions'
+import { Container } from 'reactstrap'
 
-import { SignUpForm } from "../../components/Forms/SignUpForm";
-import { register } from "../../queries";
+import { SignUpForm } from '../../components/Forms/SignUpForm'
+import { register } from '../../queries'
 
 class SignUp extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
-      fullName: "",
-      email: "",
-      password1: "",
-      password2: "",
-      error: ""
-    };
+      fullName: '',
+      email: '',
+      password1: '',
+      password2: '',
+      error: ''
+    }
   }
 
   handleInput = e => {
-    this.setState({ [e.target.id]: e.target.value });
-  };
+    this.setState({ [e.target.id]: e.target.value })
+  }
 
   register = (values, { setErrors }) => {
-    const { fullName, email, password1, password2 } = values;
+    const { fullName, email, password1, password2 } = values
     this.props
       .register({
         variables: {
@@ -39,19 +39,19 @@ class SignUp extends React.Component {
       })
       .then(response => {
         if (response.data.register.success) {
-          const token = response.data.register.token;
+          const token = response.data.register.token
 
-          this.props.islogin(token, true);
-          this.props.history.push(path.DASHBOARD);
+          this.props.islogin(token, true)
+          this.props.history.push(path.HOME)
         } else {
-          let errors = {};
+          let errors = {}
           response.data.register.error.validationErrors.map(
-            error => (errors[error["field"]] = error["messages"].join(" "))
-          );
-          setErrors(errors);
+            error => (errors[error['field']] = error['messages'].join(' '))
+          )
+          setErrors(errors)
         }
-      });
-  };
+      })
+  }
 
   render() {
     return (
@@ -62,7 +62,7 @@ class SignUp extends React.Component {
           error={this.state.error}
         />
       </Container>
-    );
+    )
   }
 }
 
@@ -72,12 +72,12 @@ const mapDispatchToProps = dispatch =>
       islogin
     },
     dispatch
-  );
+  )
 
 export default compose(
   connect(
     null,
     mapDispatchToProps
   ),
-  graphql(register, { name: "register" })
-)(SignUp);
+  graphql(register, { name: 'register' })
+)(SignUp)
