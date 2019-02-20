@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { MDBFooter } from 'mdbreact'
 import { Mutation } from 'react-apollo'
 
-import { createMessage, getRoom } from '../../../queries'
+import { createMessage, getRooms, getRoom } from '../../../queries'
 
 const CreateMessageForm = ({ currentRoom, users }) => {
   const [value, setValue] = useState('')
@@ -19,6 +19,9 @@ const CreateMessageForm = ({ currentRoom, users }) => {
         {
           query: getRoom,
           variables: { id: currentRoom }
+        },
+        {
+          query: getRooms
         }
       ]}
     >

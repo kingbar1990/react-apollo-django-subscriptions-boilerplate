@@ -2,7 +2,7 @@ import graphene
 from serious_django_graphene import FormMutation
 
 from .forms import MessageForm
-from .models import Message
+from .models import Message, Room
 from .schema import MessageType
 
 
@@ -43,6 +43,11 @@ class MessageCreateMutation(FormMutation):
         message = form.save()
         message_id = message.id
         message = Message.objects.get(id=message_id)
+
+        room_id = form.data['room']
+        room = Room.objects.get(id=room_id)
+        room.last_message = message
+        room.save()
         return cls(message=message)
 
 
