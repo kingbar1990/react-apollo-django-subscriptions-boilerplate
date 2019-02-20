@@ -5,10 +5,15 @@ from accounts.mutations import (LoginMutation, RegisterMutation,
                                 SendConfirmationEmailMutation,
                                 UserEditMutation)
 from accounts.schema import Query as AccountsQuery
+from channels.layers import get_channel_layer
+from core.models import Message
 from core.mutations import (MessageCreateMutation, MessageMutationDelete,
                             MessageUpdateMutation)
 from core.schema import Query as CoreQuery
+from core.schema import MessageType
 from rx import Observable
+
+channel_layer = get_channel_layer()
 
 
 class Query(AccountsQuery, CoreQuery, graphene.ObjectType):
@@ -31,6 +36,17 @@ class Mutation(graphene.ObjectType):
 
 class Subscription(graphene.ObjectType):
     count_seconds = graphene.Int(up_to=graphene.Int())
+    new_message = graphene.Field(MessageType)
+
+    async def resolve_new_message(root, info):
+        channel_name = await channel_layer.new_channel()
+        await channel_layer.group_add("new_message", channel_name)
+        try:
+            while True:
+                message = await channel_layer.receive(channel_name)
+                yield message["data"]
+        finally:
+            await channel_layer.group_discard("new_message", channel_name)
 
     def resolve_count_seconds(root, info, up_to=5):
         return (

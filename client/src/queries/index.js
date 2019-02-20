@@ -261,3 +261,17 @@ export const countSeconds = gql`
     countSeconds
   }
 `
+
+export const newMessageSubscription = gql`
+  subscription {
+    newMessage {
+      id
+      text
+      time
+      sender {
+        id
+        fullName
+      }
+    }
+  }
+`

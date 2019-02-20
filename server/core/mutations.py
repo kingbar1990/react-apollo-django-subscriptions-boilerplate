@@ -1,9 +1,13 @@
 import graphene
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from serious_django_graphene import FormMutation
 
 from .forms import MessageForm
 from .models import Message, Room
 from .schema import MessageType
+
+channel_layer = get_channel_layer()
 
 
 class MessageMutationDelete(graphene.Mutation):
@@ -48,6 +52,10 @@ class MessageCreateMutation(FormMutation):
         room = Room.objects.get(id=room_id)
         room.last_message = message
         room.save()
+
+        async_to_sync(channel_layer.group_send)(
+            "new_message", {"data": message})
+
         return cls(message=message)
 
 

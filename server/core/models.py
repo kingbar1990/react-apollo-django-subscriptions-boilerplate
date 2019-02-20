@@ -26,7 +26,10 @@ class Message(models.Model):
         on_delete=models.SET_NULL
     )
     room = models.ForeignKey(
-        Room, related_name='messages', on_delete=models.CASCADE
+        Room,
+        related_name='messages',
+        null=True,
+        on_delete=models.SET_NULL
     )
     time = models.DateTimeField(auto_now=True)
 
