@@ -115,6 +115,21 @@ export const getRoom = gql`
   }
 `
 
+export const getRooms = gql`
+  query getRooms {
+    rooms {
+      id
+      lastMessage {
+        text
+        sender {
+          fullName
+          id
+        }
+      }
+    }
+  }
+`
+
 export const createMessage = gql`
   mutation createMessage($text: String!, $sender: ID!, $room: ID!) {
     createMessage(text: $text, sender: $sender, room: $room) {
@@ -244,20 +259,5 @@ export const resetPassword = gql`
 export const countSeconds = gql`
   subscription {
     countSeconds
-  }
-`
-
-export const getRooms = gql`
-  query getRooms {
-    rooms {
-      id
-      lastMessage {
-        text
-        sender {
-          fullName
-          id
-        }
-      }
-    }
   }
 `
