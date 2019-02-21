@@ -1,8 +1,8 @@
 import React, { Fragment, useState } from 'react'
 import { MDBCard } from 'mdbreact'
-import { Query } from 'react-apollo'
+import { Query, Mutation } from 'react-apollo'
 
-import { getRoom, newMessageSubscription } from '../../queries'
+import { getRoom, newMessageSubscription, deleteMessage } from '../../queries'
 
 import UserInfo from '../../components/UserProfile'
 import CreateMessageForm from '../../components/Forms/CreateMessageForm'
@@ -48,7 +48,33 @@ const Room = props => {
               <MDBCard className="card-body mt-3" key={i.id}>
                 <section className="flex-space">
                   <h4>{i.text}</h4>
-                  <button onClick={() => setModal(i.id)}>Edit</button>
+                  <div>
+                    <button
+                      className="btn btn-outline-primary"
+                      onClick={() => setModal(i.id)}
+                    >
+                      Edit
+                    </button>
+                    <Mutation
+                      mutation={deleteMessage}
+                      variables={{ messageId: i.id }}
+                      refetchQueries={[
+                        {
+                          query: getRoom,
+                          variables: { id: currentRoom }
+                        }
+                      ]}
+                    >
+                      {deleteMessage => (
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={deleteMessage}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </Mutation>
+                  </div>
                 </section>
                 <ModalForm
                   title={'Edit message'}

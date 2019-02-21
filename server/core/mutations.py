@@ -12,7 +12,7 @@ channel_layer = get_channel_layer()
 
 class MessageMutationDelete(graphene.Mutation):
     class Arguments:
-        message_id = graphene.String()
+        message_id = graphene.ID()
 
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)

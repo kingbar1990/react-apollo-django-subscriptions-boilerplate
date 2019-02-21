@@ -178,9 +178,9 @@ export const updateMessage = gql`
   }
 `
 
-export const deleteTask = gql`
-  mutation deleteTask($taskId: String) {
-    deleteTask(taskId: $taskId) {
+export const deleteMessage = gql`
+  mutation deleteMessage($messageId: ID) {
+    deleteMessage(messageId: $messageId) {
       success
     }
   }
