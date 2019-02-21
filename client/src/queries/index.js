@@ -119,12 +119,8 @@ export const getRooms = gql`
   query getRooms {
     rooms {
       id
-      lastMessage {
-        text
-        sender {
-          fullName
-          id
-        }
+      users {
+        fullName
       }
     }
   }
@@ -150,25 +146,23 @@ export const createMessage = gql`
   }
 `
 
-export const updateTask = gql`
-  mutation updateTask(
-    $taskId: Int!
-    $name: String!
-    $description: String
-    $status: String!
-    $dueDate: Date
-    $assignedTo: ID
-    $estimatedTime: Int!
+export const updateMessage = gql`
+  mutation updateMessage(
+    $text: String!
+    $sender: ID!
+    $room: ID!
+    $messageId: Int
   ) {
-    updateTask(
-      taskId: $taskId
-      name: $name
-      description: $description
-      status: $status
-      dueDate: $dueDate
-      estimatedTime: $estimatedTime
-      assignedTo: $assignedTo
+    updateMessage(
+      text: $text
+      sender: $sender
+      room: $room
+      messageId: $messageId
     ) {
+      message {
+        id
+        text
+      }
       error {
         __typename
         ... on ValidationErrors {
@@ -176,17 +170,6 @@ export const updateTask = gql`
             field
             messages
           }
-        }
-      }
-      task {
-        id
-        name
-        description
-        status
-        dueDate
-        estimatedTime
-        assignedTo {
-          id
         }
       }
     }

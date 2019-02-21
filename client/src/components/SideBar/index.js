@@ -26,7 +26,7 @@ const Sidebar = () => (
               activeClassName="activeClass"
               key={i.id}
             >
-              <ListGroupItem>{i.lastMessage.text}</ListGroupItem>
+              <ListGroupItem>{i.users[1].fullName}</ListGroupItem>
             </NavLink>
           ))
         }}

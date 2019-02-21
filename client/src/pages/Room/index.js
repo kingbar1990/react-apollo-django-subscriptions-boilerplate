@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
 import { MDBCard } from 'mdbreact'
 import { Query } from 'react-apollo'
 
@@ -6,8 +6,12 @@ import { getRoom, newMessageSubscription } from '../../queries'
 
 import UserInfo from '../../components/UserProfile'
 import CreateMessageForm from '../../components/Forms/CreateMessageForm'
+import ModalForm from '../../components/Forms/ModalForm'
+import EditMessageForm from '../../components/Forms/EditMessageForm'
 
 const Room = props => {
+  const [modal, setModal] = useState(false)
+
   const currentRoom = props.match.params.id
 
   const subscribeToNewMessage = subscribeToMore => {
@@ -41,9 +45,23 @@ const Room = props => {
             <CreateMessageForm currentRoom={currentRoom} {...data.room} />
             {data.room.messages.map(i => (
               <MDBCard className="card-body mt-3" key={i.id}>
-                <h4>{i.text}</h4>
+                <section className="flex-space">
+                  <h4>{i.text}</h4>
+                  <button onClick={() => setModal(true)}>Edit</button>
+                </section>
+                <ModalForm
+                  title={'Edit message'}
+                  isActive={modal}
+                  closeModal={() => setModal(false)}
+                >
+                  <EditMessageForm
+                    {...i}
+                    currentRoom={currentRoom}
+                    closeModal={() => setModal(false)}
+                  />
+                </ModalForm>
                 <p>{i.sender.fullName}</p>
-                <i>{i.time}</i>
+                <time>{i.time}</time>
               </MDBCard>
             ))}
             <div className="bar-right position-fixed">

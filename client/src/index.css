@@ -43,6 +43,12 @@ a {
   width: 22rem;
 }
 
+.flex-space {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .bar-right {
   right: 0;
   top: 0px;

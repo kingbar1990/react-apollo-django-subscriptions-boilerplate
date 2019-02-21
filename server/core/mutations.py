@@ -68,7 +68,6 @@ class MessageUpdateMutation(FormMutation):
     @classmethod
     def perform_mutate(cls, form, info):
         message = Message.objects.get(id=form.cleaned_data.pop('message_id'))
-        for key, value in form.cleaned_data.items():
-            setattr(message, key, value)
+        message.text = form.data['text']
         message.save()
         return cls(message=message)
