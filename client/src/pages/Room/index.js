@@ -10,7 +10,7 @@ import ModalForm from '../../components/Forms/ModalForm'
 import EditMessageForm from '../../components/Forms/EditMessageForm'
 
 const Room = props => {
-  const [modal, setModal] = useState(false)
+  const [modal, setModal] = useState()
 
   const currentRoom = props.match.params.id
 
@@ -47,17 +47,17 @@ const Room = props => {
               <MDBCard className="card-body mt-3" key={i.id}>
                 <section className="flex-space">
                   <h4>{i.text}</h4>
-                  <button onClick={() => setModal(true)}>Edit</button>
+                  <button onClick={() => setModal(i.id)}>Edit</button>
                 </section>
                 <ModalForm
                   title={'Edit message'}
-                  isActive={modal}
-                  closeModal={() => setModal(false)}
+                  isActive={i.id === modal}
+                  closeModal={setModal}
                 >
                   <EditMessageForm
                     {...i}
                     currentRoom={currentRoom}
-                    closeModal={() => setModal(false)}
+                    closeModal={setModal}
                   />
                 </ModalForm>
                 <p>{i.sender.fullName}</p>

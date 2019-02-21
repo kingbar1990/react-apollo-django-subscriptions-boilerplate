@@ -116,8 +116,8 @@ export const getRoom = gql`
 `
 
 export const getRooms = gql`
-  query getRooms {
-    rooms {
+  query getRooms($userId: Int) {
+    rooms(userId: $userId) {
       id
       users {
         fullName

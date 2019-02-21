@@ -45,13 +45,8 @@ class MessageCreateMutation(FormMutation):
     @classmethod
     def perform_mutate(cls, form, info):
         message = form.save()
-        message_id = message.id
-        message = Message.objects.get(id=message_id)
 
-        room_id = form.data['room']
-        room = Room.objects.get(id=room_id)
-        room.last_message = message
-        room.save()
+        form.cleaned_data['room'].last_message = message
 
         async_to_sync(channel_layer.group_send)(
             "new_message", {"data": message})
@@ -67,7 +62,7 @@ class MessageUpdateMutation(FormMutation):
 
     @classmethod
     def perform_mutate(cls, form, info):
-        message = Message.objects.get(id=form.cleaned_data.pop('message_id'))
-        message.text = form.data['text']
+        message = Message.objects.get(id=form.cleaned_data['message_id'])
+        message.text = form.cleaned_data['text']
         message.save()
         return cls(message=message)

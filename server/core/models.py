@@ -10,7 +10,7 @@ class Room(models.Model):
         related_name='last_message',
         blank=True,
         null=True,
-        on_delete=models.CASCADE
+        on_delete=models.SET_NULL
     )
 
     def __str__(self):

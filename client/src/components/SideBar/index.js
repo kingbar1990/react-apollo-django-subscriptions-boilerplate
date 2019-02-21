@@ -6,7 +6,7 @@ import { Subscription, Query } from 'react-apollo'
 import { DASHBOARD } from '../../constants/routes'
 import { countSeconds, getRooms } from '../../queries'
 
-const Sidebar = () => (
+const Sidebar = props => (
   <div className="sidebar-fixed position-fixed">
     <a href={DASHBOARD} className="sidebar">
       <h3 className="logo-wrapper">Current room</h3>
@@ -15,7 +15,7 @@ const Sidebar = () => (
       {({ data, loading }) => <p>Online: {!loading && data.countSeconds}</p>}
     </Subscription>
     <ListGroup className="list-group-flush">
-      <Query query={getRooms}>
+      <Query query={getRooms} variables={{ userId: props.id }}>
         {({ loading, error, data }) => {
           if (loading) return 'Loading...'
           if (error) return `Error! ${error.message}`

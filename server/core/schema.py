@@ -24,11 +24,11 @@ class MessagePaginatedType(graphene.ObjectType):
 
 
 class Query:
-    rooms = graphene.List(RoomType)
+    rooms = graphene.List(RoomType, user_id=graphene.Int())
     room = graphene.Field(RoomType, id=graphene.Int())
 
     def resolve_room(self, info, id):
         return Room.objects.get(id=id)
 
-    def resolve_rooms(self, info):
-        return Room.objects.all()
+    def resolve_rooms(self, info, user_id):
+        return Room.objects.filter(users__id=user_id)
