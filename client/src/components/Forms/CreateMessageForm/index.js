@@ -21,6 +21,7 @@ const CreateMessageForm = ({ currentRoom, users }) => {
           variables: { id: currentRoom }
         }
       ]}
+      onCompleted={() => setValue('')}
     >
       {createTask => (
         <MDBFooter className="my-3">

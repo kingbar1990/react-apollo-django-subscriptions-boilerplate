@@ -111,6 +111,7 @@ export const getRoom = gql`
         }
         time
       }
+      unviewedMessages
     }
   }
 `
@@ -122,6 +123,7 @@ export const getRooms = gql`
       users {
         fullName
       }
+      unviewedMessages
     }
   }
 `

@@ -11,8 +11,13 @@ class MessageType(DjangoObjectType):
 
 
 class RoomType(DjangoObjectType):
+    unviewed_messages = graphene.Int()
+
     class Meta:
         model = Room
+
+    def resolve_unviewed_messages(self, info):
+        return Room.objects.filter(id=self.id, last_message__seen=False).count()
 
 
 class MessagePaginatedType(graphene.ObjectType):
@@ -28,7 +33,11 @@ class Query:
     room = graphene.Field(RoomType, id=graphene.Int())
 
     def resolve_room(self, info, id):
-        return Room.objects.get(id=id)
+        room = Room.objects.get(id=id)
+        room.last_message.seen = True
+        room.last_message.save()
+
+        return room
 
     def resolve_rooms(self, info, user_id):
         return Room.objects.filter(users__id=user_id)

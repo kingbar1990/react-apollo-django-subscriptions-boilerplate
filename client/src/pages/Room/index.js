@@ -25,6 +25,7 @@ const Room = props => {
           room: {
             messages: [...prev.room.messages, newMessage],
             users: prev.room.users,
+            unviewedMessages: prev.room.unviewedMessages,
             __typename: prev.room.__typename
           }
         })

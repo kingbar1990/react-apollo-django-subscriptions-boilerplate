@@ -31,6 +31,7 @@ class Message(models.Model):
         null=True,
         on_delete=models.SET_NULL
     )
+    seen = models.BooleanField(default=True)
     time = models.DateTimeField(auto_now=True)
 
     def __str__(self):

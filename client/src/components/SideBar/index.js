@@ -1,5 +1,5 @@
 import React from 'react'
-import { ListGroup, ListGroupItem } from 'mdbreact'
+import { ListGroupItem, MDBBadge } from 'mdbreact'
 import { NavLink } from 'react-router-dom'
 import { Subscription, Query } from 'react-apollo'
 
@@ -14,24 +14,27 @@ const Sidebar = props => (
     <Subscription subscription={countSeconds}>
       {({ data, loading }) => <p>Online: {!loading && data.countSeconds}</p>}
     </Subscription>
-    <ListGroup className="list-group-flush">
-      <Query query={getRooms} variables={{ userId: props.id }}>
-        {({ loading, error, data }) => {
-          if (loading) return 'Loading...'
-          if (error) return `Error! ${error.message}`
+    <Query query={getRooms} variables={{ userId: props.id }}>
+      {({ loading, error, data }) => {
+        if (loading) return 'Loading...'
+        if (error) return `Error! ${error.message}`
 
-          return data.rooms.map(i => (
-            <NavLink
-              to={`/dashboard/${i.id}`}
-              activeClassName="activeClass"
-              key={i.id}
-            >
-              <ListGroupItem>{i.users[1].fullName}</ListGroupItem>
-            </NavLink>
-          ))
-        }}
-      </Query>
-    </ListGroup>
+        return data.rooms.map(i => (
+          <NavLink
+            to={`/dashboard/${i.id}`}
+            activeClassName="activeClass"
+            key={i.id}
+          >
+            <ListGroupItem className="flex-space">
+              {i.users[1].fullName}
+              <MDBBadge color="elegant-color" pill>
+                {i.unviewedMessages}
+              </MDBBadge>
+            </ListGroupItem>
+          </NavLink>
+        ))
+      }}
+    </Query>
   </div>
 )
 
