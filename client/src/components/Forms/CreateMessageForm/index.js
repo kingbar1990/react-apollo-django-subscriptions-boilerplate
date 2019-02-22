@@ -15,12 +15,22 @@ const CreateMessageForm = ({ currentRoom, users }) => {
         sender: users[0].id,
         room: currentRoom
       }}
-      refetchQueries={[
-        {
+      update={(cache, { data: { createMessage } }) => {
+        const data = cache.readQuery({
           query: getRoom,
           variables: { id: currentRoom }
-        }
-      ]}
+        })
+        cache.writeQuery({
+          query: getRoom,
+          data: {
+            room: {
+              messages: [...data.room.messages, createMessage.message],
+              users: data.room.users,
+              __typename: data.room.__typename
+            }
+          }
+        })
+      }}
       onCompleted={() => setValue('')}
     >
       {createTask => (

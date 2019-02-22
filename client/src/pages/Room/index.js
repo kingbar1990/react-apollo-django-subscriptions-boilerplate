@@ -56,7 +56,7 @@ const Room = props => {
                     </button>
                     <Mutation
                       mutation={deleteMessage}
-                      variables={{ messageId: i.id }}
+                      variables={{ messageId: parseInt(i.id) }}
                       refetchQueries={[
                         {
                           query: getRoom,

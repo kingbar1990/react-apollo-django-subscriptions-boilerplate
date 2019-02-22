@@ -129,7 +129,7 @@ export const getRooms = gql`
 
 export const createMessage = gql`
   mutation createMessage($text: String!, $sender: ID!, $room: ID!) {
-    createMessage(text: $text, sender: $sender, room: $room) {
+    createMessage(text: $text, sender: $sender, room: $room, seen: false) {
       message {
         id
         text

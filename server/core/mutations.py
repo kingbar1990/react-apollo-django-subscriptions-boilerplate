@@ -28,6 +28,12 @@ class MessageMutationDelete(graphene.Mutation):
 
         if not errors:
             try:
+                room = Room.objects.get(last_message=message_id)
+                prev = Message.objects.exclude(
+                    id=message_id).order_by('-id').first()
+                room.last_message = prev
+                room.save()
+
                 Message.objects.get(id=message_id).delete()
                 success = True
             except Message.DoesNotExist:
@@ -48,8 +54,13 @@ class MessageCreateMutation(FormMutation):
 
         form.cleaned_data['room'].last_message = message
 
+        form.cleaned_data['room'].save()
+
         async_to_sync(channel_layer.group_send)(
             "new_message", {"data": message})
+
+        async_to_sync(channel_layer.group_send)(
+            "notify", {"data": form.cleaned_data['room']})
 
         return cls(message=message)
 
