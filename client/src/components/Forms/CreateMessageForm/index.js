@@ -34,14 +34,18 @@ const CreateMessageForm = ({ currentRoom, users }) => {
       onCompleted={() => setValue('')}
     >
       {createTask => (
-        <MDBFooter className="my-3">
+        <MDBFooter className="py-3">
           <input
+            className="input-send rad"
             onChange={event => {
               setValue(event.target.value)
             }}
             value={value}
+            placeholder="Type something"
           />
-          <button onClick={createTask}>Send</button>
+          <button className="btn-rounded rad" onClick={createTask}>
+            Send
+          </button>
         </MDBFooter>
       )}
     </Mutation>

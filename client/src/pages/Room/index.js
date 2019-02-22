@@ -1,5 +1,4 @@
-import React, { Fragment, useState } from 'react'
-import { MDBCard } from 'mdbreact'
+import React, { useState } from 'react'
 import { Query, Mutation } from 'react-apollo'
 
 import { getRoom, newMessageSubscription, deleteMessage } from '../../queries'
@@ -41,59 +40,61 @@ const Room = props => {
         subscribeToNewMessage(subscribeToMore)
 
         return (
-          <Fragment>
+          <article className="feed">
             <CreateMessageForm currentRoom={currentRoom} {...data.room} />
             {data.room.messages.map(i => (
-              <MDBCard className="card-body mt-3" key={i.id}>
-                <section className="flex-space">
-                  <h4>{i.text}</h4>
-                  <div>
-                    <button
-                      className="btn btn-outline-primary"
-                      onClick={() => setModal(i.id)}
-                    >
-                      Edit
-                    </button>
-                    <Mutation
-                      mutation={deleteMessage}
-                      variables={{ messageId: parseInt(i.id) }}
-                      refetchQueries={[
-                        {
-                          query: getRoom,
-                          variables: { id: currentRoom }
-                        }
-                      ]}
-                    >
-                      {deleteMessage => (
-                        <button
-                          className="btn btn-outline-danger"
-                          onClick={deleteMessage}
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </Mutation>
-                  </div>
-                </section>
-                <ModalForm
-                  title={'Edit message'}
-                  isActive={i.id === modal}
-                  closeModal={setModal}
-                >
-                  <EditMessageForm
-                    {...i}
-                    currentRoom={currentRoom}
+              <div className="content mt-3" key={i.id}>
+                <article className="card-shadow rad">
+                  <section className="flex-space">
+                    <h4>{i.text}</h4>
+                    <div>
+                      <button
+                        className="btn-rounded rad"
+                        onClick={() => setModal(i.id)}
+                      >
+                        Edit
+                      </button>
+                      <Mutation
+                        mutation={deleteMessage}
+                        variables={{ messageId: parseInt(i.id) }}
+                        refetchQueries={[
+                          {
+                            query: getRoom,
+                            variables: { id: currentRoom }
+                          }
+                        ]}
+                      >
+                        {deleteMessage => (
+                          <button
+                            className="btn-rounded rad"
+                            onClick={deleteMessage}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </Mutation>
+                    </div>
+                  </section>
+                  <ModalForm
+                    title={'Edit message'}
+                    isActive={i.id === modal}
                     closeModal={setModal}
-                  />
-                </ModalForm>
-                <p>{i.sender.fullName}</p>
-                <time>{i.time}</time>
-              </MDBCard>
+                  >
+                    <EditMessageForm
+                      {...i}
+                      currentRoom={currentRoom}
+                      closeModal={setModal}
+                    />
+                  </ModalForm>
+                  <span className="mr-3">{i.sender.fullName}</span>
+                  <time>{i.time}</time>
+                </article>
+              </div>
             ))}
             <div className="bar-right position-fixed">
               <UserInfo profile={data.room.users[1]} />
             </div>
-          </Fragment>
+          </article>
         )
       }}
     </Query>
