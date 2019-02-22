@@ -111,7 +111,6 @@ export const getRoom = gql`
         }
         time
       }
-      unviewedMessages
     }
   }
 `
@@ -257,6 +256,15 @@ export const newMessageSubscription = gql`
         id
         fullName
       }
+    }
+  }
+`
+
+export const unviewedMessageSubscription = gql`
+  subscription {
+    notifications {
+      id
+      unviewedMessages
     }
   }
 `

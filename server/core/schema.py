@@ -1,8 +1,12 @@
 import graphene
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from graphene_django.types import DjangoObjectType
 
 from .models import Message, Room
 from .utils import get_paginator
+
+channel_layer = get_channel_layer()
 
 
 class MessageType(DjangoObjectType):
@@ -36,6 +40,9 @@ class Query:
         room = Room.objects.get(id=id)
         room.last_message.seen = True
         room.last_message.save()
+
+        async_to_sync(channel_layer.group_send)(
+            "notify", {"data": room})
 
         return room
 

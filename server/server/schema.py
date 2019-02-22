@@ -10,7 +10,7 @@ from core.models import Message
 from core.mutations import (MessageCreateMutation, MessageMutationDelete,
                             MessageUpdateMutation)
 from core.schema import Query as CoreQuery
-from core.schema import MessageType
+from core.schema import MessageType, RoomType
 from rx import Observable
 
 channel_layer = get_channel_layer()
@@ -37,6 +37,7 @@ class Mutation(graphene.ObjectType):
 class Subscription(graphene.ObjectType):
     count_seconds = graphene.Int(up_to=graphene.Int())
     new_message = graphene.Field(MessageType)
+    notifications = graphene.Field(RoomType)
 
     async def resolve_new_message(root, info):
         channel_name = await channel_layer.new_channel()
@@ -54,6 +55,16 @@ class Subscription(graphene.ObjectType):
             .map(lambda i: "{0}".format(i))
             .take_while(lambda i: int(i) <= up_to)
         )
+
+    async def resolve_notifications(root, info):
+        channel_name = await channel_layer.new_channel()
+        await channel_layer.group_add("notify", channel_name)
+        try:
+            while True:
+                room = await channel_layer.receive(channel_name)
+                yield room["data"]
+        finally:
+            await channel_layer.group_discard("notify", channel_name)
 
 
 schema = graphene.Schema(
