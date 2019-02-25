@@ -46,7 +46,7 @@ const Sidebar = props => {
               key={i.id}
             >
               <ListGroupItem className="flex-space shade">
-                {i.users[1].fullName}
+                {i.users[0].fullName}
                 <MDBBadge color="elegant-color" pill>
                   {i.unviewedMessages}
                 </MDBBadge>

@@ -7,6 +7,10 @@ a {
   color: inherit;
 }
 
+time {
+  color: #616770;
+}
+
 .styles-card {
   width: 22rem;
 }

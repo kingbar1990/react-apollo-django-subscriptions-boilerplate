@@ -5,11 +5,13 @@ const UserInfo = ({ profile }) => (
   <section className="card">
     <div className="card-body">
       <center className="m-t-30">
-        <img
-          src={`${BACKEND_URL}/media/${profile.avatar}`}
-          alt="avatar"
-          className="card-img-top"
-        />
+        {profile.avatar && (
+          <img
+            src={`${BACKEND_URL}/media/${profile.avatar}`}
+            alt="avatar"
+            className="card-img-top"
+          />
+        )}
         <h4 className="card-title m-t-10">{profile.fullName}</h4>
       </center>
     </div>

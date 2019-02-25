@@ -87,22 +87,26 @@ const Room = props => {
                       closeModal={setModal}
                     />
                   </ModalForm>
-                  <span className="mr-3">{i.sender.fullName}</span>
-                  <time>{i.time}</time>
-                  {i.file && (
-                    <div className="width">
-                      <img
-                        src={`${BACKEND_URL}/media/${i.file}`}
-                        alt={i.id}
-                        className="preview rad"
-                      />
+                  <section className="flex-space">
+                    {i.file && (
+                      <div className="width">
+                        <img
+                          src={`${BACKEND_URL}/media/${i.file}`}
+                          alt={i.id}
+                          className="preview rad"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <span className="mr-3">{i.sender.fullName}</span>
+                      <time>{new Date(i.time).toDateString()}</time>
                     </div>
-                  )}
+                  </section>
                 </article>
               </div>
             ))}
             <div className="bar-right position-fixed shade">
-              <UserInfo profile={data.room.users[1]} />
+              <UserInfo profile={data.room.users[0]} />
             </div>
           </article>
         )
