@@ -1,6 +1,9 @@
+import base64
+
 import graphene
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.core.files.base import ContentFile
 from serious_django_graphene import FormMutation
 
 from .forms import MessageForm
@@ -61,6 +64,19 @@ class MessageCreateMutation(FormMutation):
 
         async_to_sync(channel_layer.group_send)(
             "notify", {"data": form.cleaned_data['room']})
+
+        if form.cleaned_data['file']:
+            img_format, img_str = form.cleaned_data.pop(
+                'file'
+            ).split(';base64,')
+            ext = img_format.split('/')[-1]
+            file = ContentFile(
+                base64.b64decode(img_str), name=str(message.id) + ext
+            )
+            message.file = file
+            message.save()
+        else:
+            form.cleaned_data.pop('file')
 
         return cls(message=message)
 

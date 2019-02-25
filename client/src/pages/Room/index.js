@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Query, Mutation } from 'react-apollo'
 
+import { BACKEND_URL } from '../../constants'
 import { getRoom, newMessageSubscription, deleteMessage } from '../../queries'
 
 import UserInfo from '../../components/UserProfile'
@@ -44,7 +45,7 @@ const Room = props => {
             <CreateMessageForm currentRoom={currentRoom} {...data.room} />
             {data.room.messages.map(i => (
               <div className="content mt-3" key={i.id}>
-                <article className="card-shadow rad">
+                <article className="card-shadow rad shade">
                   <section className="flex-space">
                     <h4>{i.text}</h4>
                     <div>
@@ -88,10 +89,19 @@ const Room = props => {
                   </ModalForm>
                   <span className="mr-3">{i.sender.fullName}</span>
                   <time>{i.time}</time>
+                  {i.file && (
+                    <div className="width">
+                      <img
+                        src={`${BACKEND_URL}/media/${i.file}`}
+                        alt={i.id}
+                        className="preview rad"
+                      />
+                    </div>
+                  )}
                 </article>
               </div>
             ))}
-            <div className="bar-right position-fixed">
+            <div className="bar-right position-fixed shade">
               <UserInfo profile={data.room.users[1]} />
             </div>
           </article>

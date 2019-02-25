@@ -110,6 +110,7 @@ export const getRoom = gql`
           fullName
         }
         time
+        file
       }
     }
   }
@@ -128,8 +129,19 @@ export const getRooms = gql`
 `
 
 export const createMessage = gql`
-  mutation createMessage($text: String!, $sender: ID!, $room: ID!) {
-    createMessage(text: $text, sender: $sender, room: $room, seen: false) {
+  mutation createMessage(
+    $text: String!
+    $sender: ID!
+    $room: ID!
+    $file: String
+  ) {
+    createMessage(
+      text: $text
+      sender: $sender
+      room: $room
+      seen: false
+      file: $file
+    ) {
       message {
         id
         text

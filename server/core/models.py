@@ -33,6 +33,9 @@ class Message(models.Model):
     )
     seen = models.BooleanField(default=True)
     time = models.DateTimeField(auto_now=True)
+    file = models.ImageField(
+        upload_to='attachment/', null=True, blank=True
+    )
 
     def __str__(self):
         return self.text

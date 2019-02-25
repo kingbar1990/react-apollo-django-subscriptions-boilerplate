@@ -25,7 +25,7 @@ const Sidebar = props => {
   }
 
   return (
-    <div className="sidebar-fixed position-fixed">
+    <div className="sidebar-fixed position-fixed shade">
       <a href={DASHBOARD} className="sidebar">
         <h3 className="logo-wrapper">Current room</h3>
       </a>
@@ -45,7 +45,7 @@ const Sidebar = props => {
               activeClassName="activeClass"
               key={i.id}
             >
-              <ListGroupItem className="flex-space">
+              <ListGroupItem className="flex-space shade">
                 {i.users[1].fullName}
                 <MDBBadge color="elegant-color" pill>
                   {i.unviewedMessages}

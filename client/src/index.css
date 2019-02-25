@@ -19,6 +19,14 @@ a {
   transition: background-color 0.3s;
 }
 
+.shade {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.width {
+  width: 140px;
+}
+
 .navbar-brand {
   margin-left: 15px;
   color: #2196f3 !important;
@@ -29,7 +37,6 @@ a {
   top: 0;
   height: 100vh;
   width: 270px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   z-index: 1050;
   background-color: #fff;
   padding: 1.5rem;
@@ -46,7 +53,6 @@ a {
   top: 0px;
   height: 100vh;
   width: 250px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   z-index: 1050;
   background-color: #fff;
 }
@@ -75,21 +81,22 @@ a {
 
 .card-shadow {
   background: #fff;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-  padding: 0.84rem 2.14rem;
+  padding: 0.84rem 3rem;
   width: 50%;
 }
 
 .btn-rounded {
   padding: 6px 28px;
   margin: 0 6px;
+  border: 0;
+  background: #eaebed;
+  color: #4b4f56;
 }
 
 .activeClass .list-group-item {
   z-index: 5;
   color: #fff;
   border-color: #007bff;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   background-color: #007bff !important;
 }
 
@@ -120,8 +127,27 @@ a {
   outline: none;
 }
 
+.preview {
+  max-width: 100%;
+  height: auto;
+}
+
+.hidden {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.label {
+  color: #49505b;
+  display: inline-block;
+}
+
 @media (max-width: 1200px) {
   .sidebar-fixed {
+    display: none;
+  }
+  .bar-right {
     display: none;
   }
   .flexible-content {
