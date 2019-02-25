@@ -6,11 +6,23 @@ from channels.layers import get_channel_layer
 from django.core.files.base import ContentFile
 from serious_django_graphene import FormMutation
 
-from .forms import MessageForm
+from .forms import MessageForm, RoomForm
 from .models import Message, Room
-from .schema import MessageType
+from .schema import MessageType, RoomType
 
 channel_layer = get_channel_layer()
+
+
+class CreateRoomMutation(FormMutation):
+    class Meta:
+        form_class = RoomForm
+
+    room = graphene.Field(lambda: RoomType)
+
+    @classmethod
+    def perform_mutate(cls, form, info):
+        room = form.save()
+        return cls(room=room)
 
 
 class MessageMutationDelete(graphene.Mutation):

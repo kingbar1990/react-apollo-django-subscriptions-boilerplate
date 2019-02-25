@@ -38,8 +38,9 @@ class Query:
 
     def resolve_room(self, info, id):
         room = Room.objects.get(id=id)
-        room.last_message.seen = True
-        room.last_message.save()
+        if room.last_message:
+            room.last_message.seen = True
+            room.last_message.save()
 
         async_to_sync(channel_layer.group_send)(
             "notify", {"data": room})

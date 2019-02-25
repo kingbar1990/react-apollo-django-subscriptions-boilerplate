@@ -3,7 +3,7 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
 
-from .models import Message
+from .models import Message, Room
 
 
 class MessageForm(ModelForm):
@@ -14,4 +14,12 @@ class MessageForm(ModelForm):
         model = Message
         fields = [
             'text', 'sender', 'room', 'message_id', 'seen'
+        ]
+
+
+class RoomForm(ModelForm):
+    class Meta:
+        model = Room
+        fields = [
+            'users'
         ]

@@ -252,6 +252,25 @@ export const resetPassword = gql`
   }
 `
 
+export const createRoom = gql`
+  mutation createRoom($users: [ID]!) {
+    createRoom(users: $users) {
+      error {
+        __typename
+        ... on ValidationErrors {
+          validationErrors {
+            field
+            messages
+          }
+        }
+      }
+      room {
+        id
+      }
+    }
+  }
+`
+
 export const countSeconds = gql`
   subscription {
     countSeconds
@@ -268,6 +287,7 @@ export const newMessageSubscription = gql`
         id
         fullName
       }
+      file
     }
   }
 `
