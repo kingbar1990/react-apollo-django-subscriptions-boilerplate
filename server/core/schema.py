@@ -4,7 +4,6 @@ from channels.layers import get_channel_layer
 from graphene_django.types import DjangoObjectType
 
 from .models import Message, Room
-from .utils import get_paginator
 
 channel_layer = get_channel_layer()
 
@@ -16,6 +15,12 @@ class MessageType(DjangoObjectType):
 
 class RoomType(DjangoObjectType):
     unviewed_messages = graphene.Int()
+    messages = graphene.List(
+        MessageType,
+        first=graphene.Int(),
+        skip=graphene.Int(),
+        room=graphene.Int()
+    )
 
     class Meta:
         model = Room
@@ -23,13 +28,16 @@ class RoomType(DjangoObjectType):
     def resolve_unviewed_messages(self, info):
         return Room.objects.filter(id=self.id, last_message__seen=False).count()
 
+    def resolve_messages(self, info, first=None, skip=None, room=None):
+        qs = Message.objects.filter(room_id=room)
 
-class MessagePaginatedType(graphene.ObjectType):
-    page = graphene.Int()
-    pages = graphene.Int()
-    has_next = graphene.Boolean()
-    has_prev = graphene.Boolean()
-    objects = graphene.List(MessageType)
+        if skip:
+            qs = qs[skip:]
+
+        if first:
+            qs = qs[:first]
+
+        return qs
 
 
 class Query:

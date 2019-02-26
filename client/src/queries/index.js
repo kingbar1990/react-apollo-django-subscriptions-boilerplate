@@ -96,13 +96,13 @@ export const getUsers = gql`
 `
 
 export const getRoom = gql`
-  query getRoom($id: Int) {
+  query getRoom($id: Int, $first: Int, $skip: Int) {
     room(id: $id) {
       users {
         id
         fullName
       }
-      messages {
+      messages(first: $first, skip: $skip, room: $id) {
         id
         text
         sender {

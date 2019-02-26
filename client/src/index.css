@@ -11,6 +11,10 @@ time {
   color: #616770;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 .styles-card {
   width: 22rem;
 }
@@ -74,8 +78,9 @@ time {
 }
 
 .feed {
-  display: flex;
-  flex-direction: column;
+  max-height: 85vh;
+  width: auto;
+  overflow-y: scroll;
 }
 
 .content:nth-child(even) {
@@ -85,7 +90,7 @@ time {
 
 .card-shadow {
   background: #fff;
-  padding: 0.84rem 3rem;
+  padding: 0.84rem 2.5rem;
   width: 50%;
 }
 
@@ -107,7 +112,6 @@ time {
 .main-container {
   min-height: 100vh;
   position: relative;
-  padding-bottom: 213px;
 }
 
 .page-footer {
