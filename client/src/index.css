@@ -7,10 +7,6 @@ a {
   color: inherit;
 }
 
-time {
-  color: #616770;
-}
-
 body.modal-open {
   overflow: hidden;
 }

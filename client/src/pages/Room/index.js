@@ -69,6 +69,7 @@ const Room = props => {
             <div className="bar-right position-fixed shade">
               <UserInfo profile={data.room.users[0]} />
             </div>
+            <i className="grey-text">Typing...</i>
           </MDBContainer>
         )
       }}

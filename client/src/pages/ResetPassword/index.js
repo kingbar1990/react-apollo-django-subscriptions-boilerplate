@@ -1,15 +1,15 @@
-import React from "react";
-import { graphql } from "react-apollo";
+import React from 'react'
+import { graphql } from 'react-apollo'
 
-import * as path from "../../constants/routes";
-import { Container } from "reactstrap";
+import * as path from '../../constants/routes'
+import { MDBContainer } from 'mdbreact'
 
-import { ResetPasswordForm } from "../../components/Forms/ResetPasswordForm";
-import { resetPassword } from "../../queries";
+import { ResetPasswordForm } from '../../components/Forms/ResetPasswordForm'
+import { resetPassword } from '../../queries'
 
 class ResetPassword extends React.Component {
   resetPassword = (values, { setErrors }) => {
-    const { newPassword1, newPassword2, confirmToken, userId } = values;
+    const { newPassword1, newPassword2, confirmToken, userId } = values
     this.props
       .resetPassword({
         variables: {
@@ -22,38 +22,38 @@ class ResetPassword extends React.Component {
       .then(response => {
         if (!response.data.resetPassword.error.validationErrors.length) {
           if (response.data.resetPassword.success) {
-            alert("Your password has been changed successfully!");
-            this.props.history.push(path.HOME);
+            alert('Your password has been changed successfully!')
+            this.props.history.push(path.HOME)
           } else {
-            alert("Your account is unconfirmed.");
+            alert('Your account is unconfirmed.')
           }
         } else {
-          let errors = {};
+          let errors = {}
           response.data.resetPassword.error.validationErrors.map(error => {
-            if (error["field"] === "__all__") {
-              errors["new_password2"] = error["messages"].join(" ");
-            } else if (error["field"] === "new_password2") {
-              errors["newPassword2"] = error["messages"].join(" ");
+            if (error['field'] === '__all__') {
+              errors['new_password2'] = error['messages'].join(' ')
+            } else if (error['field'] === 'new_password2') {
+              errors['newPassword2'] = error['messages'].join(' ')
             } else {
-              errors[error] = error["messages"];
+              errors[error] = error['messages']
             }
-            return null;
-          });
-          setErrors(errors);
+            return null
+          })
+          setErrors(errors)
         }
-      });
-  };
+      })
+  }
   render() {
     return (
-      <Container>
+      <MDBContainer>
         <ResetPasswordForm
           resetPassword={this.resetPassword}
           uid={this.props.match.params.uid}
           confirmToken={this.props.match.params.confirmToken}
         />
-      </Container>
-    );
+      </MDBContainer>
+    )
   }
 }
 
-export default graphql(resetPassword, { name: "resetPassword" })(ResetPassword);
+export default graphql(resetPassword, { name: 'resetPassword' })(ResetPassword)

@@ -5,10 +5,10 @@ import { bindActionCreators } from 'redux'
 
 import * as path from '../../constants/routes'
 import { islogin } from '../../actions'
-import { Container } from 'reactstrap'
 
 import { SignUpForm } from '../../components/Forms/SignUpForm'
 import { register } from '../../queries'
+import { MDBContainer } from 'mdbreact'
 
 class SignUp extends React.Component {
   constructor() {
@@ -55,13 +55,13 @@ class SignUp extends React.Component {
 
   render() {
     return (
-      <Container>
+      <MDBContainer>
         <SignUpForm
           handleInput={this.handleInput}
           register={this.register}
           error={this.state.error}
         />
-      </Container>
+      </MDBContainer>
     )
   }
 }

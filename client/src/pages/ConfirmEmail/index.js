@@ -1,24 +1,24 @@
-import React from "react";
-import { graphql, compose } from "react-apollo";
+import React from 'react'
+import { graphql, compose } from 'react-apollo'
 
-import * as path from "../../constants/routes";
-import { Container } from "reactstrap";
+import * as path from '../../constants/routes'
+import { MDBContainer } from 'mdbreact'
 
-import { ConfirmEmailForm } from "../../components/Forms/ConfirmEmailForm";
-import { confirmEmail } from "../../queries";
+import { ConfirmEmailForm } from '../../components/Forms/ConfirmEmailForm'
+import { confirmEmail } from '../../queries'
 
 class ConfirmEmail extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
-      email: "",
-      error: ""
-    };
+      email: '',
+      error: ''
+    }
   }
 
   handleInput = e => {
-    this.setState({ [e.target.id]: e.target.value });
-  };
+    this.setState({ [e.target.id]: e.target.value })
+  }
 
   confirmEmail = (values, { setErrors }) => {
     this.props
@@ -29,38 +29,38 @@ class ConfirmEmail extends React.Component {
       })
       .then(response => {
         if (!response.data.confirmEmail.error) {
-          alert("Check your email, please!");
-          this.props.history.push(path.HOME);
+          alert('Check your email, please!')
+          this.props.history.push(path.HOME)
         } else {
-          let errors = {};
+          let errors = {}
           response.data.confirmEmail.error.validationErrors.map(error => {
-            if (error["field"] === "__all__") {
-              errors["email"] = error["messages"].join(" ");
-            } else if (error["field"] === "email") {
-              errors["email"] = error["messages"].join(" ");
+            if (error['field'] === '__all__') {
+              errors['email'] = error['messages'].join(' ')
+            } else if (error['field'] === 'email') {
+              errors['email'] = error['messages'].join(' ')
             } else {
-              errors[error] = error["messages"];
+              errors[error] = error['messages']
             }
-            return null;
-          });
-          setErrors(errors);
+            return null
+          })
+          setErrors(errors)
         }
-      });
-  };
+      })
+  }
 
   render() {
     return (
-      <Container>
+      <MDBContainer>
         <ConfirmEmailForm
           handleInput={this.handleInput}
           confirmEmail={this.confirmEmail}
           error={this.state.error}
         />
-      </Container>
-    );
+      </MDBContainer>
+    )
   }
 }
 
-export default compose(
-  graphql(confirmEmail, { name: "confirmEmail" })
-)(ConfirmEmail);
+export default compose(graphql(confirmEmail, { name: 'confirmEmail' }))(
+  ConfirmEmail
+)

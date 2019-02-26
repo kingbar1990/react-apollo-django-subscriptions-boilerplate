@@ -1,9 +1,9 @@
-import React from "react";
-import { Formik, Form, Field } from "formik";
-import { Button } from "mdbreact";
-import { ReactstrapInput } from "reactstrap-formik";
+import React from 'react'
+import { Formik, Form, Field } from 'formik'
+import { Button } from 'mdbreact'
+import { ReactstrapInput } from 'reactstrap-formik'
 
-import { UserFormValidate } from "./validation";
+import { UserFormValidate } from './validation'
 
 const UserEditForm = props => {
   return (
@@ -35,11 +35,15 @@ const UserEditForm = props => {
                     name="avatar"
                     type="file"
                     className="form-control-file"
-                    accept='image/*'
+                    accept="image/*"
                     onChange={props.handleImageChange}
                     label="Avatar"
                   />
-                  {props.error && <div className="invalid-feedback d-block" >{props.error}</div>}
+                  {props.error && (
+                    <div className="invalid-feedback d-block">
+                      {props.error}
+                    </div>
+                  )}
                 </div>
                 <Button color="primary" type="submit" style={{ margin: 0 }}>
                   Save
@@ -50,7 +54,7 @@ const UserEditForm = props => {
         )}
       </Formik>
     </div>
-  );
-};
+  )
+}
 
-export default UserEditForm;
+export default UserEditForm

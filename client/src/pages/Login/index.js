@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { MDBContainer } from 'mdbreact'
 
 import * as path from '../../constants/routes'
 import { islogin } from '../../actions'
-import { Container } from 'reactstrap'
 
 import { LoginForm } from '../../components/Forms/LoginForm'
 import { login } from '../../queries'
@@ -57,13 +57,13 @@ class Login extends Component {
 
   render() {
     return (
-      <Container>
+      <MDBContainer>
         <LoginForm
           handleInput={this.handleInput}
           login={this.login}
           error={this.state.error}
         />
-      </Container>
+      </MDBContainer>
     )
   }
 }

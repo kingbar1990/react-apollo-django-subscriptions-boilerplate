@@ -1,15 +1,15 @@
-import React from "react";
-import { Formik, Form, Field } from "formik";
-import { Button } from "reactstrap";
-import { ReactstrapInput } from "reactstrap-formik";
+import React from 'react'
+import { Formik, Form, Field } from 'formik'
+import { Button } from 'mdbreact'
+import { ReactstrapInput } from 'reactstrap-formik'
 
-import { ResetPasswordSchema } from "./validation";
+import { ResetPasswordSchema } from './validation'
 
 export const ResetPasswordForm = ({ uid, confirmToken, resetPassword }) => (
   <Formik
     initialValues={{
-      newPassword1: "",
-      newPassword2: "",
+      newPassword1: '',
+      newPassword2: '',
       userId: uid,
       confirmToken: confirmToken
     }}
@@ -39,4 +39,4 @@ export const ResetPasswordForm = ({ uid, confirmToken, resetPassword }) => (
       </div>
     )}
   </Formik>
-);
+)

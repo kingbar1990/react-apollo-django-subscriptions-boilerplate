@@ -53,7 +53,9 @@ const Message = props => {
       <section className="flex-space">
         <div>
           <span className="mr-3">{props.sender.fullName}</span>
-          <time>{new Date(props.time).toDateString()}</time>
+          <time className="grey-text">
+            {new Date(props.time).toDateString()}
+          </time>
         </div>
         {props.file && (
           <div className="width">
