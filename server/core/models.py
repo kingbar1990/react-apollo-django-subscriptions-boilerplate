@@ -12,6 +12,7 @@ class Room(models.Model):
         null=True,
         on_delete=models.SET_NULL
     )
+    typing = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s" % (self.id)

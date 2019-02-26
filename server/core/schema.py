@@ -43,12 +43,24 @@ class RoomType(DjangoObjectType):
 class Query:
     rooms = graphene.List(RoomType, user_id=graphene.Int())
     room = graphene.Field(RoomType, id=graphene.Int())
+    type = graphene.Field(RoomType, id=graphene.Int())
 
     def resolve_room(self, info, id):
         room = Room.objects.get(id=id)
         if room.last_message:
             room.last_message.seen = True
+            room.typing = False
             room.last_message.save()
+
+        async_to_sync(channel_layer.group_send)(
+            "notify", {"data": room})
+
+        return room
+
+    def resolve_type(self, info, id):
+        room = Room.objects.get(id=id)
+        room.typing = True
+        room.save()
 
         async_to_sync(channel_layer.group_send)(
             "notify", {"data": room})

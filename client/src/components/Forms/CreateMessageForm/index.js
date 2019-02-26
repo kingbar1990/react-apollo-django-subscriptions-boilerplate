@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { MDBFooter } from 'mdbreact'
-import { Mutation } from 'react-apollo'
+import { Mutation, graphql } from 'react-apollo'
 
 import { getBase64 } from '../../../utils'
-import { createMessage, getRoom } from '../../../queries'
+import { createMessage, getRoom, getType } from '../../../queries'
 
-const CreateMessageForm = ({ currentRoom, users }) => {
+const CreateMessageForm = ({ currentRoom, users, data }) => {
   const [value, setValue] = useState('')
   const [avatar, setAvatar] = useState('')
   const [error, setError] = useState('')
@@ -22,6 +22,14 @@ const CreateMessageForm = ({ currentRoom, users }) => {
     } else {
       return setError('max size 1MB')
     }
+  }
+
+  const handleInputChange = e => {
+    setValue(e.target.value)
+    data.refetch({
+      id: currentRoom,
+      skip: false
+    })
   }
 
   return (
@@ -74,9 +82,7 @@ const CreateMessageForm = ({ currentRoom, users }) => {
           <section>
             <input
               className="input-send rad"
-              onChange={event => {
-                setValue(event.target.value)
-              }}
+              onChange={handleInputChange}
               value={value}
               placeholder="Type something"
             />
@@ -90,4 +96,6 @@ const CreateMessageForm = ({ currentRoom, users }) => {
   )
 }
 
-export default CreateMessageForm
+export default graphql(getType, {
+  options: props => ({ variables: { id: props.currentRoom, skip: true } })
+})(CreateMessageForm)

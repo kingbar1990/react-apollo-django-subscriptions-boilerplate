@@ -1,8 +1,12 @@
 import React from 'react'
-import { Query } from 'react-apollo'
+import { Query, Subscription } from 'react-apollo'
 import { MDBContainer } from 'mdbreact'
 
-import { getRoom, newMessageSubscription } from '../../queries'
+import {
+  getRoom,
+  newMessageSubscription,
+  unviewedMessageSubscription
+} from '../../queries'
 
 import UserInfo from '../../components/UserProfile'
 import CreateMessageForm from '../../components/Forms/CreateMessageForm'
@@ -69,7 +73,15 @@ const Room = props => {
             <div className="bar-right position-fixed shade">
               <UserInfo profile={data.room.users[0]} />
             </div>
-            <i className="grey-text">Typing...</i>
+            <Subscription subscription={unviewedMessageSubscription}>
+              {({ data, loading }) =>
+                !loading && data.notifications.typing ? (
+                  <em className="grey-text">Typing...</em>
+                ) : (
+                  ''
+                )
+              }
+            </Subscription>
           </MDBContainer>
         )
       }}

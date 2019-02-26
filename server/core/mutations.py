@@ -47,6 +47,7 @@ class MessageMutationDelete(graphene.Mutation):
                 prev = Message.objects.exclude(
                     id=message_id).order_by('-id').first()
                 room.last_message = prev
+                room.typing = False
                 room.save()
 
                 Message.objects.get(id=message_id).delete()

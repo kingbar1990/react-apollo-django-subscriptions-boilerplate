@@ -116,6 +116,14 @@ export const getRoom = gql`
   }
 `
 
+export const getType = gql`
+  query getType($id: Int, $skip: Boolean!) {
+    type(id: $id) @skip(if: $skip) {
+      typing
+    }
+  }
+`
+
 export const getRooms = gql`
   query getRooms($userId: Int) {
     rooms(userId: $userId) {
@@ -297,6 +305,7 @@ export const unviewedMessageSubscription = gql`
     notifications {
       id
       unviewedMessages
+      typing
     }
   }
 `
