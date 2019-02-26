@@ -14,7 +14,7 @@ const Message = props => {
     <article className="card-shadow rad shade">
       <section className="flex-space">
         <p>{props.text}</p>
-        <div>
+        <div className="d-flex">
           <button
             className="btn-rounded rad"
             onClick={() => setModal(props.id)}

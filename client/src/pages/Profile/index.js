@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
+import { MDBContainer, MDBRow } from 'mdbreact'
 
 import { User, editUser } from '../../queries'
 
@@ -60,15 +61,17 @@ class EditUser extends Component {
     const user = this.props.user.me
     if (this.props.user.loading) return null
     return (
-      <article className="row mt-3">
-        <UserProfile profile={user} />
-        <UserEditForm
-          initialValues={user}
-          handleEditUser={this.handleEditUser}
-          handleImageChange={this.handleImageChange}
-          error={this.state.imageError}
-        />
-      </article>
+      <MDBContainer>
+        <MDBRow className="mt-3">
+          <UserProfile profile={user} />
+          <UserEditForm
+            initialValues={user}
+            handleEditUser={this.handleEditUser}
+            handleImageChange={this.handleImageChange}
+            error={this.state.imageError}
+          />
+        </MDBRow>
+      </MDBContainer>
     )
   }
 }

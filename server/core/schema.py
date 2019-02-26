@@ -29,7 +29,7 @@ class RoomType(DjangoObjectType):
         return Room.objects.filter(id=self.id, last_message__seen=False).count()
 
     def resolve_messages(self, info, first=None, skip=None, room=None):
-        qs = Message.objects.filter(room_id=room)
+        qs = Message.objects.filter(room_id=room).order_by('time')
 
         if skip:
             qs = qs[skip:]

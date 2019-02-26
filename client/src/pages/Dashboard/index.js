@@ -1,6 +1,6 @@
 import React from 'react'
 import { Query, compose, graphql } from 'react-apollo'
-import { MDBListGroup, MDBListGroupItem } from 'mdbreact'
+import { MDBListGroup, MDBListGroupItem, MDBContainer } from 'mdbreact'
 
 import { getUsers, createRoom, User } from '../../queries'
 
@@ -22,8 +22,8 @@ const Dashboard = props => {
   }
 
   return (
-    <article className="mt-3">
-      <h1>Choose people</h1>
+    <MDBContainer>
+      <h1 className="mt-3">Choose people</h1>
       <MDBListGroup className="styles-card">
         <Query query={getUsers}>
           {({ loading, error, data }) => {
@@ -37,7 +37,7 @@ const Dashboard = props => {
           }}
         </Query>
       </MDBListGroup>
-    </article>
+    </MDBContainer>
   )
 }
 

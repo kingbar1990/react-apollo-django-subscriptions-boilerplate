@@ -78,8 +78,7 @@ body.modal-open {
 }
 
 .feed {
-  max-height: 85vh;
-  width: auto;
+  max-height: 74vh;
   overflow-y: scroll;
 }
 
@@ -107,11 +106,6 @@ body.modal-open {
   color: #fff;
   border-color: #007bff;
   background-color: #007bff !important;
-}
-
-.main-container {
-  min-height: 100vh;
-  position: relative;
 }
 
 .page-footer {

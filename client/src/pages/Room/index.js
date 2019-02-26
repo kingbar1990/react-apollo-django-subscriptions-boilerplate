@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Query } from 'react-apollo'
+import { MDBContainer } from 'mdbreact'
 
 import { getRoom, newMessageSubscription } from '../../queries'
 
@@ -37,7 +38,7 @@ const Room = props => {
         subscribeToNewMessage(subscribeToMore)
 
         return (
-          <Fragment>
+          <MDBContainer>
             <CreateMessageForm currentRoom={currentRoom} {...data.room} />
             <MessageList
               data={data.room}
@@ -68,7 +69,7 @@ const Room = props => {
             <div className="bar-right position-fixed shade">
               <UserInfo profile={data.room.users[0]} />
             </div>
-          </Fragment>
+          </MDBContainer>
         )
       }}
     </Query>

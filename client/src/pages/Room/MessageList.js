@@ -13,9 +13,9 @@ const MessageList = ({ data, currentRoom, onLoadMore }) => {
   }
 
   return (
-    <article className="feed" onScroll={e => handleScroll(e, onLoadMore)}>
+    <article className="feed py-3" onScroll={e => handleScroll(e, onLoadMore)}>
       {data.messages.map(i => (
-        <div className="content mt-3" key={i.id}>
+        <div className="content mb-3" key={i.id}>
           <Message {...i} currentRoom={currentRoom} />
         </div>
       ))}

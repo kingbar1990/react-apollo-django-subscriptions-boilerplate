@@ -1,6 +1,5 @@
 import React from 'react'
 import { Query } from 'react-apollo'
-import { MDBContainer } from 'mdbreact'
 
 import NavBar from '../../components/NavBar'
 import SideBar from '../../components/SideBar'
@@ -19,10 +18,8 @@ const Main = props => (
         return <SideBar {...data.me} />
       }}
     </Query>
-    <main className="main-container">
-      <NavBar />
-      <MDBContainer>{props.children}</MDBContainer>
-    </main>
+    <NavBar />
+    {props.children}
   </div>
 )
 
