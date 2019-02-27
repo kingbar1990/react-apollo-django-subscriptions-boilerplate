@@ -21,6 +21,8 @@ const Room = props => {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev
         const newMessage = subscriptionData.data.newMessage
+        const exists = prev.room.messages.find(({ id }) => id === newMessage.id)
+        if (exists) return prev
 
         return Object.assign({}, prev, {
           room: {

@@ -40,18 +40,16 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
         file: avatar
       }}
       update={(cache, { data: { createMessage } }) => {
-        const data = cache.readQuery({
+        const { room } = cache.readQuery({
           query: getRoom,
           variables: { id: currentRoom, first: 5 }
         })
         cache.writeQuery({
           query: getRoom,
-          data: {
-            room: {
-              messages: [...data.room.messages, createMessage.message],
-              users: data.room.users,
-              __typename: data.room.__typename
-            }
+          room: {
+            messages: [...room.messages, createMessage.message],
+            users: room.users,
+            __typename: room.__typename
           }
         })
       }}
