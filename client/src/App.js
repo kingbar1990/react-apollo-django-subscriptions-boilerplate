@@ -8,7 +8,6 @@ import SignUp from './pages/SignUp'
 import Login from './pages/Login'
 import Main from './components/Main'
 import Loader from './components/Loader'
-import PageNotFound from './components/PageNotFound'
 
 const Room = lazy(() => import('./pages/Room'))
 const Profile = lazy(() => import('./pages/Profile'))
@@ -40,7 +39,6 @@ const App = props => (
         />
       </Suspense>
     </Main>
-    <Route component={PageNotFound} />
   </Switch>
 )
 

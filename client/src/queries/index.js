@@ -286,12 +286,6 @@ export const createRoom = gql`
   }
 `
 
-export const countSeconds = gql`
-  subscription {
-    countSeconds
-  }
-`
-
 export const newMessageSubscription = gql`
   subscription {
     newMessage {

@@ -31,6 +31,14 @@ body.modal-open {
   width: 140px;
 }
 
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .navbar-brand {
   margin-left: 15px;
   color: #2196f3 !important;
