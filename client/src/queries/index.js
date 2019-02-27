@@ -153,6 +153,12 @@ export const createMessage = gql`
       message {
         id
         text
+        sender {
+          id
+          fullName
+        }
+        time
+        file
       }
       error {
         __typename
@@ -179,6 +185,7 @@ export const updateMessage = gql`
       sender: $sender
       room: $room
       messageId: $messageId
+      seen: false
     ) {
       message {
         id

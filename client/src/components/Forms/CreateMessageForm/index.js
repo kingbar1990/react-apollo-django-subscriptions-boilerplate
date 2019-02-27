@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { MDBFooter } from 'mdbreact'
 import { Mutation, graphql } from 'react-apollo'
 
-import { getBase64 } from '../../../utils'
+import { getBase64, debounce } from '../../../utils'
 import { createMessage, getRoom, getType } from '../../../queries'
 
 const CreateMessageForm = ({ currentRoom, users, data }) => {
@@ -24,13 +24,11 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
     }
   }
 
-  const handleInputChange = e => {
-    setValue(e.target.value)
-    data.refetch({
-      id: currentRoom,
-      skip: false
-    })
-  }
+  let updateStatus = () => data.refetch({ id: currentRoom, skip: false })
+
+  updateStatus = debounce(updateStatus, 3000)
+
+  const handleInputChange = e => setValue(e.target.value)
 
   return (
     <Mutation
@@ -44,7 +42,7 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
       update={(cache, { data: { createMessage } }) => {
         const data = cache.readQuery({
           query: getRoom,
-          variables: { id: currentRoom }
+          variables: { id: currentRoom, first: 5 }
         })
         cache.writeQuery({
           query: getRoom,
@@ -83,6 +81,7 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
             <input
               className="input-send rad"
               onChange={handleInputChange}
+              onFocus={updateStatus}
               value={value}
               placeholder="Type something"
             />
