@@ -1,6 +1,7 @@
 import React from 'react'
 import { Query, Subscription } from 'react-apollo'
 import { MDBContainer } from 'mdbreact'
+import { Offline, Online } from 'react-detect-offline'
 
 import {
   getRoom,
@@ -10,6 +11,7 @@ import {
 
 import UserInfo from '../../components/UserProfile'
 import CreateMessageForm from '../../components/Forms/CreateMessageForm'
+import OfflinePage from '../../components/OfflinePage'
 import MessageList from './MessageList'
 
 const Room = props => {
@@ -46,32 +48,37 @@ const Room = props => {
         return (
           <MDBContainer>
             <CreateMessageForm currentRoom={currentRoom} {...data.room} />
-            <MessageList
-              data={data.room}
-              currentRoom={currentRoom}
-              onLoadMore={() =>
-                fetchMore({
-                  variables: {
-                    id: currentRoom,
-                    first: 5,
-                    skip: data.room.messages.length
-                  },
-                  updateQuery: (prev, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev
-                    return Object.assign({}, prev, {
-                      room: {
-                        messages: [
-                          ...prev.room.messages,
-                          ...fetchMoreResult.room.messages
-                        ],
-                        users: prev.room.users,
-                        __typename: prev.room.__typename
-                      }
-                    })
-                  }
-                })
-              }
-            />
+            <Offline>
+              <OfflinePage />
+            </Offline>
+            <Online>
+              <MessageList
+                data={data.room}
+                currentRoom={currentRoom}
+                onLoadMore={() =>
+                  fetchMore({
+                    variables: {
+                      id: currentRoom,
+                      first: 5,
+                      skip: data.room.messages.length
+                    },
+                    updateQuery: (prev, { fetchMoreResult }) => {
+                      if (!fetchMoreResult) return prev
+                      return Object.assign({}, prev, {
+                        room: {
+                          messages: [
+                            ...prev.room.messages,
+                            ...fetchMoreResult.room.messages
+                          ],
+                          users: prev.room.users,
+                          __typename: prev.room.__typename
+                        }
+                      })
+                    }
+                  })
+                }
+              />
+            </Online>
             <div className="bar-right position-fixed shade">
               <UserInfo profile={data.room.users[0]} />
             </div>
