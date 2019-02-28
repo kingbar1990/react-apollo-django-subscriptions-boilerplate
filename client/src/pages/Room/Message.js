@@ -24,12 +24,26 @@ const Message = props => {
           <Mutation
             mutation={deleteMessage}
             variables={{ messageId: parseInt(props.id) }}
-            refetchQueries={[
-              {
+            update={cache => {
+              const data = cache.readQuery({
                 query: getRoom,
-                variables: { id: props.currentRoom }
-              }
-            ]}
+                variables: { id: props.currentRoom, first: 5 }
+              })
+
+              const del = data.room.messages.indexOf(props.id)
+              data.room.messages.splice(del, 1)
+
+              cache.writeQuery({
+                query: getRoom,
+                data: {
+                  room: {
+                    messages: data.room.messages,
+                    users: data.room.users,
+                    __typename: data.room.__typename
+                  }
+                }
+              })
+            }}
           >
             {deleteMessage => (
               <button className="btn-rounded rad" onClick={deleteMessage}>

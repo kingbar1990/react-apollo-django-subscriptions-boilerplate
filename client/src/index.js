@@ -19,6 +19,7 @@ import rootReducer from './rootReducer'
 import App from './App'
 import { TOKEN } from './constants'
 import './index.css'
+import * as serviceWorker from './serviceWorker'
 
 const cache = new InMemoryCache()
 
@@ -76,3 +77,5 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root')
 )
+
+serviceWorker.register()

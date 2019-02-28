@@ -10,6 +10,7 @@
     <meta name="theme-color" content="#000000" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>React App</title>
     <style type="text/css">
       .app {
@@ -30,29 +31,5 @@
         <h1>Connecting...</h1>
       </div>
     </div>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker
-            .register('service-worker.js')
-            .then(
-              function(registration) {
-                console.log(
-                  'ServiceWorker registration successful with scope: ',
-                  registration.scope
-                )
-              },
-              function(err) {
-                console.log('ServiceWorker registration failed: ', err)
-              }
-            )
-            .catch(function(err) {
-              console.log(err)
-            })
-        })
-      } else {
-        console.log('service worker is not supported')
-      }
-    </script>
   </body>
 </html>

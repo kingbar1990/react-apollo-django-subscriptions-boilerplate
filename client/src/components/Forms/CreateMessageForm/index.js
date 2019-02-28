@@ -40,19 +40,22 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
         file: avatar
       }}
       update={(cache, { data: { createMessage } }) => {
-        const { room } = cache.readQuery({
+        const data = cache.readQuery({
           query: getRoom,
           variables: { id: currentRoom, first: 5 }
         })
         cache.writeQuery({
           query: getRoom,
-          room: {
-            messages: [...room.messages, createMessage.message],
-            users: room.users,
-            __typename: room.__typename
+          data: {
+            room: {
+              messages: [...data.room.messages, createMessage.message],
+              users: data.room.users,
+              __typename: data.room.__typename
+            }
           }
         })
       }}
+      onError={() => setError('Message not sent :( Please try again')}
       onCompleted={() => {
         setValue('')
         setAvatar('')
@@ -60,8 +63,12 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
     >
       {createTask => (
         <MDBFooter className="py-3 shade">
-          <section className="flex-space">
-            {error && <div className="invalid-feedback d-block">{error}</div>}
+          {error && (
+            <section className="flex-space">
+              <div className="d-block invalid-feedback mb-2">{error}</div>
+            </section>
+          )}
+          <section>
             {avatar && <span className="btn-rounded rad">Preview</span>}
             <label htmlFor="avatar" className="label btn-rounded rad">
               Attach
@@ -74,8 +81,6 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
               onChange={handleImageChange}
               className="hidden"
             />
-          </section>
-          <section>
             <input
               className="input-send rad"
               onChange={handleInputChange}

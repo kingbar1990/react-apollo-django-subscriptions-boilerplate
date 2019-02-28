@@ -43,7 +43,7 @@ class MessageMutationDelete(graphene.Mutation):
 
         if not errors:
             try:
-                room = Room.objects.get(last_message=message_id)
+                room = Room.objects.get(messages__id=message_id)
                 prev = Message.objects.exclude(
                     id=message_id).order_by('-id').first()
                 room.last_message = prev
