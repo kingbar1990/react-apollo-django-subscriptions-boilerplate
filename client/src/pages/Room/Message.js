@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Mutation } from 'react-apollo'
 
-import { BACKEND_URL } from '../../constants'
+import { BACKEND_URL, DATA_PER_PAGE } from '../../constants'
 import { getRoom, deleteMessage } from '../../queries'
 
 import ModalForm from '../../components/Forms/ModalForm'
@@ -27,11 +27,12 @@ const Message = props => {
             update={cache => {
               const data = cache.readQuery({
                 query: getRoom,
-                variables: { id: props.currentRoom, first: 5 }
+                variables: { id: props.currentRoom, first: DATA_PER_PAGE }
               })
 
-              const del = data.room.messages.indexOf(props.id)
-              data.room.messages.splice(del, 1)
+              const del = data.room.messages.find(i => i.id === props.id)
+              const index = data.room.messages.indexOf(del)
+              data.room.messages.splice(index, 1)
 
               cache.writeQuery({
                 query: getRoom,

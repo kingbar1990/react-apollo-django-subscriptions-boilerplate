@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Query } from 'react-apollo'
 
 import NavBar from '../../components/NavBar'
@@ -10,7 +10,7 @@ import { User } from '../../queries'
 import '../../index.css'
 
 const Main = props => (
-  <div className="flexible-content">
+  <Fragment>
     <Query query={User}>
       {({ loading, error, data }) => {
         if (loading) return 'Loading...'
@@ -20,7 +20,7 @@ const Main = props => (
     </Query>
     <NavBar />
     {props.children}
-  </div>
+  </Fragment>
 )
 
 export default withAuth(Main)

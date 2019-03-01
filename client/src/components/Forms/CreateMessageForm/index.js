@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { MDBFooter } from 'mdbreact'
 import { Mutation, graphql } from 'react-apollo'
 
+import { DATA_PER_PAGE } from '../../../constants'
 import { getBase64, debounce } from '../../../utils'
 import { createMessage, getRoom, getType } from '../../../queries'
 
@@ -42,7 +43,7 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
       update={(cache, { data: { createMessage } }) => {
         const data = cache.readQuery({
           query: getRoom,
-          variables: { id: currentRoom, first: 5 }
+          variables: { id: currentRoom, first: DATA_PER_PAGE }
         })
         cache.writeQuery({
           query: getRoom,

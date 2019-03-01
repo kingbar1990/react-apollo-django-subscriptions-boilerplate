@@ -8,6 +8,7 @@ import {
   unviewedMessageSubscription
 } from '../../queries'
 
+import { DATA_PER_PAGE } from '../../constants'
 import UserInfo from '../../components/UserProfile'
 import CreateMessageForm from '../../components/Forms/CreateMessageForm'
 import MessageList from './MessageList'
@@ -36,7 +37,10 @@ const Room = props => {
   }
 
   return (
-    <Query query={getRoom} variables={{ id: currentRoom, first: 5 }}>
+    <Query
+      query={getRoom}
+      variables={{ id: currentRoom, first: DATA_PER_PAGE }}
+    >
       {({ loading, error, data, subscribeToMore, fetchMore }) => {
         if (loading) return null
         if (error) return `Error! ${error.message}`
@@ -53,7 +57,7 @@ const Room = props => {
                 fetchMore({
                   variables: {
                     id: currentRoom,
-                    first: 5,
+                    first: DATA_PER_PAGE,
                     skip: data.room.messages.length
                   },
                   updateQuery: (prev, { fetchMoreResult }) => {

@@ -74,7 +74,7 @@ body.modal-open {
 }
 
 .feed {
-  max-height: 74vh;
+  max-height: 82vh;
   overflow-y: scroll;
 }
 
@@ -149,9 +149,6 @@ body.modal-open {
   }
   .bar-right {
     display: none;
-  }
-  .flexible-content {
-    padding-left: 0;
   }
   .flexible-navbar {
     padding-left: 10px;
