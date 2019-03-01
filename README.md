@@ -1,6 +1,6 @@
 # React Apollo Django boilerplate
 
-Boilerplate that using apollo-subscriptions and django-channels
+Live chat with apollo-subscriptions and django-channels
 
 ## Getting Started
 
