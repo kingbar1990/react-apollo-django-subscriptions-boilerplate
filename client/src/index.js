@@ -1,8 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { ApolloClient } from 'apollo-client'
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
@@ -15,7 +13,6 @@ import { getMainDefinition } from 'apollo-utilities'
 import 'bootstrap-css-only/css/bootstrap.min.css'
 import 'mdbreact/dist/css/mdb.css'
 
-import rootReducer from './rootReducer'
 import App from './App'
 import { TOKEN } from './constants'
 import './index.css'
@@ -65,16 +62,12 @@ const client = new ApolloClient({
   link
 })
 
-const store = createStore(rootReducer)
-
 ReactDOM.render(
-  <Provider store={store}>
-    <ApolloProvider client={client}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ApolloProvider>
-  </Provider>,
+  <ApolloProvider client={client}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </ApolloProvider>,
   document.getElementById('root')
 )
 

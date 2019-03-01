@@ -1,5 +1,5 @@
 import React from 'react'
-import { graphql, compose } from 'react-apollo'
+import { graphql } from 'react-apollo'
 
 import * as path from '../../constants/routes'
 import { MDBContainer } from 'mdbreact'
@@ -61,6 +61,4 @@ class ConfirmEmail extends React.Component {
   }
 }
 
-export default compose(graphql(confirmEmail, { name: 'confirmEmail' }))(
-  ConfirmEmail
-)
+export default graphql(confirmEmail, { name: 'confirmEmail' })(ConfirmEmail)

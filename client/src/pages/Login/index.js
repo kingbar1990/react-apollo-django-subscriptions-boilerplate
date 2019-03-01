@@ -1,14 +1,13 @@
 import React, { Component } from 'react'
-import { graphql, compose } from 'react-apollo'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import { graphql } from 'react-apollo'
 import { MDBContainer } from 'mdbreact'
 
+import * as actions from '../../constants'
 import * as path from '../../constants/routes'
-import { islogin } from '../../actions'
 
 import { LoginForm } from '../../components/Forms/LoginForm'
 import { login } from '../../queries'
+import { saveData } from '../../utils'
 
 class Login extends Component {
   constructor() {
@@ -20,9 +19,7 @@ class Login extends Component {
     }
   }
 
-  handleInput = e => {
-    this.setState({ [e.target.id]: e.target.value })
-  }
+  handleInput = e => this.setState({ [e.target.id]: e.target.value })
 
   login = (values, { setErrors }) => {
     const { username, password } = values
@@ -37,7 +34,7 @@ class Login extends Component {
         if (!response.data.login.error) {
           const token = response.data.login.token
 
-          this.props.islogin(token, true)
+          saveData(actions.TOKEN, token)
           this.props.history.push(path.DASHBOARD)
         } else {
           let errors = {}
@@ -68,18 +65,4 @@ class Login extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    {
-      islogin
-    },
-    dispatch
-  )
-
-export default compose(
-  connect(
-    null,
-    mapDispatchToProps
-  ),
-  graphql(login, { name: 'login' })
-)(Login)
+export default graphql(login, { name: 'login' })(Login)

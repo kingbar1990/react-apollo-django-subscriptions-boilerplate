@@ -1,16 +1,15 @@
-import React from 'react'
-import { graphql, compose } from 'react-apollo'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React, { Component } from 'react'
+import { graphql } from 'react-apollo'
+import { MDBContainer } from 'mdbreact'
 
+import * as actions from '../../constants'
 import * as path from '../../constants/routes'
-import { islogin } from '../../actions'
 
 import { SignUpForm } from '../../components/Forms/SignUpForm'
 import { register } from '../../queries'
-import { MDBContainer } from 'mdbreact'
+import { saveData } from '../../utils'
 
-class SignUp extends React.Component {
+class SignUp extends Component {
   constructor() {
     super()
     this.state = {
@@ -22,9 +21,7 @@ class SignUp extends React.Component {
     }
   }
 
-  handleInput = e => {
-    this.setState({ [e.target.id]: e.target.value })
-  }
+  handleInput = e => this.setState({ [e.target.id]: e.target.value })
 
   register = (values, { setErrors }) => {
     const { fullName, email, password1, password2 } = values
@@ -41,7 +38,7 @@ class SignUp extends React.Component {
         if (response.data.register.success) {
           const token = response.data.register.token
 
-          this.props.islogin(token, true)
+          saveData(actions.TOKEN, token)
           this.props.history.push(path.DASHBOARD)
         } else {
           let errors = {}
@@ -66,18 +63,4 @@ class SignUp extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    {
-      islogin
-    },
-    dispatch
-  )
-
-export default compose(
-  connect(
-    null,
-    mapDispatchToProps
-  ),
-  graphql(register, { name: 'register' })
-)(SignUp)
+export default graphql(register, { name: 'register' })(SignUp)
