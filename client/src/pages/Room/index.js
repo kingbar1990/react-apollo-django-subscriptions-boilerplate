@@ -1,17 +1,18 @@
-import React from 'react'
-import { Query, Subscription } from 'react-apollo'
-import { MDBContainer } from 'mdbreact'
+import React from "react"
+import { Query, Subscription, graphql } from "react-apollo"
+import { MDBContainer } from "mdbreact"
 
 import {
   getRoom,
   newMessageSubscription,
-  unviewedMessageSubscription
-} from '../../queries'
+  unviewedMessageSubscription,
+  User
+} from "../../queries"
 
-import { DATA_PER_PAGE } from '../../constants'
-import UserInfo from '../../components/UserProfile'
-import CreateMessageForm from '../../components/Forms/CreateMessageForm'
-import MessageList from './MessageList'
+import { DATA_PER_PAGE } from "../../constants"
+import UserInfo from "../../components/UserProfile"
+import CreateMessageForm from "../../components/Forms/CreateMessageForm"
+import MessageList from "./MessageList"
 
 const Room = props => {
   const currentRoom = props.match.params.id
@@ -35,7 +36,6 @@ const Room = props => {
       }
     })
   }
-
   return (
     <Query
       query={getRoom}
@@ -44,13 +44,12 @@ const Room = props => {
       {({ loading, error, data, subscribeToMore, fetchMore }) => {
         if (loading) return null
         if (error) return `Error! ${error.message}`
-
         subscribeToNewMessage(subscribeToMore)
-
         return (
           <MDBContainer>
             <CreateMessageForm currentRoom={currentRoom} {...data.room} />
             <MessageList
+              me={props.me.me}
               data={data.room}
               currentRoom={currentRoom}
               onLoadMore={() =>
@@ -84,7 +83,7 @@ const Room = props => {
                 !loading && data.notifications.typing ? (
                   <em className="grey-text">Typing...</em>
                 ) : (
-                  ''
+                  ""
                 )
               }
             </Subscription>
@@ -95,4 +94,4 @@ const Room = props => {
   )
 }
 
-export default Room
+export default graphql(User, { name: "me" })(Room)

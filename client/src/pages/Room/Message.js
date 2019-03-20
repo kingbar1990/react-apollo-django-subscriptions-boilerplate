@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { Mutation } from 'react-apollo'
+import React, { useState } from "react"
+import { Mutation } from "react-apollo"
 
-import { BACKEND_URL, DATA_PER_PAGE } from '../../constants'
-import { getRoom, deleteMessage } from '../../queries'
+import { BACKEND_URL, DATA_PER_PAGE } from "../../constants"
+import { getRoom, deleteMessage } from "../../queries"
 
-import ModalForm from '../../components/Forms/ModalForm'
-import EditMessageForm from '../../components/Forms/EditMessageForm'
+import ModalForm from "../../components/Forms/ModalForm"
+import EditMessageForm from "../../components/Forms/EditMessageForm"
 
 const Message = props => {
   const [modal, setModal] = useState()
@@ -55,7 +55,7 @@ const Message = props => {
         </div>
       </section>
       <ModalForm
-        title={'Edit message'}
+        title={"Edit message"}
         isActive={props.id === modal}
         closeModal={setModal}
       >

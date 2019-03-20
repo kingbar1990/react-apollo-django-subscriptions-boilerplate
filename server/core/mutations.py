@@ -68,6 +68,9 @@ class MessageCreateMutation(FormMutation):
     def perform_mutate(cls, form, info):
         message = form.save()
 
+        message.sender_id = info.context.user.id
+        message.save()
+
         form.cleaned_data['room'].last_message = message
 
         form.cleaned_data['room'].save()

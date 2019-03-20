@@ -78,7 +78,12 @@ body.modal-open {
   overflow-y: scroll;
 }
 
-.content:nth-child(even) {
+/* .content:nth-child(even) {
+  display: flex;
+  justify-content: flex-end;
+} */
+
+.content {
   display: flex;
   justify-content: flex-end;
 }
