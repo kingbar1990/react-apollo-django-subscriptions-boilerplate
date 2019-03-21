@@ -1,8 +1,12 @@
-import React from "react"
+import React, { useRef, useEffect } from "react"
 
 import Message from "./Message"
 
 const MessageList = ({ data, currentRoom, onLoadMore, me }) => {
+  useEffect(() => {
+    chatEnd.current.scrollIntoView()
+  })
+
   const handleScroll = ({ currentTarget }, onLoadMore) => {
     if (
       currentTarget.scrollTop + currentTarget.clientHeight >=
@@ -11,6 +15,9 @@ const MessageList = ({ data, currentRoom, onLoadMore, me }) => {
       onLoadMore()
     }
   }
+
+  const chatEnd = useRef()
+
   return (
     <article className="feed py-3" onScroll={e => handleScroll(e, onLoadMore)}>
       {data.messages.map(i => {
@@ -23,6 +30,9 @@ const MessageList = ({ data, currentRoom, onLoadMore, me }) => {
           </div>
         )
       })}
+
+      {/* dummy div for scroll page to end of a chat */}
+      <div ref={chatEnd} />
     </article>
   )
 }
