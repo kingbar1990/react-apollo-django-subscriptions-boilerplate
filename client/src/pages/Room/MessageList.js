@@ -19,7 +19,7 @@ const MessageList = ({ data, currentRoom, onLoadMore, me }) => {
             className={me.id === i.sender.id ? "content mb-3" : "mb-3"}
             key={i.id}
           >
-            <Message {...i} currentRoom={currentRoom} />
+            <Message {...i} currentRoom={currentRoom} me={me} />
           </div>
         )
       })}

@@ -9,50 +9,51 @@ import EditMessageForm from "../../components/Forms/EditMessageForm"
 
 const Message = props => {
   const [modal, setModal] = useState()
-
   return (
     <article className="card-shadow rad shade">
       <section className="flex-space">
         <p>{props.text}</p>
-        <div className="d-flex">
-          <button
-            className="btn-rounded rad"
-            onClick={() => setModal(props.id)}
-          >
-            Edit
-          </button>
-          <Mutation
-            mutation={deleteMessage}
-            variables={{ messageId: parseInt(props.id) }}
-            update={cache => {
-              const data = cache.readQuery({
-                query: getRoom,
-                variables: { id: props.currentRoom, first: DATA_PER_PAGE }
-              })
+        {props.me.id === props.sender.id ? (
+          <div className="d-flex">
+            <button
+              className="btn-rounded rad"
+              onClick={() => setModal(props.id)}
+            >
+              Edit
+            </button>
+            <Mutation
+              mutation={deleteMessage}
+              variables={{ messageId: parseInt(props.id) }}
+              update={cache => {
+                const data = cache.readQuery({
+                  query: getRoom,
+                  variables: { id: props.currentRoom, first: DATA_PER_PAGE }
+                })
 
-              const del = data.room.messages.find(i => i.id === props.id)
-              const index = data.room.messages.indexOf(del)
-              data.room.messages.splice(index, 1)
+                const del = data.room.messages.find(i => i.id === props.id)
+                const index = data.room.messages.indexOf(del)
+                data.room.messages.splice(index, 1)
 
-              cache.writeQuery({
-                query: getRoom,
-                data: {
-                  room: {
-                    messages: data.room.messages,
-                    users: data.room.users,
-                    __typename: data.room.__typename
+                cache.writeQuery({
+                  query: getRoom,
+                  data: {
+                    room: {
+                      messages: data.room.messages,
+                      users: data.room.users,
+                      __typename: data.room.__typename
+                    }
                   }
-                }
-              })
-            }}
-          >
-            {deleteMessage => (
-              <button className="btn-rounded rad" onClick={deleteMessage}>
-                Delete
-              </button>
-            )}
-          </Mutation>
-        </div>
+                })
+              }}
+            >
+              {deleteMessage => (
+                <button className="btn-rounded rad" onClick={deleteMessage}>
+                  Delete
+                </button>
+              )}
+            </Mutation>
+          </div>
+        ) : null}
       </section>
       <ModalForm
         title={"Edit message"}
