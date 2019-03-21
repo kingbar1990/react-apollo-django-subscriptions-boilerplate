@@ -21,6 +21,13 @@ class CreateRoomMutation(FormMutation):
 
     @classmethod
     def perform_mutate(cls, form, info):
+        room = None
+        users = form.cleaned_data['users']
+
+        if Room.exists(users[0].id, users[1].id):
+            room = Room.get_by_users(users[0].id, users[1].id)
+            return cls(room=room)
+
         room = form.save()
         return cls(room=room)
 

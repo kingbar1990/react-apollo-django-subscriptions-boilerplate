@@ -1,8 +1,8 @@
-import React from 'react'
-import { Query, compose, graphql } from 'react-apollo'
-import { MDBListGroup, MDBListGroupItem, MDBContainer } from 'mdbreact'
+import React from "react"
+import { Query, compose, graphql } from "react-apollo"
+import { MDBListGroup, MDBListGroupItem, MDBContainer } from "mdbreact"
 
-import { getUsers, createRoom, User } from '../../queries'
+import { getUsers, createRoom, User } from "../../queries"
 
 const Dashboard = props => {
   const createRoom = recipient => {
@@ -14,7 +14,7 @@ const Dashboard = props => {
       })
       .then(response => {
         if (!response.data.createRoom.room.error) {
-          props.history.push(response.data.createRoom.room.id)
+          props.history.push(`dashboard/${response.data.createRoom.room.id}`)
         } else {
           console.log(response.data.createRoom.room.error)
         }
@@ -27,13 +27,18 @@ const Dashboard = props => {
       <MDBListGroup className="styles-card">
         <Query query={getUsers}>
           {({ loading, error, data }) => {
-            if (loading) return 'Loading...'
+            if (loading) return "Loading..."
             if (error) return `Error! ${error.message}`
-            return data.users.map(i => (
-              <MDBListGroupItem key={i.id} onClick={() => createRoom(i.id)}>
-                {i.fullName}
-              </MDBListGroupItem>
-            ))
+            return data.users.map(i => {
+              if (i.id !== props.data.me.id) {
+                return (
+                  <MDBListGroupItem key={i.id} onClick={() => createRoom(i.id)}>
+                    {i.fullName}
+                  </MDBListGroupItem>
+                )
+              }
+              return null
+            })
           }}
         </Query>
       </MDBListGroup>

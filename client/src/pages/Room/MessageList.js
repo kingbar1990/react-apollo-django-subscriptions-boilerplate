@@ -16,7 +16,7 @@ const MessageList = ({ data, currentRoom, onLoadMore, me }) => {
       {data.messages.map(i => {
         return (
           <div
-            className={me.id === i.sender.id ? "content mb-3" : "md-3"}
+            className={me.id === i.sender.id ? "content mb-3" : "mb-3"}
             key={i.id}
           >
             <Message {...i} currentRoom={currentRoom} />

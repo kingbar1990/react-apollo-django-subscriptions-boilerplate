@@ -17,6 +17,18 @@ class Room(models.Model):
     def __str__(self):
         return "%s" % (self.id)
 
+    @classmethod
+    def exists(cls, user_id_1, user_id_2):
+        """ Method that checks if room exists with provided users """
+        if Room.objects.filter(users__id=user_id_1).filter(users__id=user_id_2).count() == 1:
+            return True
+        return False
+
+    @classmethod
+    def get_by_users(cls, user_id_1, user_id_2):
+        """ Method that gets room by user's id """
+        return Room.objects.filter(users__id=user_id_1).filter(users__id=user_id_2).first()
+
 
 class Message(models.Model):
     text = models.CharField(max_length=255)
