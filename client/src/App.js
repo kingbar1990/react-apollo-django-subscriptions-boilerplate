@@ -1,23 +1,23 @@
-import React, { lazy, Suspense } from 'react'
-import { withRouter, Switch, Route } from 'react-router'
+import React, { lazy, Suspense } from "react";
+import { withRouter, Switch, Route } from "react-router";
 
-import * as path from './constants/routes'
+import * as path from "./constants/routes";
 
-import Home from './pages/Home'
-import SignUp from './pages/SignUp'
-import Login from './pages/Login'
-import Main from './components/Main'
-import Loader from './components/Loader'
+import Home from "./pages/Home";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
+import Main from "./components/Main";
+import Loader from "./components/Loader";
 
-const Room = lazy(() => import('./pages/Room'))
-const Profile = lazy(() => import('./pages/Profile'))
-const ConfirmEmail = lazy(() => import('./pages/ConfirmEmail'))
-const ResetPassword = lazy(() => import('./pages/ResetPassword'))
-const Dashboard = lazy(() => import('./pages/Dashboard'))
+const Room = lazy(() => import("./pages/Room"));
+const Profile = lazy(() => import("./pages/Profile"));
+const ConfirmEmail = lazy(() => import("./pages/ConfirmEmail"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 const App = props => (
   <Switch>
-    <Route exact path={path.HOME} component={Home} />
+    <Route exact path={path.HOME} component={Login} />
     <Route exact path={path.SIGN_UP} component={SignUp} />
     <Route exact path={path.SIGN_IN} component={Login} />
     <Main {...props}>
@@ -40,6 +40,6 @@ const App = props => (
       </Suspense>
     </Main>
   </Switch>
-)
+);
 
-export default withRouter(App)
+export default withRouter(App);
