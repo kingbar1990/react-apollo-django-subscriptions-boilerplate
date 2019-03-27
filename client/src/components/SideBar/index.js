@@ -19,7 +19,6 @@ const Sidebar = props => {
       }
     });
   };
-  console.log(props);
   return (
     <div className="sidebar-fixed position-fixed shade">
       <a href={DASHBOARD} className="sidebar">

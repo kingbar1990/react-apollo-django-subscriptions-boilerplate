@@ -1,6 +1,6 @@
 import React from "react";
 import { Formik, Form, Field } from "formik";
-import { Button, MDBCard, MDBCol, MDBInput } from "mdbreact";
+import { Button, MDBCard, MDBCol } from "mdbreact";
 import { ReactstrapInput } from "reactstrap-formik";
 import { Link } from "react-router-dom";
 

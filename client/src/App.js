@@ -3,7 +3,6 @@ import { withRouter, Switch, Route } from "react-router";
 
 import * as path from "./constants/routes";
 
-import Home from "./pages/Home";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Main from "./components/Main";
