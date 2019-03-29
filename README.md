@@ -7,7 +7,7 @@ Live chat with apollo-subscriptions and django-channels
 - Rename ".env.example" to ".env"
 
 ```bash
-mv .env.example .env
+cp .env.example .env
 ```
 
 - Build docker containers
