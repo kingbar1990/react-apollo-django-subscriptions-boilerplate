@@ -4,6 +4,7 @@ psycopg2-binary==2.7.7
 Pillow==5.4.1
 django-cors-headers==2.5.2
 django-jwt-auth==0.0.2
+daphne==2.4.1
 PyJWT==1.7.1
 gevent==1.4.0
 graphene==2.1.3

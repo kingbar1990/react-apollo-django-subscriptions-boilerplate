@@ -25,7 +25,7 @@ services:
     volumes:
       - ./server/:/var/www/server
       - ./client/:/var/www/client/
-    command: gunicorn server.wsgi -c gunicorn.conf
+    command: daphne -b 0.0.0.0 -p $SERVER_PORT server.asgi:application
     env_file:
       - .env
     environment:
