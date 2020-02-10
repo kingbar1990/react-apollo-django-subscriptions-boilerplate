@@ -319,3 +319,12 @@ export const readMessages = gql`
     }
   }
 `;
+
+export const updateRoom = gql`
+  mutation updateRoom($isTyping: Boolean!, $roomId: ID!) {
+    updateRoom(isTyping: $isTyping, roomId: $roomId) {
+      errors
+      success
+    }
+  }
+`;

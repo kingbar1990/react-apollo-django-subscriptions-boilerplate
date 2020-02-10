@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Query, Subscription, graphql, compose } from "react-apollo";
 import { MDBContainer } from "mdbreact";
 
@@ -16,6 +16,8 @@ import CreateMessageForm from "../../components/Forms/CreateMessageForm";
 import MessageList from "./MessageList";
 
 const Room = props => {
+  const [inputOnFocus, setInputOnFocus] = useState(false);
+
   const currentRoom = props.match.params.id;
 
   const subscribeToNewMessage = subscribeToMore => {
@@ -59,7 +61,11 @@ const Room = props => {
         subscribeToNewMessage(subscribeToMore);
         return (
           <MDBContainer>
-            <CreateMessageForm currentRoom={currentRoom} {...data.room} />
+            <CreateMessageForm
+              currentRoom={currentRoom}
+              setInputOnFocus={setInputOnFocus}
+              {...data.room}
+            />
             <MessageList
               me={props.me.me}
               readRoomMessages={readRoomMessages}
@@ -93,7 +99,7 @@ const Room = props => {
             </div>
             <Subscription subscription={unviewedMessageSubscription}>
               {({ data, loading }) =>
-                !loading && data.notifications.typing ? (
+                !loading && data.notifications.typing && !inputOnFocus ? (
                   <em className="grey-text">Typing...</em>
                 ) : (
                   ""

@@ -32,6 +32,28 @@ class CreateRoomMutation(FormMutation):
         return cls(room=room)
 
 
+class UpdateRoomMutation(graphene.Mutation):
+    class Arguments:
+        room_id = graphene.ID(required=True)
+        is_typing = graphene.Boolean(required=True)
+
+    errors = graphene.List(graphene.String)
+    success = graphene.Boolean()
+
+    @staticmethod
+    def mutate(root, info, **args):
+        errors = list()
+        success = True
+        room_id = args.pop('room_id', None)
+        is_typing = args.pop('is_typing', None)
+
+        room = Room.objects.get(id=room_id)
+        room.typing = is_typing
+        room.save()
+
+        return UpdateRoomMutation(errors=errors, success=success)
+
+
 class MessageMutationDelete(graphene.Mutation):
     class Arguments:
         message_id = graphene.ID()

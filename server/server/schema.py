@@ -8,7 +8,7 @@ from accounts.schema import Query as AccountsQuery
 from channels.layers import get_channel_layer
 from core.models import Message
 from core.mutations import (CreateRoomMutation, MessageCreateMutation,
-                            MessageMutationDelete, MessageUpdateMutation, ReadMessagesMutation)
+                            MessageMutationDelete, MessageUpdateMutation, ReadMessagesMutation, UpdateRoomMutation)
 from core.schema import Query as CoreQuery
 from core.schema import MessageType, RoomType
 from rx import Observable
@@ -34,6 +34,7 @@ class Mutation(graphene.ObjectType):
     reset_password = ResetPasswordMutation.Field()
     create_room = CreateRoomMutation.Field()
     reed_messages = ReadMessagesMutation.Field()
+    update_room = UpdateRoomMutation.Field()
 
 
 class Subscription(graphene.ObjectType):

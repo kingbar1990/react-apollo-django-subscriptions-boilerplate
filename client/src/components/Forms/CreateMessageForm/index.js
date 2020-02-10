@@ -1,35 +1,47 @@
-import React, { useState } from 'react'
-import { MDBFooter } from 'mdbreact'
-import { Mutation, graphql } from 'react-apollo'
+import React, { useState } from "react";
+import { MDBFooter } from "mdbreact";
+import { Mutation, graphql, compose } from "react-apollo";
 
-import { DATA_PER_PAGE } from '../../../constants'
-import { getBase64, debounce } from '../../../utils'
-import { createMessage, getRoom, getType } from '../../../queries'
+import { DATA_PER_PAGE } from "../../../constants";
+import { getBase64, debounce } from "../../../utils";
+import { createMessage, getRoom, getType, updateRoom } from "../../../queries";
 
-const CreateMessageForm = ({ currentRoom, users, data }) => {
-  const [value, setValue] = useState('')
-  const [avatar, setAvatar] = useState('')
-  const [error, setError] = useState('')
+const CreateMessageForm = ({
+  currentRoom,
+  users,
+  data,
+  updateRoom,
+  setInputOnFocus
+}) => {
+  const [value, setValue] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [error, setError] = useState("");
 
   const handleImageChange = e => {
     if (!e.target.files) {
-      return
+      return;
     }
-    let file = e.target.files[0]
+    let file = e.target.files[0];
     if (file.size <= 1048576) {
       getBase64(file)
         .then(image => (file = image))
-        .then(() => setAvatar(file))
+        .then(() => setAvatar(file));
     } else {
-      return setError('max size 1MB')
+      return setError("max size 1MB");
     }
-  }
+  };
 
-  let updateStatus = () => data.refetch({ id: currentRoom, skip: false })
+  let updateStatus = () => data.refetch({ id: currentRoom, skip: false });
 
-  updateStatus = debounce(updateStatus, 3000)
+  const changeTypingStatus = status => {
+    updateRoom({
+      variables: { roomId: currentRoom, isTyping: status }
+    });
+  };
 
-  const handleInputChange = e => setValue(e.target.value)
+  updateStatus = debounce(updateStatus, 3000);
+
+  const handleInputChange = e => setValue(e.target.value);
 
   return (
     <Mutation
@@ -44,7 +56,7 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
         const data = cache.readQuery({
           query: getRoom,
           variables: { id: currentRoom, first: DATA_PER_PAGE }
-        })
+        });
         cache.writeQuery({
           query: getRoom,
           data: {
@@ -54,12 +66,12 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
               __typename: data.room.__typename
             }
           }
-        })
+        });
       }}
-      onError={() => setError('Message not sent :( Please try again')}
+      onError={() => setError("Message not sent :( Please try again")}
       onCompleted={() => {
-        setValue('')
-        setAvatar('')
+        setValue("");
+        setAvatar("");
       }}
     >
       {createTask => (
@@ -85,7 +97,16 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
             <input
               className="input-send rad"
               onChange={handleInputChange}
-              onFocus={updateStatus}
+              // onFocus={updateStatus}
+              onFocus={() => {
+                changeTypingStatus(true);
+                updateStatus();
+                setInputOnFocus(true);
+              }}
+              onBlur={() => {
+                changeTypingStatus(false);
+                setInputOnFocus(false);
+              }}
               value={value}
               placeholder="Type something"
             />
@@ -96,9 +117,12 @@ const CreateMessageForm = ({ currentRoom, users, data }) => {
         </MDBFooter>
       )}
     </Mutation>
-  )
-}
+  );
+};
 
-export default graphql(getType, {
-  options: props => ({ variables: { id: props.currentRoom, skip: true } })
-})(CreateMessageForm)
+export default compose(
+  graphql(getType, {
+    options: props => ({ variables: { id: props.currentRoom, skip: true } })
+  }),
+  graphql(updateRoom, { name: "updateRoom" })
+)(CreateMessageForm);
