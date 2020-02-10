@@ -26,7 +26,7 @@ class RoomType(DjangoObjectType):
         model = Room
 
     def resolve_unviewed_messages(self, info):
-        return Room.objects.filter(id=self.id, last_message__seen=False).count()
+        return self.messages.filter(seen=False).count()
 
     def resolve_messages(self, info, first=None, skip=None, room=None):
         qs = Message.objects.filter(room_id=room).order_by('time')
@@ -47,8 +47,8 @@ class Query:
 
     def resolve_room(self, info, id):
         room = Room.objects.get(id=id)
+
         if room.last_message:
-            room.last_message.seen = True
             room.typing = False
             room.last_message.save()
 

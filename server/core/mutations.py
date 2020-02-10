@@ -116,3 +116,23 @@ class MessageUpdateMutation(FormMutation):
         message.text = form.cleaned_data['text']
         message.save()
         return cls(message=message)
+
+
+class ReadMessagesMutation(graphene.Mutation):
+    class Arguments:
+        room_id = graphene.ID(required=True)
+
+    success = graphene.Boolean()
+    errors = graphene.List(graphene.String)
+
+    @staticmethod
+    def mutate(root, info, room_id):
+        success = True
+        errors = list()
+
+        unread_messages = Message.objects.filter(room_id=room_id, seen=False)
+        for message in unread_messages:
+            message.seen = True
+            message.save()
+
+        return ReadMessagesMutation(success=success, errors=errors)

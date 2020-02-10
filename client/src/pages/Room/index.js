@@ -1,30 +1,33 @@
-import React from "react"
-import { Query, Subscription, graphql } from "react-apollo"
-import { MDBContainer } from "mdbreact"
+import React from "react";
+import { Query, Subscription, graphql, compose } from "react-apollo";
+import { MDBContainer } from "mdbreact";
 
 import {
   getRoom,
   newMessageSubscription,
   unviewedMessageSubscription,
-  User
-} from "../../queries"
+  User,
+  readMessages
+} from "../../queries";
 
-import { DATA_PER_PAGE } from "../../constants"
-import UserInfo from "../../components/UserProfile"
-import CreateMessageForm from "../../components/Forms/CreateMessageForm"
-import MessageList from "./MessageList"
+import { DATA_PER_PAGE } from "../../constants";
+import UserInfo from "../../components/UserProfile";
+import CreateMessageForm from "../../components/Forms/CreateMessageForm";
+import MessageList from "./MessageList";
 
 const Room = props => {
-  const currentRoom = props.match.params.id
+  const currentRoom = props.match.params.id;
 
   const subscribeToNewMessage = subscribeToMore => {
     subscribeToMore({
       document: newMessageSubscription,
       updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev
-        const newMessage = subscriptionData.data.newMessage
-        const exists = prev.room.messages.find(({ id }) => id === newMessage.id)
-        if (exists) return prev
+        if (!subscriptionData.data) return prev;
+        const newMessage = subscriptionData.data.newMessage;
+        const exists = prev.room.messages.find(
+          ({ id }) => id === newMessage.id
+        );
+        if (exists) return prev;
 
         return Object.assign({}, prev, {
           room: {
@@ -32,24 +35,34 @@ const Room = props => {
             users: prev.room.users,
             __typename: prev.room.__typename
           }
-        })
+        });
       }
-    })
-  }
+    });
+  };
+
+  const readRoomMessages = () => {
+    props.readMessages({
+      variables: {
+        roomId: currentRoom
+      }
+    });
+  };
+
   return (
     <Query
       query={getRoom}
       variables={{ id: currentRoom, first: DATA_PER_PAGE }}
     >
       {({ loading, error, data, subscribeToMore, fetchMore }) => {
-        if (loading) return null
-        if (error) return `Error! ${error.message}`
-        subscribeToNewMessage(subscribeToMore)
+        if (loading) return null;
+        if (error) return `Error! ${error.message}`;
+        subscribeToNewMessage(subscribeToMore);
         return (
           <MDBContainer>
             <CreateMessageForm currentRoom={currentRoom} {...data.room} />
             <MessageList
               me={props.me.me}
+              readRoomMessages={readRoomMessages}
               data={data.room}
               currentRoom={currentRoom}
               onLoadMore={() =>
@@ -60,7 +73,7 @@ const Room = props => {
                     skip: data.room.messages.length
                   },
                   updateQuery: (prev, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev
+                    if (!fetchMoreResult) return prev;
                     return Object.assign({}, prev, {
                       room: {
                         messages: [
@@ -70,7 +83,7 @@ const Room = props => {
                         users: prev.room.users,
                         __typename: prev.room.__typename
                       }
-                    })
+                    });
                   }
                 })
               }
@@ -88,10 +101,13 @@ const Room = props => {
               }
             </Subscription>
           </MDBContainer>
-        )
+        );
       }}
     </Query>
-  )
-}
+  );
+};
 
-export default graphql(User, { name: "me" })(Room)
+export default compose(
+  graphql(User, { name: "me" }),
+  graphql(readMessages, { name: "readMessages" })
+)(Room);

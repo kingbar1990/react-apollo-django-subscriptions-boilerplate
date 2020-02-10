@@ -1,4 +1,4 @@
-import gql from 'graphql-tag'
+import gql from "graphql-tag";
 
 export const register = gql`
   mutation register(
@@ -31,7 +31,7 @@ export const register = gql`
       }
     }
   }
-`
+`;
 
 export const login = gql`
   mutation login($username: String!, $password: String!) {
@@ -53,7 +53,7 @@ export const login = gql`
       }
     }
   }
-`
+`;
 
 export const editUser = gql`
   mutation editUser($fullName: String, $email: String!, $avatar: String) {
@@ -75,7 +75,7 @@ export const editUser = gql`
       }
     }
   }
-`
+`;
 
 export const verifyToken = gql`
   mutation verifyToken($token: String!) {
@@ -83,7 +83,7 @@ export const verifyToken = gql`
       payload
     }
   }
-`
+`;
 
 export const getUsers = gql`
   query getUsers {
@@ -93,7 +93,7 @@ export const getUsers = gql`
       email
     }
   }
-`
+`;
 
 export const getRoom = gql`
   query getRoom($id: Int, $first: Int, $skip: Int) {
@@ -114,7 +114,7 @@ export const getRoom = gql`
       }
     }
   }
-`
+`;
 
 export const getType = gql`
   query getType($id: Int, $skip: Boolean!) {
@@ -122,7 +122,7 @@ export const getType = gql`
       typing
     }
   }
-`
+`;
 
 export const getRooms = gql`
   query getRooms($userId: Int) {
@@ -134,7 +134,7 @@ export const getRooms = gql`
       unviewedMessages
     }
   }
-`
+`;
 
 export const createMessage = gql`
   mutation createMessage(
@@ -171,7 +171,7 @@ export const createMessage = gql`
       }
     }
   }
-`
+`;
 
 export const updateMessage = gql`
   mutation updateMessage(
@@ -202,7 +202,7 @@ export const updateMessage = gql`
       }
     }
   }
-`
+`;
 
 export const deleteMessage = gql`
   mutation deleteMessage($messageId: ID) {
@@ -210,7 +210,7 @@ export const deleteMessage = gql`
       success
     }
   }
-`
+`;
 
 export const User = gql`
   query me {
@@ -221,7 +221,7 @@ export const User = gql`
       avatar
     }
   }
-`
+`;
 
 export const confirmEmail = gql`
   mutation confirmEmail($email: String!) {
@@ -238,7 +238,7 @@ export const confirmEmail = gql`
       }
     }
   }
-`
+`;
 
 export const resetPassword = gql`
   mutation resetPassword(
@@ -265,7 +265,7 @@ export const resetPassword = gql`
       }
     }
   }
-`
+`;
 
 export const createRoom = gql`
   mutation createRoom($users: [ID]!) {
@@ -284,7 +284,7 @@ export const createRoom = gql`
       }
     }
   }
-`
+`;
 
 export const newMessageSubscription = gql`
   subscription {
@@ -299,7 +299,7 @@ export const newMessageSubscription = gql`
       file
     }
   }
-`
+`;
 
 export const unviewedMessageSubscription = gql`
   subscription {
@@ -309,4 +309,13 @@ export const unviewedMessageSubscription = gql`
       typing
     }
   }
-`
+`;
+
+export const readMessages = gql`
+  mutation readMessages($roomId: ID!) {
+    reedMessages(roomId: $roomId) {
+      success
+      errors
+    }
+  }
+`;
