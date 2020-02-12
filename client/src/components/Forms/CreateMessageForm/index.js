@@ -1,21 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MDBFooter } from "mdbreact";
 import { Mutation, graphql, compose } from "react-apollo";
 
 import { DATA_PER_PAGE } from "../../../constants";
 import { getBase64, debounce } from "../../../utils";
-import { createMessage, getRoom, getType, updateRoom } from "../../../queries";
+import { createMessage, getRoom, getType, onFocus } from "../../../queries";
 
 const CreateMessageForm = ({
   currentRoom,
   users,
   data,
-  updateRoom,
+  onFocusQuery,
+  inputOnFocus,
   setInputOnFocus
 }) => {
   const [value, setValue] = useState("");
   const [avatar, setAvatar] = useState("");
   const [error, setError] = useState("");
+  const [intervalTimerId, setIntervalTimerId] = useState(null);
+
+  useEffect(() => {
+    if (inputOnFocus) {
+      let timerId = setInterval(() => {
+        changeTypingStatus(true);
+      }, 500);
+      setIntervalTimerId(timerId);
+    } else {
+      clearInterval(intervalTimerId);
+    }
+  }, [inputOnFocus]);
 
   const handleImageChange = e => {
     if (!e.target.files) {
@@ -34,8 +47,8 @@ const CreateMessageForm = ({
   let updateStatus = () => data.refetch({ id: currentRoom, skip: false });
 
   const changeTypingStatus = status => {
-    updateRoom({
-      variables: { roomId: currentRoom, isTyping: status }
+    onFocusQuery.refetch({
+      focused: status
     });
   };
 
@@ -97,15 +110,14 @@ const CreateMessageForm = ({
             <input
               className="input-send rad"
               onChange={handleInputChange}
-              // onFocus={updateStatus}
               onFocus={() => {
+                setInputOnFocus(true);
                 changeTypingStatus(true);
                 updateStatus();
-                setInputOnFocus(true);
               }}
               onBlur={() => {
-                changeTypingStatus(false);
                 setInputOnFocus(false);
+                changeTypingStatus(false);
               }}
               value={value}
               placeholder="Type something"
@@ -124,5 +136,5 @@ export default compose(
   graphql(getType, {
     options: props => ({ variables: { id: props.currentRoom, skip: true } })
   }),
-  graphql(updateRoom, { name: "updateRoom" })
+  graphql(onFocus, { name: "onFocusQuery" })
 )(CreateMessageForm);

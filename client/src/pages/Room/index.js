@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Query, Subscription, graphql, compose } from "react-apollo";
 import { MDBContainer } from "mdbreact";
+import _ from "lodash";
 
 import {
   getRoom,
   newMessageSubscription,
   unviewedMessageSubscription,
   User,
-  readMessages
+  readMessages,
+  onFocusSubscription
 } from "../../queries";
 
 import { DATA_PER_PAGE } from "../../constants";
@@ -17,6 +19,7 @@ import MessageList from "./MessageList";
 
 const Room = props => {
   const [inputOnFocus, setInputOnFocus] = useState(false);
+  const [lastPollingTime, setLastPollingTime] = useState(0);
 
   const currentRoom = props.match.params.id;
 
@@ -50,6 +53,16 @@ const Room = props => {
     });
   };
 
+  const typing = useRef();
+
+  const deleteTyping = () => {
+    if (typing.current) {
+      typing.current.hidden = true;
+    }
+  };
+
+  const testThrottle = _.throttle(deleteTyping, 10000);
+
   return (
     <Query
       query={getRoom}
@@ -64,6 +77,7 @@ const Room = props => {
             <CreateMessageForm
               currentRoom={currentRoom}
               setInputOnFocus={setInputOnFocus}
+              inputOnFocus={inputOnFocus}
               {...data.room}
             />
             <MessageList
@@ -97,14 +111,26 @@ const Room = props => {
             <div className="bar-right position-fixed shade">
               <UserInfo profile={data.room.users[0]} />
             </div>
-            <Subscription subscription={unviewedMessageSubscription}>
-              {({ data, loading }) =>
-                !loading && data.notifications.typing && !inputOnFocus ? (
-                  <em className="grey-text">Typing...</em>
+            <Subscription subscription={onFocusSubscription}>
+              {({ data, loading }) => {
+                testThrottle();
+
+                if (typing.current) {
+                  typing.current.hidden = false;
+                }
+                return !loading && data.onFocus && !inputOnFocus ? (
+                  <em
+                    className="grey-text"
+                    id="typing"
+                    ref={typing}
+                    hidden={false}
+                  >
+                    Typing...
+                  </em>
                 ) : (
                   ""
-                )
-              }
+                );
+              }}
             </Subscription>
           </MDBContainer>
         );

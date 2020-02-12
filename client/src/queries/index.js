@@ -328,3 +328,15 @@ export const updateRoom = gql`
     }
   }
 `;
+
+export const onFocus = gql`
+  query onFocus($focused: Boolean) {
+    onFocus(focused: $focused)
+  }
+`;
+
+export const onFocusSubscription = gql`
+  subscription onFocus {
+    onFocus
+  }
+`;

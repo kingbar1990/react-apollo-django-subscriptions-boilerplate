@@ -40,6 +40,7 @@ class Mutation(graphene.ObjectType):
 class Subscription(graphene.ObjectType):
     new_message = graphene.Field(MessageType)
     notifications = graphene.Field(RoomType)
+    on_focus = graphene.Boolean()
 
     async def resolve_new_message(root, info):
         channel_name = await channel_layer.new_channel()
@@ -60,6 +61,16 @@ class Subscription(graphene.ObjectType):
                 yield room["data"]
         finally:
             await channel_layer.group_discard("notify", channel_name)
+
+    async def resolve_on_focus(root, info):
+        channel_name = await channel_layer.new_channel()
+        await channel_layer.group_add("focused", channel_name)
+        try:
+            while True:
+                focused = await channel_layer.receive(channel_name)
+                yield focused['data']
+        finally:
+            await channel_layer.group_discard("focused", channel_name)
 
 
 schema = graphene.Schema(
