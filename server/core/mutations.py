@@ -158,11 +158,10 @@ class ReadMessagesMutation(graphene.Mutation):
         for message in unread_messages:
             message.seen = True
             message.save()
+            async_to_sync(channel_layer.group_send)(
+                "new_message", {"data": message})
 
         async_to_sync(channel_layer.group_send)(
             "notify", {"data": Room.objects.get(id=room_id)})
-
-        async_to_sync(channel_layer.group_send)(
-            "new_message", {"data": Room.objects.get(id=room_id).last_message})
 
         return ReadMessagesMutation(success=success, errors=errors)

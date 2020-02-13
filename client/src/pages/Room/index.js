@@ -53,6 +53,10 @@ const Room = props => {
     });
   };
 
+  useEffect(() => {
+    readRoomMessages();
+  }, []);
+
   const typing = useRef();
 
   const deleteTyping = () => {
