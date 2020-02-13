@@ -2,16 +2,9 @@ import React, { useRef, useEffect } from "react";
 
 import Message from "./Message";
 
-const MessageList = ({
-  data,
-  currentRoom,
-  onLoadMore,
-  me,
-  readRoomMessages
-}) => {
+const MessageList = ({ data, currentRoom, onLoadMore, me }) => {
   useEffect(() => {
     chatEnd.current.scrollIntoView();
-    readRoomMessages();
   });
 
   const handleScroll = ({ currentTarget }, onLoadMore) => {

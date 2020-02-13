@@ -152,7 +152,9 @@ class ReadMessagesMutation(graphene.Mutation):
         success = True
         errors = list()
 
-        unread_messages = Message.objects.filter(room_id=room_id, seen=False)
+        unread_messages = Message.objects.filter(
+            room_id=room_id, seen=False).exclude(sender_id=info.context.user.id)
+
         for message in unread_messages:
             message.seen = True
             message.save()

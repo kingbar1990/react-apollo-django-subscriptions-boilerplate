@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Query, Subscription, graphql, compose } from "react-apollo";
 import { MDBContainer } from "mdbreact";
 import _ from "lodash";
@@ -53,6 +53,10 @@ const Room = props => {
     });
   };
 
+  useEffect(() => {
+    readRoomMessages();
+  });
+
   const typing = useRef();
 
   const deleteTyping = () => {
@@ -82,7 +86,6 @@ const Room = props => {
             />
             <MessageList
               me={props.me.me}
-              readRoomMessages={readRoomMessages}
               data={data.room}
               currentRoom={currentRoom}
               onLoadMore={() =>
