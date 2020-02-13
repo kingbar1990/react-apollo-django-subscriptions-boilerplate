@@ -1,14 +1,23 @@
-import React, { useState } from "react"
-import { Mutation } from "react-apollo"
+import React, { useState, useEffect } from "react";
+import { Mutation } from "react-apollo";
+import MdDoneAll from "react-ionicons/lib/MdDoneAll";
+import MdCheckmark from "react-ionicons/lib/MdCheckmark";
 
-import { BACKEND_URL, DATA_PER_PAGE } from "../../constants"
-import { getRoom, deleteMessage } from "../../queries"
+import { BACKEND_URL, DATA_PER_PAGE } from "../../constants";
+import { getRoom, deleteMessage } from "../../queries";
 
-import ModalForm from "../../components/Forms/ModalForm"
-import EditMessageForm from "../../components/Forms/EditMessageForm"
+import ModalForm from "../../components/Forms/ModalForm";
+import EditMessageForm from "../../components/Forms/EditMessageForm";
 
 const Message = props => {
-  const [modal, setModal] = useState()
+  const [modal, setModal] = useState();
+
+  useEffect(() => {
+    if (!props.seen && props.sender.id !== props.me.id) {
+      props.readRoomMessages(props.currentRoom);
+    }
+  }, []);
+
   return (
     <article className="card-shadow rad shade">
       <section className="flex-space">
@@ -28,11 +37,11 @@ const Message = props => {
                 const data = cache.readQuery({
                   query: getRoom,
                   variables: { id: props.currentRoom, first: DATA_PER_PAGE }
-                })
+                });
 
-                const del = data.room.messages.find(i => i.id === props.id)
-                const index = data.room.messages.indexOf(del)
-                data.room.messages.splice(index, 1)
+                const del = data.room.messages.find(i => i.id === props.id);
+                const index = data.room.messages.indexOf(del);
+                data.room.messages.splice(index, 1);
 
                 cache.writeQuery({
                   query: getRoom,
@@ -43,7 +52,7 @@ const Message = props => {
                       __typename: data.room.__typename
                     }
                   }
-                })
+                });
               }}
             >
               {deleteMessage => (
@@ -66,8 +75,16 @@ const Message = props => {
           closeModal={setModal}
         />
       </ModalForm>
-      <section className="flex-space">
+      <section className="flex-space" id="2">
         <div>
+          {props.sender.id === props.me.id ? (
+            props.seen ? (
+              <MdDoneAll fontSize="25px" color="#43853d" />
+            ) : (
+              <MdCheckmark fontSize="25px" color="#43853d" />
+            )
+          ) : null}
+
           <span className="mr-3">{props.sender.fullName}</span>
           <time className="grey-text">
             {new Date(props.time).toDateString()}
@@ -84,7 +101,7 @@ const Message = props => {
         )}
       </section>
     </article>
-  )
-}
+  );
+};
 
-export default Message
+export default Message;

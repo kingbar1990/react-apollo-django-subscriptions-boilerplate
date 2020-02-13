@@ -104,6 +104,7 @@ export const getRoom = gql`
       }
       messages(first: $first, skip: $skip, room: $id) {
         id
+        seen
         text
         sender {
           id
@@ -290,6 +291,7 @@ export const newMessageSubscription = gql`
   subscription {
     newMessage {
       id
+      seen
       text
       time
       sender {

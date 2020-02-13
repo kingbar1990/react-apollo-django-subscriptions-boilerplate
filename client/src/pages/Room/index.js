@@ -53,10 +53,6 @@ const Room = props => {
     });
   };
 
-  useEffect(() => {
-    readRoomMessages();
-  });
-
   const typing = useRef();
 
   const deleteTyping = () => {
@@ -88,6 +84,7 @@ const Room = props => {
               me={props.me.me}
               data={data.room}
               currentRoom={currentRoom}
+              readRoomMessages={readRoomMessages}
               onLoadMore={() =>
                 fetchMore({
                   variables: {
