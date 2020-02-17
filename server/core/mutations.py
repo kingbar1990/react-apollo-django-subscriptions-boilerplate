@@ -137,6 +137,8 @@ class MessageUpdateMutation(FormMutation):
         message = Message.objects.get(id=form.cleaned_data['message_id'])
         message.text = form.cleaned_data['text']
         message.save()
+        async_to_sync(channel_layer.group_send)(
+            "new_message", {"data": message})
         return cls(message=message)
 
 
