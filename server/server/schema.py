@@ -41,6 +41,7 @@ class Subscription(graphene.ObjectType):
     new_message = graphene.Field(MessageType)
     notifications = graphene.Field(RoomType)
     on_focus = graphene.Boolean()
+    has_unreaded_messages = graphene.Boolean()
 
     async def resolve_new_message(root, info):
         channel_name = await channel_layer.new_channel()
@@ -71,6 +72,16 @@ class Subscription(graphene.ObjectType):
                 yield focused['data']
         finally:
             await channel_layer.group_discard("focused", channel_name)
+
+    async def resolve_has_unreaded_messages(root, info):
+        channel_name = await channel_layer.new_channel()
+        await channel_layer.group_add("has_unreaded_messages", channel_name)
+        try:
+            while True:
+                data = await channel_layer.receive(channel_name)
+                yield data['data']
+        finally:
+            await channel_layer.group_discard("has_unreaded_messages", channel_name)
 
 
 schema = graphene.Schema(

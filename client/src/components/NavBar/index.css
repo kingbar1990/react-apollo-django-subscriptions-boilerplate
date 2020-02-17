@@ -1,0 +1,10 @@
+#aaa::before {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    content: " ";
+    right: 0;
+    top: 3px;
+    position: absolute;
+    border-radius: 50px;
+}

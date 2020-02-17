@@ -133,6 +133,13 @@ export const getRooms = gql`
       users {
         fullName
       }
+      lastMessage {
+        id
+        sender {
+          id
+        }
+        seen
+      }
       unviewedMessages
     }
   }
@@ -342,5 +349,11 @@ export const onFocus = gql`
 export const onFocusSubscription = gql`
   subscription onFocus {
     onFocus
+  }
+`;
+
+export const hasUnreadedMessagesSubscription = gql`
+  subscription hasUnreadedMessages {
+    hasUnreadedMessages
   }
 `;

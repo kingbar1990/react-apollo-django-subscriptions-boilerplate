@@ -107,6 +107,9 @@ class MessageCreateMutation(FormMutation):
         async_to_sync(channel_layer.group_send)(
             "notify", {"data": form.cleaned_data['room']})
 
+        async_to_sync(channel_layer.group_send)(
+            "has_unreaded_messages", {"data": True})
+
         if form.cleaned_data['file']:
             img_format, img_str = form.cleaned_data.pop(
                 'file'
@@ -151,9 +154,10 @@ class ReadMessagesMutation(graphene.Mutation):
     def mutate(root, info, room_id):
         success = True
         errors = list()
+        user = info.context.user
 
         unread_messages = Message.objects.filter(
-            room_id=room_id, seen=False).exclude(sender_id=info.context.user.id)
+            room_id=room_id, seen=False).exclude(sender_id=user.id)
 
         for message in unread_messages:
             message.seen = True
@@ -163,5 +167,16 @@ class ReadMessagesMutation(graphene.Mutation):
 
         async_to_sync(channel_layer.group_send)(
             "notify", {"data": Room.objects.get(id=room_id)})
+
+        unreaded_rooms = user.rooms.all()
+        unreaded_rooms = unreaded_rooms.filter(last_message__seen=False).exclude(
+            last_message__sender_id=user)
+
+        if(len(unreaded_rooms) > 0):
+            async_to_sync(channel_layer.group_send)(
+                "has_unreaded_messages", {"data": True})
+        else:
+            async_to_sync(channel_layer.group_send)(
+                "has_unreaded_messages", {"data": False})
 
         return ReadMessagesMutation(success=success, errors=errors)

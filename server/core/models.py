@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Room(models.Model):
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, related_name='rooms')
     last_message = models.ForeignKey(
         'Message',
         related_name='last_message',
