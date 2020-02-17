@@ -228,6 +228,7 @@ export const User = gql`
       email
       fullName
       avatar
+      hasUnreadedMessages
     }
   }
 `;

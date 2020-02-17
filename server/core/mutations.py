@@ -170,8 +170,7 @@ class ReadMessagesMutation(graphene.Mutation):
 
         unreaded_rooms = user.rooms.all()
         unreaded_rooms = unreaded_rooms.filter(last_message__seen=False).exclude(
-            last_message__sender_id=user)
-
+            last_message__sender_id=user.id)
         if(len(unreaded_rooms) > 0):
             async_to_sync(channel_layer.group_send)(
                 "has_unreaded_messages", {"data": True})

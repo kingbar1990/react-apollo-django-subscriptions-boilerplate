@@ -82,7 +82,9 @@ class NavBar extends Component {
                 <MDBNavLink to={PROFILE}>
                   <Subscription subscription={hasUnreadedMessagesSubscription}>
                     {({ data, loading }) => {
-                      return !loading && data.hasUnreadedMessages ? (
+                      return (!loading && data.hasUnreadedMessages) ||
+                        (this.props.me.me.hasUnreadedMessages &&
+                          data == undefined) ? (
                         <div
                           id="message-badge"
                           style={{ position: "relative" }}
