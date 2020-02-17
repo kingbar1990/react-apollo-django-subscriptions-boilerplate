@@ -106,6 +106,7 @@ export const getRoom = gql`
         id
         seen
         text
+        isDeleted
         sender {
           id
           fullName
@@ -294,6 +295,7 @@ export const newMessageSubscription = gql`
       seen
       text
       time
+      isDeleted
       sender {
         id
         fullName

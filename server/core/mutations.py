@@ -72,15 +72,12 @@ class MessageMutationDelete(graphene.Mutation):
 
         if not errors:
             try:
-                room = Room.objects.get(messages__id=message_id)
-                prev = Message.objects.exclude(
-                    id=message_id).order_by('-id').first()
-                room.last_message_id = prev.id
-                room.typing = False
-                room.save()
-
-                Message.objects.get(id=message_id).delete()
+                message = Message.objects.get(id=message_id)
+                message.is_deleted = True
+                message.save()
                 success = True
+                async_to_sync(channel_layer.group_send)(
+                    "new_message", {"data": message})
             except Message.DoesNotExist:
                 errors.append('Message with provided ID does not exist')
 
@@ -139,6 +136,7 @@ class MessageUpdateMutation(FormMutation):
         message.save()
         async_to_sync(channel_layer.group_send)(
             "new_message", {"data": message})
+
         return cls(message=message)
 
 

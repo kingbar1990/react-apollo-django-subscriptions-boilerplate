@@ -27,7 +27,7 @@ const MessageList = ({
   return (
     <article className="feed py-3" onScroll={e => handleScroll(e, onLoadMore)}>
       {data.messages.map(i => {
-        return (
+        return i.isDeleted ? null : (
           <div
             className={me.id === i.sender.id ? "content mb-3" : "mb-3"}
             key={i.id}

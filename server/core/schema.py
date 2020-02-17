@@ -26,10 +26,11 @@ class RoomType(DjangoObjectType):
         model = Room
 
     def resolve_unviewed_messages(self, info):
-        return self.messages.filter(seen=False).count()
+        return self.messages.filter(seen=False, is_deleted=False).count()
 
     def resolve_messages(self, info, first=None, skip=None, room=None):
-        qs = Message.objects.filter(room_id=room).order_by('time')
+        qs = Message.objects.filter(
+            room_id=room, is_deleted=False).order_by('time')
 
         if skip:
             qs = qs[skip:]
