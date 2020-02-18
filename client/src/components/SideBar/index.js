@@ -41,7 +41,10 @@ const Sidebar = props => {
                 {props.me.me.id === i.users[0].id
                   ? i.users[0].fullName
                   : i.users[1].fullName}
-                <MDBBadge color="elegant-color" pill>
+                <MDBBadge
+                  color={i.unviewedMessages > 0 ? "red" : "elegant-color"}
+                  pill
+                >
                   {i.unviewedMessages}
                 </MDBBadge>
               </ListGroupItem>
