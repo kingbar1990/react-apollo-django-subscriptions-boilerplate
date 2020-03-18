@@ -32,10 +32,11 @@ const Room = props => {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const newMessage = subscriptionData.data.newMessage;
+        const userFromRoom = prev.room.users.find(({ id }) => id === newMessage.sender.id);
         const exists = prev.room.messages.find(
           ({ id }) => id === newMessage.id
         );
-        if (exists) return prev;
+        if (exists || !userFromRoom) return prev;
 
         return Object.assign({}, prev, {
           room: {
