@@ -97,18 +97,21 @@ class MessageCreateMutation(FormMutation):
         message.sender_id = info.context.user.id
         message.save()
 
+        room = message.room
+        reciever_id = room.users.exclude(pk=message.sender.pk).first().pk
+
         form.cleaned_data['room'].last_message = message
 
         form.cleaned_data['room'].save()
 
         async_to_sync(channel_layer.group_send)(
-            str(message.room.id), {"data": message})
+            "new_message_" + str(message.room.id), {"data": message})
 
         async_to_sync(channel_layer.group_send)(
-            "notify", {"data": form.cleaned_data['room']})
+            "notify_" + str(reciever_id), {"data": form.cleaned_data['room']})
 
         async_to_sync(channel_layer.group_send)(
-            "has_unreaded_messages", {"data": True})
+            "has_unreaded_messages_" + str(reciever_id), {"data": True})
 
         if form.cleaned_data['file']:
             img_format, img_str = form.cleaned_data.pop(
@@ -138,7 +141,7 @@ class MessageUpdateMutation(FormMutation):
         message.text = form.cleaned_data['text']
         message.save()
         async_to_sync(channel_layer.group_send)(
-            "new_message", {"data": message})
+            "new_message_" + str(message.room.id), {"data": message})
 
         return cls(message=message)
 
@@ -163,19 +166,19 @@ class ReadMessagesMutation(graphene.Mutation):
             message.seen = True
             message.save()
             async_to_sync(channel_layer.group_send)(
-                "new_message", {"data": message})
-
+                "new_message_" + str(room_id), {"data": message})
+        
         async_to_sync(channel_layer.group_send)(
-            "notify", {"data": Room.objects.get(id=room_id)})
+            "notify_" + str(user.id), {"data": Room.objects.get(id=room_id)})
 
         unreaded_rooms = user.rooms.all()
         unreaded_rooms = unreaded_rooms.filter(last_message__seen=False).exclude(
             last_message__sender_id=user.id)
         if(len(unreaded_rooms) > 0):
             async_to_sync(channel_layer.group_send)(
-                "has_unreaded_messages", {"data": True})
+                "has_unreaded_messages_" + str(user.id), {"data": True})
         else:
             async_to_sync(channel_layer.group_send)(
-                "has_unreaded_messages", {"data": False})
+                "has_unreaded_messages_" + str(user.id), {"data": False})
 
         return ReadMessagesMutation(success=success, errors=errors)

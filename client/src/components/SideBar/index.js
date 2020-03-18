@@ -10,9 +10,11 @@ const Sidebar = props => {
   const subscribeToNewMessage = subscribeToMore => {
     subscribeToMore({
       document: unviewedMessageSubscription,
+      variables: {
+        userId: props.me.me.id
+      },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
-
         return Object.assign({}, prev, {
           rooms: [...prev.rooms]
         });

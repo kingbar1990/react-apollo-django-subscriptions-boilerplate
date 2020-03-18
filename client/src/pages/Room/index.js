@@ -22,7 +22,6 @@ const Room = props => {
   const [lastPollingTime, setLastPollingTime] = useState(0);
 
   const currentRoom = props.match.params.id;
-
   const subscribeToNewMessage = (subscribeToMore, room_id) => {
     subscribeToMore({
       document: newMessageSubscription,
@@ -48,11 +47,11 @@ const Room = props => {
       }
     });
   };
-
+  
   const readRoomMessages = () => {
     props.readMessages({
       variables: {
-        roomId: currentRoom
+        roomId: currentRoom,
       }
     });
   };
@@ -79,7 +78,7 @@ const Room = props => {
       {({ loading, error, data, subscribeToMore, fetchMore }) => {
         if (loading) return null
         if (error) return `Error! ${error.message}`
-        subscribeToNewMessage(subscribeToMore, currentRoom)
+        subscribeToNewMessage(subscribeToMore, currentRoom);
         return (
           <MDBContainer>
             <CreateMessageForm
@@ -130,7 +129,7 @@ const Room = props => {
                   <em
                     className="grey-text"
                     id="typing"
-                    ref={typing}
+                    ref={typing}  
                     hidden={false}
                   >
                     Typing...

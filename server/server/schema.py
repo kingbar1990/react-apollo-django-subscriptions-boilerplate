@@ -39,29 +39,29 @@ class Mutation(graphene.ObjectType):
 
 class Subscription(graphene.ObjectType):
     new_message = graphene.Field(MessageType, channel_id=graphene.ID())
-    notifications = graphene.Field(RoomType)
+    notifications = graphene.Field(RoomType, user_id=graphene.ID())
     on_focus = graphene.Boolean()
-    has_unreaded_messages = graphene.Boolean()
+    has_unreaded_messages = graphene.Boolean(user_id=graphene.ID())
 
     async def resolve_new_message(root, info, channel_id):
         channel_name = await channel_layer.new_channel()
-        await channel_layer.group_add(channel_id, channel_name)
+        await channel_layer.group_add("new_message_" + str(channel_id), channel_name)
         try:
             while True:
                 message = await channel_layer.receive(channel_name)
                 yield message["data"]
         finally:
-            await channel_layer.group_discard(channel_id, channel_name)
+            await channel_layer.group_discard("new_message_" + str(channel_id), channel_name)
 
-    async def resolve_notifications(root, info):
+    async def resolve_notifications(root, info, user_id):
         channel_name = await channel_layer.new_channel()
-        await channel_layer.group_add("notify", channel_name)
+        await channel_layer.group_add("notify_" + str(user_id), channel_name)
         try:
             while True:
                 room = await channel_layer.receive(channel_name)
                 yield room["data"]
         finally:
-            await channel_layer.group_discard("notify", channel_name)
+            await channel_layer.group_discard("notify_" + str(user_id), channel_name)
 
     async def resolve_on_focus(root, info):
         channel_name = await channel_layer.new_channel()
@@ -73,15 +73,15 @@ class Subscription(graphene.ObjectType):
         finally:
             await channel_layer.group_discard("focused", channel_name)
 
-    async def resolve_has_unreaded_messages(root, info):
+    async def resolve_has_unreaded_messages(root, info, user_id):
         channel_name = await channel_layer.new_channel()
-        await channel_layer.group_add("has_unreaded_messages", channel_name)
+        await channel_layer.group_add("has_unreaded_messages_" + str(user_id), channel_name)
         try:
             while True:
                 data = await channel_layer.receive(channel_name)
                 yield data['data']
         finally:
-            await channel_layer.group_discard("has_unreaded_messages", channel_name)
+            await channel_layer.group_discard("has_unreaded_messages_" + str(user_id), channel_name)
 
 
 schema = graphene.Schema(

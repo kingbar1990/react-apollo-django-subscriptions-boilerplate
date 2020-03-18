@@ -59,7 +59,6 @@ class NavBar extends Component {
       }
     });
   };
-
   render() {
     return (
       <Navbar className="flexible-navbar" light expand="md" scrolling>
@@ -80,7 +79,7 @@ class NavBar extends Component {
             {this.props.me.loading ? null : (
               <MDBNavItem>
                 <MDBNavLink to={PROFILE}>
-                  <Subscription subscription={hasUnreadedMessagesSubscription}>
+                  <Subscription subscription={hasUnreadedMessagesSubscription} variables={{userId:this.props.me.me.id}}>
                     {({ data, loading }) => {
                       return (!loading && data.hasUnreadedMessages) ||
                         (this.props.me.me.hasUnreadedMessages &&

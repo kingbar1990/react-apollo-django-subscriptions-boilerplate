@@ -298,7 +298,7 @@ export const createRoom = gql`
 
 export const newMessageSubscription = gql`
   subscription(
-    $channelId: ID
+    $channelId: ID!
   ) {
     newMessage(channelId: $channelId) {
       id
@@ -316,8 +316,10 @@ export const newMessageSubscription = gql`
 `;
 
 export const unviewedMessageSubscription = gql`
-  subscription {
-    notifications {
+  subscription(
+    $userId: ID!
+  ) {
+    notifications(userId: $userId) {
       id
       unviewedMessages
       typing
@@ -326,7 +328,9 @@ export const unviewedMessageSubscription = gql`
 `;
 
 export const readMessages = gql`
-  mutation readMessages($roomId: ID!) {
+  mutation readMessages(
+    $roomId: ID!
+    ) {
     reedMessages(roomId: $roomId) {
       success
       errors
@@ -356,7 +360,9 @@ export const onFocusSubscription = gql`
 `;
 
 export const hasUnreadedMessagesSubscription = gql`
-  subscription hasUnreadedMessages {
-    hasUnreadedMessages
+  subscription hasUnreadedMessages(
+    $userId: ID!
+  ) {
+    hasUnreadedMessages(userId: $userId)
   }
 `;
