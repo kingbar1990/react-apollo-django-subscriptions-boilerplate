@@ -23,9 +23,12 @@ const Room = props => {
 
   const currentRoom = props.match.params.id;
 
-  const subscribeToNewMessage = subscribeToMore => {
+  const subscribeToNewMessage = (subscribeToMore, room_id) => {
     subscribeToMore({
       document: newMessageSubscription,
+      variables: {
+        channelId: room_id
+      },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const newMessage = subscriptionData.data.newMessage;
@@ -73,9 +76,9 @@ const Room = props => {
       variables={{ id: currentRoom, first: DATA_PER_PAGE }}
     >
       {({ loading, error, data, subscribeToMore, fetchMore }) => {
-        if (loading) return null;
-        if (error) return `Error! ${error.message}`;
-        subscribeToNewMessage(subscribeToMore);
+        if (loading) return null
+        if (error) return `Error! ${error.message}`
+        subscribeToNewMessage(subscribeToMore, currentRoom)
         return (
           <MDBContainer>
             <CreateMessageForm

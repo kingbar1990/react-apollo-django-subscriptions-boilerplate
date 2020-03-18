@@ -102,7 +102,7 @@ class MessageCreateMutation(FormMutation):
         form.cleaned_data['room'].save()
 
         async_to_sync(channel_layer.group_send)(
-            "new_message", {"data": message})
+            str(message.room.id), {"data": message})
 
         async_to_sync(channel_layer.group_send)(
             "notify", {"data": form.cleaned_data['room']})

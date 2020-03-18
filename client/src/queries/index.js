@@ -297,8 +297,10 @@ export const createRoom = gql`
 `;
 
 export const newMessageSubscription = gql`
-  subscription {
-    newMessage {
+  subscription(
+    $channelId: ID
+  ) {
+    newMessage(channelId: $channelId) {
       id
       seen
       text
