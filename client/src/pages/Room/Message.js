@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Mutation } from "react-apollo";
 import MdDoneAll from "react-ionicons/lib/MdDoneAll";
 import MdCheckmark from "react-ionicons/lib/MdCheckmark";
-
 import { BACKEND_URL, DATA_PER_PAGE } from "../../constants";
 import { getRoom, deleteMessage } from "../../queries";
 
@@ -11,15 +10,14 @@ import EditMessageForm from "../../components/Forms/EditMessageForm";
 
 const Message = props => {
   const [modal, setModal] = useState();
-
+  const imageFormats = ['jpeg', 'png', 'gif', 'tiff']
   useEffect(() => {
     if (!props.seen && props.sender.id !== props.me.id) {
       props.readRoomMessages(props.currentRoom);
     }
   }, []);
-
   return (
-    <article className="card-shadow rad shade">
+    <article className="card-shadow rad shade" style={{borderRadius: "4rem"}}>
       <section className="flex-space">
         <p>{props.text}</p>
         {props.me.id === props.sender.id ? (
@@ -64,6 +62,25 @@ const Message = props => {
           </div>
         ) : null}
       </section>
+      {props.file && 
+      (( imageFormats.find(format => props.file.indexOf(format) != -1)) ? (
+          <div className="width" style={{margin: "10px auto"}}>
+            <a href={`${BACKEND_URL}/media/${props.file}`}>
+              <img
+                src={`${BACKEND_URL}/media/${props.file}`}
+                alt={props.id}
+                style={{width:"100px", height:"100px", borderRadius: "5px"}}
+              />
+            </a>
+          </div>
+        ):
+        (
+          <div>
+            <span>File: </span><a href={`${BACKEND_URL}/media/${props.file}`} style={{color: 'blue'}}>{props.file.split('/').slice(-1)[0]}</a>
+          </div>
+        )
+      )}
+         
       <ModalForm
         title={"Edit message"}
         isActive={props.id === modal}
@@ -90,15 +107,7 @@ const Message = props => {
             {new Date(props.time).toDateString()}
           </time>
         </div>
-        {props.file && (
-          <div className="width">
-            <img
-              src={`${BACKEND_URL}/media/${props.file}`}
-              alt={props.id}
-              className="preview rad"
-            />
-          </div>
-        )}
+        
       </section>
     </article>
   );

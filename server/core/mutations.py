@@ -89,7 +89,7 @@ class MessageCreateMutation(FormMutation):
         form_class = MessageForm
 
     message = graphene.Field(lambda: MessageType)
-
+    
     @classmethod
     def perform_mutate(cls, form, info):
         message = form.save()

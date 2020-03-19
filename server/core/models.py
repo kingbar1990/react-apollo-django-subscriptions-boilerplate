@@ -31,7 +31,7 @@ class Room(models.Model):
 
 
 class Message(models.Model):
-    text = models.CharField(max_length=255)
+    text = models.CharField(max_length=255, null=True, blank=True)
     sender = models.ForeignKey(
         User,
         related_name='sended_messages',
@@ -46,10 +46,10 @@ class Message(models.Model):
     )
     seen = models.BooleanField(default=True)
     time = models.DateTimeField(auto_now=True)
-    file = models.ImageField(
+    file = models.FileField(
         upload_to='attachment/', null=True, blank=True
     )
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.text
+        return "Message № " + str(self.pk)

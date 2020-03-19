@@ -72,8 +72,8 @@ class Query:
     def resolve_rooms(self, info, user_id):
         return Room.objects.filter(users__id=user_id)
 
-    def resolve_on_focus(self, info, room_id, focused=False):
-        if focused:
+    def resolve_on_focus(self, info, room_id=None, focused=False):
+        if focused and room_id:
             async_to_sync(channel_layer.group_send)("focused_" + str(room_id), {"data": True})
             return True
         async_to_sync(channel_layer.group_send)("focused_" + str(room_id), {"data": False})

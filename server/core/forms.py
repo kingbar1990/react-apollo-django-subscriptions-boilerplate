@@ -17,6 +17,13 @@ class MessageForm(ModelForm):
         ]
 
 
+    def clean(self):
+        cleaned_data = super().clean()
+        file = cleaned_data.get('file')
+        text = cleaned_data.get('text')
+        if not file and not text:
+            raise forms.ValidationError("Send file or message!")
+
 class RoomForm(ModelForm):
     class Meta:
         model = Room
