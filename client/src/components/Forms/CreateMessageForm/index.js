@@ -12,7 +12,8 @@ const CreateMessageForm = ({
   data,
   onFocusQuery,
   inputOnFocus,
-  setInputOnFocus
+  setInputOnFocus,
+  addToStoredMessages
 }) => {
   const [value, setValue] = useState("");
   const [avatar, setAvatar] = useState("");
@@ -93,7 +94,15 @@ const CreateMessageForm = ({
           }
         });
       }}
-      onError={() => setError("Message not sent :( Please try again")}
+      onError={() => {
+        if (!navigator.onLine){
+          setError("No Internet Connection!");
+          addToStoredMessages(value, currentRoom, users[0].id, avatar)
+        }
+        else{
+          setError("Message not sent :( Please try again");
+        }
+      }}
       onCompleted={() => {
         setValue("");
         setAvatar("");

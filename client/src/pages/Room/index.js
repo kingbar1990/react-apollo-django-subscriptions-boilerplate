@@ -12,16 +12,37 @@ import {
   onFocusSubscription
 } from "../../queries";
 
+import StoredMessages from "./StoredMessages"; 
 import { DATA_PER_PAGE } from "../../constants";
 import UserInfo from "../../components/UserProfile";
 import CreateMessageForm from "../../components/Forms/CreateMessageForm";
 import MessageList from "./MessageList";
 
-const Room = props => {
+const Room = props => { 
   const [inputOnFocus, setInputOnFocus] = useState(false);
-  const [lastPollingTime, setLastPollingTime] = useState(0);
-
   const currentRoom = props.match.params.id;
+  const [storedMessages, setStoredMessages] = useState(Object.assign({}, getAllLocalStorageItems()))
+  const [lastPollingTime, setLastPollingTime] = useState(0);
+  const [notSentMessages, setNonSentMessages] = useState(localStorage.get)
+
+  function getAllLocalStorageItems() {
+    var tempDict = {}
+    var keys = Object.keys(localStorage);
+    for (let i of keys){
+      if(i.indexOf('message') != -1) {
+        let item = JSON.parse(localStorage.getItem(i));
+        console.log(item["room"]);
+        console.log(currentRoom);
+        if(item["room"] == currentRoom){
+          tempDict[i] = item;
+        }
+      }
+    }
+    return tempDict;
+  }
+
+
+
   const subscribeToNewMessage = (subscribeToMore, room_id) => {
     subscribeToMore({
       document: newMessageSubscription,
@@ -48,6 +69,21 @@ const Room = props => {
     });
   };
   
+  const deleteStoredMessage = (message_id) => {
+    localStorage.removeItem(message_id);
+    var newDict = getAllLocalStorageItems();
+    setStoredMessages(newDict);
+  }
+
+  const addToStoredMessages = (text, room, sender, avatar) => {
+    let randomInt = Math.round(Math.random() * 10000000)
+    localStorage.setItem(
+      `message_${randomInt}`, 
+      JSON.stringify({"text": text, "room": room, "sender": sender, "file": avatar}))
+    var newDict = getAllLocalStorageItems();
+    setStoredMessages(newDict);
+  }
+
   const readRoomMessages = () => {
     props.readMessages({
       variables: {
@@ -71,77 +107,82 @@ const Room = props => {
   const testThrottle = _.throttle(deleteTyping, 10000);
 
   return (
-    <Query
-      query={getRoom}
-      variables={{ id: currentRoom, first: DATA_PER_PAGE }}
-    >
-      {({ loading, error, data, subscribeToMore, fetchMore }) => {
-        if (loading) return null
-        if (error) return `Error! ${error.message}`
-        subscribeToNewMessage(subscribeToMore, currentRoom);
-        return (
-          <MDBContainer>
-            <CreateMessageForm
-              currentRoom={currentRoom}
-              setInputOnFocus={setInputOnFocus}
-              inputOnFocus={inputOnFocus}
-              {...data.room}
-            />
-            <MessageList
-              me={props.me.me}
-              data={data.room}
-              currentRoom={currentRoom}
-              readRoomMessages={readRoomMessages}
-              onLoadMore={() =>
-                fetchMore({
-                  variables: {
-                    id: currentRoom,
-                    first: DATA_PER_PAGE,
-                    skip: data.room.messages.length
-                  },
-                  updateQuery: (prev, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev;
-                    return Object.assign({}, prev, {
-                      room: {
-                        messages: [
-                          ...prev.room.messages,
-                          ...fetchMoreResult.room.messages
-                        ],
-                        users: prev.room.users,
-                        __typename: prev.room.__typename
-                      }
-                    });
-                  }
-                })
-              }
-            />
-            <div className="bar-right position-fixed shade">
-              <UserInfo profile={data.room.users[0]} />
-            </div>
-            <Subscription subscription={onFocusSubscription} variables={{roomId: currentRoom}}>
-              {({ data, loading }) => {
-                testThrottle();
-                if (typing.current) {
-                  typing.current.hidden = false;
+    <div>
+      <Query
+        query={getRoom}
+        variables={{ id: currentRoom, first: DATA_PER_PAGE }}
+      >
+        {({ loading, error, data, subscribeToMore, fetchMore }) => {
+          if (loading) return null
+          if (error) return `Error! ${error.message}`
+          subscribeToNewMessage(subscribeToMore, currentRoom);
+          return (
+            <MDBContainer>
+              <CreateMessageForm
+                currentRoom={currentRoom}
+                setInputOnFocus={setInputOnFocus}
+                addToStoredMessages={addToStoredMessages}
+                inputOnFocus={inputOnFocus}
+                {...data.room}
+              />
+              <MessageList
+                me={props.me.me}
+                data={data.room}
+                currentRoom={currentRoom}
+                readRoomMessages={readRoomMessages}
+                storedMessages={storedMessages}
+                deleteStoredMessage={deleteStoredMessage}
+                onLoadMore={() =>
+                  fetchMore({
+                    variables: {
+                      id: currentRoom,
+                      first: DATA_PER_PAGE,
+                      skip: data.room.messages.length
+                    },
+                    updateQuery: (prev, { fetchMoreResult }) => {
+                      if (!fetchMoreResult) return prev;
+                      return Object.assign({}, prev, {
+                        room: {
+                          messages: [
+                            ...prev.room.messages,
+                            ...fetchMoreResult.room.messages
+                          ],
+                          users: prev.room.users,
+                          __typename: prev.room.__typename
+                        }
+                      });
+                    }
+                  })
                 }
-                return !loading && data.onFocus && !inputOnFocus ? (
-                  <em
-                    className="grey-text"
-                    id="typing"
-                    ref={typing}  
-                    hidden={false}
-                  >
-                    Typing...
-                  </em>
-                ) : (
-                  ""
-                );
-              }}
-            </Subscription>
-          </MDBContainer>
-        );
-      }}
-    </Query>
+              />
+              <div className="bar-right position-fixed shade">
+                <UserInfo profile={data.room.users[0]} />
+              </div>
+              <Subscription subscription={onFocusSubscription} variables={{roomId: currentRoom}}>
+                {({ data, loading }) => {
+                  testThrottle();
+                  if (typing.current) {
+                    typing.current.hidden = false;
+                  }
+                  return !loading && data.onFocus && !inputOnFocus ? (
+                    <em
+                      className="grey-text"
+                      id="typing"
+                      ref={typing}  
+                      hidden={false}
+                    >
+                      Typing...
+                    </em>
+                  ) : (
+                    ""
+                  );
+                }}
+              </Subscription>
+            </MDBContainer>
+          );
+        }}
+      </Query>
+    </div>
   );
 };
 

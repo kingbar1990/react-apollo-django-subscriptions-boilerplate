@@ -1,18 +1,20 @@
 import React, { useRef, useEffect } from "react";
 
 import Message from "./Message";
+import StoredMessages from "./StoredMessages";
 
 const MessageList = ({
   data,
   currentRoom,
   onLoadMore,
   me,
-  readRoomMessages
+  readRoomMessages,
+  storedMessages,
+  deleteStoredMessage
 }) => {
   useEffect(() => {
     chatEnd.current.scrollIntoView();
   });
-
   const handleScroll = ({ currentTarget }, onLoadMore) => {
     if (
       currentTarget.scrollTop + currentTarget.clientHeight >=
@@ -40,6 +42,13 @@ const MessageList = ({
             />
           </div>
         );
+      })}
+      {Object.keys(storedMessages).map(item => {
+        return(
+          <div className="content mb-3">
+            <StoredMessages deleteStoredMessage={deleteStoredMessage} key={item} message_key={item} message={storedMessages[item]}/>
+          </div>
+        )
       })}
 
       {/* dummy div for scroll page to end of a chat */}
