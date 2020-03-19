@@ -48,13 +48,25 @@ const CreateMessageForm = ({
 
   const changeTypingStatus = status => {
     onFocusQuery.refetch({
+      roomId: currentRoom,
       focused: status
     });
   };
 
   updateStatus = debounce(updateStatus, 3000);
 
-  const handleInputChange = e => setValue(e.target.value);
+  const handleInputChange = e => {
+    setValue(e.target.value)
+    if (e.target.value.length > 0){
+      setInputOnFocus(true);
+      changeTypingStatus(true);
+      updateStatus();
+    }else{
+      setInputOnFocus(false);
+      changeTypingStatus(false);
+      updateStatus();
+    }
+  };
 
   return (
     <Mutation
@@ -110,11 +122,6 @@ const CreateMessageForm = ({
             <input
               className="input-send rad"
               onChange={handleInputChange}
-              onFocus={() => {
-                setInputOnFocus(true);
-                changeTypingStatus(true);
-                updateStatus();
-              }}
               onBlur={() => {
                 setInputOnFocus(false);
                 changeTypingStatus(false);
@@ -136,5 +143,5 @@ export default compose(
   graphql(getType, {
     options: props => ({ variables: { id: props.currentRoom, skip: true } })
   }),
-  graphql(onFocus, { name: "onFocusQuery" })
+  graphql(onFocus, {name: "onFocusQuery"})
 )(CreateMessageForm);

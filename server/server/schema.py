@@ -40,7 +40,7 @@ class Mutation(graphene.ObjectType):
 class Subscription(graphene.ObjectType):
     new_message = graphene.Field(MessageType, channel_id=graphene.ID())
     notifications = graphene.Field(RoomType, user_id=graphene.ID())
-    on_focus = graphene.Boolean()
+    on_focus = graphene.Boolean(room_id=graphene.ID())
     has_unreaded_messages = graphene.Boolean(user_id=graphene.ID())
 
     async def resolve_new_message(root, info, channel_id):
@@ -63,15 +63,15 @@ class Subscription(graphene.ObjectType):
         finally:
             await channel_layer.group_discard("notify_" + str(user_id), channel_name)
 
-    async def resolve_on_focus(root, info):
+    async def resolve_on_focus(root, info, room_id):
         channel_name = await channel_layer.new_channel()
-        await channel_layer.group_add("focused", channel_name)
+        await channel_layer.group_add("focused_" + str(room_id), channel_name)
         try:
             while True:
                 focused = await channel_layer.receive(channel_name)
                 yield focused['data']
         finally:
-            await channel_layer.group_discard("focused", channel_name)
+            await channel_layer.group_discard("focused_" + str(room_id), channel_name)
 
     async def resolve_has_unreaded_messages(root, info, user_id):
         channel_name = await channel_layer.new_channel()

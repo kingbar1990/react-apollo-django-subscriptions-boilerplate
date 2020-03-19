@@ -118,10 +118,9 @@ const Room = props => {
             <div className="bar-right position-fixed shade">
               <UserInfo profile={data.room.users[0]} />
             </div>
-            <Subscription subscription={onFocusSubscription}>
+            <Subscription subscription={onFocusSubscription} variables={{roomId: currentRoom}}>
               {({ data, loading }) => {
                 testThrottle();
-
                 if (typing.current) {
                   typing.current.hidden = false;
                 }

@@ -45,7 +45,7 @@ class Query:
     rooms = graphene.List(RoomType, user_id=graphene.Int())
     room = graphene.Field(RoomType, id=graphene.Int())
     type = graphene.Field(RoomType, id=graphene.Int())
-    on_focus = graphene.Boolean(focused=graphene.Boolean())
+    on_focus = graphene.Boolean(focused=graphene.Boolean(), room_id=graphene.ID())
 
     def resolve_room(self, info, id):
         room = Room.objects.get(id=id)
@@ -72,9 +72,9 @@ class Query:
     def resolve_rooms(self, info, user_id):
         return Room.objects.filter(users__id=user_id)
 
-    def resolve_on_focus(self, info, focused=False):
+    def resolve_on_focus(self, info, room_id, focused=False):
         if focused:
-            async_to_sync(channel_layer.group_send)("focused", {"data": True})
+            async_to_sync(channel_layer.group_send)("focused_" + str(room_id), {"data": True})
             return True
-        async_to_sync(channel_layer.group_send)("focused", {"data": False})
+        async_to_sync(channel_layer.group_send)("focused_" + str(room_id), {"data": False})
         return False

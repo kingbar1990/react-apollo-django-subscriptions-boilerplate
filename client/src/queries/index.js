@@ -348,14 +348,19 @@ export const updateRoom = gql`
 `;
 
 export const onFocus = gql`
-  query onFocus($focused: Boolean) {
-    onFocus(focused: $focused)
+  query onFocus(
+    $focused: Boolean,
+    $roomId: ID
+    ) {
+    onFocus(focused: $focused, roomId: $roomId)
   }
 `;
 
 export const onFocusSubscription = gql`
-  subscription onFocus {
-    onFocus
+  subscription onFocus(
+    $roomId: ID!
+  ) {
+    onFocus(roomId: $roomId)
   }
 `;
 
