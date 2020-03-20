@@ -26,6 +26,9 @@ class RoomType(DjangoObjectType):
         model = Room
 
     def resolve_unviewed_messages(self, info):
+        if 'user' in info.context:
+            user = info.context.user
+            return self.messages.filter(seen=False, is_deleted=False).exclude(sender=user).count()
         return self.messages.filter(seen=False, is_deleted=False).count()
 
     def resolve_messages(self, info, first=None, skip=None, room=None):
