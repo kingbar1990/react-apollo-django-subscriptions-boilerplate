@@ -6,6 +6,9 @@ from django.core.files.base import ContentFile
 from graphql_jwt.shortcuts import get_token
 from serious_django_graphene import FormMutation, ValidationErrors
 from server.tasks import reset_password_email
+import channels
+
+from asgiref.sync import async_to_sync
 
 from .forms import (SendConfirmationEmailForm, SetNewPasswordForm,
                     UserEditForm, UserForm)

@@ -2,7 +2,6 @@ import graphene
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from graphene_django.types import DjangoObjectType
-
 from .models import Message, Room
 
 channel_layer = get_channel_layer()
@@ -11,6 +10,7 @@ channel_layer = get_channel_layer()
 class MessageType(DjangoObjectType):
     class Meta:
         model = Message
+
 
 
 class RoomType(DjangoObjectType):

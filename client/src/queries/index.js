@@ -91,6 +91,7 @@ export const getUsers = gql`
       id
       fullName
       email
+      online
     }
   }
 `;
@@ -311,6 +312,17 @@ export const newMessageSubscription = gql`
         fullName
       }
       file
+    }
+  }
+`;
+
+export const onlineUsersSubsciption = gql `
+  subscription {
+    onlineUsers{
+      id
+      fullName
+      email
+      online
     }
   }
 `;

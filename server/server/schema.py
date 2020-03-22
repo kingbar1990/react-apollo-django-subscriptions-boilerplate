@@ -5,6 +5,7 @@ from accounts.mutations import (LoginMutation, RegisterMutation,
                                 SendConfirmationEmailMutation,
                                 UserEditMutation)
 from accounts.schema import Query as AccountsQuery
+from accounts.schema import UserType
 from channels.layers import get_channel_layer
 from core.models import Message
 from core.mutations import (CreateRoomMutation, MessageCreateMutation,
@@ -12,6 +13,8 @@ from core.mutations import (CreateRoomMutation, MessageCreateMutation,
 from core.schema import Query as CoreQuery
 from core.schema import MessageType, RoomType
 from rx import Observable
+from django.contrib.auth import get_user_model
+import json 
 
 channel_layer = get_channel_layer()
 
@@ -42,6 +45,7 @@ class Subscription(graphene.ObjectType):
     notifications = graphene.Field(RoomType, user_id=graphene.ID())
     on_focus = graphene.Boolean(room_id=graphene.ID())
     has_unreaded_messages = graphene.Boolean(user_id=graphene.ID())
+    online_users = graphene.List(UserType)
 
     async def resolve_new_message(root, info, channel_id):
         channel_name = await channel_layer.new_channel()
@@ -49,6 +53,7 @@ class Subscription(graphene.ObjectType):
         try:
             while True:
                 message = await channel_layer.receive(channel_name)
+                print(message["data"])
                 yield message["data"]
         finally:
             await channel_layer.group_discard("new_message_" + str(channel_id), channel_name)
@@ -83,7 +88,18 @@ class Subscription(graphene.ObjectType):
         finally:
             await channel_layer.group_discard("has_unreaded_messages_" + str(user_id), channel_name)
 
+    async def resolve_online_users(root, info):
+        channel_name = await channel_layer.new_channel()
+        await channel_layer.group_add("online_users", channel_name)
+        try:
+            while True:
+                online_users = await channel_layer.receive(channel_name)
+                users = get_user_model().objects.only('id', 'email', 'full_name', 'online')
+                yield users
+        finally:
+            await channel_layer.group_discard("online_users", channel_name)
 
+            
 schema = graphene.Schema(
     query=Query,
     mutation=Mutation,

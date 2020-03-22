@@ -1,11 +1,16 @@
 from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.http import AsgiHandler
+from channels.auth import AuthMiddlewareStack
+from .token_auth import TokenAuthMiddleware
+
+
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
-
 from .channels import GraphQLSubscriptionConsumer
 
 urlpatterns = [
@@ -17,8 +22,10 @@ urlpatterns = [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-
-websocket_urlpatterns = [path("subscriptions", GraphQLSubscriptionConsumer)]
-
-application = ProtocolTypeRouter(
-    {"websocket": URLRouter(websocket_urlpatterns)})
+application = ProtocolTypeRouter({
+"websocket": TokenAuthMiddleware(
+    URLRouter([
+        path('subscriptions', GraphQLSubscriptionConsumer)
+    ]),
+),
+})
