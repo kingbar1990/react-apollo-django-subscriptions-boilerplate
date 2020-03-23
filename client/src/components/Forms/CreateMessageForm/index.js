@@ -13,7 +13,7 @@ const CreateMessageForm = ({
   onFocusQuery,
   inputOnFocus,
   setInputOnFocus,
-  addToStoredMessages
+  addToStoredMessages,
 }) => {
   const [value, setValue] = useState("");
   const [avatar, setAvatar] = useState("");

@@ -141,7 +141,7 @@ export const getRooms = gql`
         }
         seen
       }
-      unviewedMessages
+      unviewedMessages(userId: $userId)
     }
   }
 `;

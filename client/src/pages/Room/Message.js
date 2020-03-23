@@ -13,7 +13,7 @@ const Message = props => {
   const imageFormats = ['jpeg', 'png', 'gif', 'tiff']
   useEffect(() => {
     if (!props.seen && props.sender.id !== props.me.id) {
-      props.readRoomMessages(props.currentRoom);
+      props.readRoomMessages();
     }
   }, []);
   return (

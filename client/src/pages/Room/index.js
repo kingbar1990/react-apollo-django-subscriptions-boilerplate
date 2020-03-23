@@ -9,7 +9,8 @@ import {
   unviewedMessageSubscription,
   User,
   readMessages,
-  onFocusSubscription
+  onFocusSubscription,
+  getRooms
 } from "../../queries";
 
 import StoredMessages from "./StoredMessages"; 
@@ -22,8 +23,6 @@ const Room = props => {
   const [inputOnFocus, setInputOnFocus] = useState(false);
   const currentRoom = props.match.params.id;
   const [storedMessages, setStoredMessages] = useState(Object.assign({}, getAllLocalStorageItems()))
-  const [lastPollingTime, setLastPollingTime] = useState(0);
-  const [notSentMessages, setNonSentMessages] = useState(localStorage.get)
 
   function getAllLocalStorageItems() {
     var tempDict = {}
@@ -86,7 +85,7 @@ const Room = props => {
     props.readMessages({
       variables: {
         roomId: currentRoom,
-      }
+      },
     });
   };
 

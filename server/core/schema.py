@@ -1,6 +1,8 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 
+from django.contrib.auth import get_user_model
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
@@ -19,7 +21,7 @@ class MessageType(DjangoObjectType):
 
 class RoomType(DjangoObjectType):
     """ Room object type for GraphQL """
-    unviewed_messages = graphene.Int()
+    unviewed_messages = graphene.Int(user_id=graphene.Int())
     messages = graphene.List(
         MessageType,
         first=graphene.Int(),
@@ -30,12 +32,11 @@ class RoomType(DjangoObjectType):
     class Meta:
         model = Room
 
-    def resolve_unviewed_messages(self, info):
+    def resolve_unviewed_messages(self, info, user_id=None):
         # Return count of unread messages
-        if 'user' in info.context:
-            user = info.context.user
+        if user_id:
+            user = get_user_model().objects.get(pk=user_id)            
             return self.messages.filter(seen=False, is_deleted=False).exclude(sender=user).count()
-        return self.messages.filter(seen=False, is_deleted=False).count()
 
     def resolve_messages(self, info, first=None, skip=None, room=None):
         # Return all messages in room
@@ -62,18 +63,12 @@ class Query:
             room.typing = False
             room.last_message.save()
 
-        async_to_sync(channel_layer.group_send)(
-            "notify", {"data": room})
-
         return room
 
     def resolve_type(self, info, id):
         room = Room.objects.get(id=id)
         room.typing = True
         room.save()
-
-        async_to_sync(channel_layer.group_send)(
-            "notify", {"data": room})
 
         return room
 

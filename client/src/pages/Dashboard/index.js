@@ -45,7 +45,7 @@ const Dashboard = props => {
               if (props.data.me && i.id !== props.data.me.id) {
                 return (
                   <MDBListGroupItem key={i.id} onClick={() => createRoom(i.id)}>
-                    {i.online ? (<span class='dot-online'></span>) : (<span class='dot-offline'></span>)}{i.fullName} 
+                    {i.online ? (<span className='dot-online'></span>) : (<span className='dot-offline'></span>)}{i.fullName} 
                   </MDBListGroupItem>
                 )
               }

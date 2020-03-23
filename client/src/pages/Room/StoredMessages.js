@@ -1,7 +1,5 @@
 import React  from "react"
 import { graphql, compose } from "react-apollo";
-import ModalForm from "../../components/Forms/ModalForm";
-import EditMessageForm from "../../components/Forms/EditMessageForm";
 import {createMessage} from "../../queries/index"
 
 const StoredMessages = ({message, deleteStoredMessage, message_key, createMessage}) => {
@@ -19,6 +17,7 @@ const StoredMessages = ({message, deleteStoredMessage, message_key, createMessag
             deleteStoredMessage(message_key);
         }
     }
+    
     return(
         <article className="card-shadow rad shade" style={{borderRadius: "4rem"}}>
             <section className="flex-space">

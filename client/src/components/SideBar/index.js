@@ -7,7 +7,7 @@ import { DASHBOARD } from "../../constants/routes";
 import { getRooms, unviewedMessageSubscription, User } from "../../queries";
 
 const Sidebar = props => {
-  const subscribeToNewMessage = subscribeToMore => {
+  const subscribeToNewMessage = (subscribeToMore, refetch) => {
     subscribeToMore({
       document: unviewedMessageSubscription,
       variables: {
@@ -15,6 +15,7 @@ const Sidebar = props => {
       },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
+        refetch();
         return Object.assign({}, prev, {
           rooms: [...prev.rooms]
         });
@@ -27,11 +28,11 @@ const Sidebar = props => {
         <h3 className="logo-wrapper">Current room</h3>
       </a>
       <Query query={getRooms} variables={{ userId: props.id }}>
-        {({ loading, error, data, subscribeToMore }) => {
+        {({ loading, error, data, subscribeToMore, refetch }) => {
           if (loading) return "Loading...";
           if (error) return `Error! ${error.message}`;
 
-          subscribeToNewMessage(subscribeToMore);
+          subscribeToNewMessage(subscribeToMore, refetch);
 
           return data.rooms.map(i => (
             <NavLink
