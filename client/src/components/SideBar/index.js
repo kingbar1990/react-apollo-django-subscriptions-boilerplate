@@ -15,7 +15,6 @@ const Sidebar = props => {
       },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
-        refetch();
         return Object.assign({}, prev, {
           rooms: [...prev.rooms]
         });
@@ -47,7 +46,8 @@ const Sidebar = props => {
                 <MDBBadge
                   color={i.unviewedMessages > 0 ? "red" : "elegant-color"}
                   pill
-                >
+                  id={`room${i.id}`}
+                  >
                   {i.unviewedMessages}
                 </MDBBadge>
               </ListGroupItem>

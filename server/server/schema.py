@@ -51,7 +51,7 @@ class Mutation(graphene.ObjectType):
 class Subscription(graphene.ObjectType):
     """ All Subscriptions """
     new_message = graphene.Field(MessageType, channel_id=graphene.ID())
-    notifications = graphene.Field(RoomType, user_id=graphene.ID())
+    notifications = graphene.Field(RoomType, user_id=graphene.Int())
     on_focus = graphene.Boolean(room_id=graphene.ID())
     has_unreaded_messages = graphene.Boolean(user_id=graphene.ID())
     online_users = graphene.List(UserType)

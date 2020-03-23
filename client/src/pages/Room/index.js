@@ -105,6 +105,7 @@ const Room = props => {
 
   return (
     <div>
+
       <Query
         query={getRoom}
         variables={{ id: currentRoom, first: DATA_PER_PAGE }}
@@ -120,6 +121,7 @@ const Room = props => {
                 setInputOnFocus={setInputOnFocus}
                 addToStoredMessages={addToStoredMessages}
                 inputOnFocus={inputOnFocus}
+                readRoomMessages={readRoomMessages}
                 {...data.room}
               />
               <MessageList

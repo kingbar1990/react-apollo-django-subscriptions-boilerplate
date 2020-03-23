@@ -329,11 +329,11 @@ export const onlineUsersSubsciption = gql `
 
 export const unviewedMessageSubscription = gql`
   subscription(
-    $userId: ID!
+    $userId: Int!
   ) {
     notifications(userId: $userId) {
       id
-      unviewedMessages
+      unviewedMessages(userId: $userId)
       typing
     }
   }

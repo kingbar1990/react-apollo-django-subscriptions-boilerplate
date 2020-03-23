@@ -13,6 +13,7 @@ const CreateMessageForm = ({
   onFocusQuery,
   inputOnFocus,
   setInputOnFocus,
+  readRoomMessages,
   addToStoredMessages,
 }) => {
   const [value, setValue] = useState("");
@@ -135,6 +136,7 @@ const CreateMessageForm = ({
                 setInputOnFocus(false);
                 changeTypingStatus(false);
               }}
+              onClick={()=> readRoomMessages()}
               value={value}
               placeholder="Type something"
             />
