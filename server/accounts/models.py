@@ -41,13 +41,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 @receiver(post_save, sender=User)
 def change_user(sender, instance, *args, **kwargs):
     """ Send message to channel if User's status changed """
-    users = serializers.serialize('json', get_user_model().objects.all())
+    users = serializers.serialize('json', User.objects.all())
     async_to_sync(channel_layer.group_send)(
-        "online_users",
+        "users",
         {
-            "type":"user_update",
+            "type":"user.update",
 			"event":"New User",
-            "users": users
+            "data": users
         }
     )
 

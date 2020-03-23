@@ -15,7 +15,7 @@ const Message = props => {
     if (!props.seen && props.sender.id !== props.me.id) {
       props.readRoomMessages();
     }
-  }, []);
+  });
   return (
     <article className="card-shadow rad shade" style={{borderRadius: "4rem"}}>
       <section className="flex-space">
@@ -63,7 +63,7 @@ const Message = props => {
         ) : null}
       </section>
       {props.file && 
-      (( imageFormats.find(format => props.file.indexOf(format) != -1)) ? (
+      (( imageFormats.find(format => props.file.indexOf(format) !== -1)) ? (
           <div className="width" style={{margin: "10px auto"}}>
             <a href={`${BACKEND_URL}/media/${props.file}`}>
               <img

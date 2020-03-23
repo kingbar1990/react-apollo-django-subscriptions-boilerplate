@@ -145,7 +145,7 @@ class GraphQLSubscriptionConsumer(AsyncJsonWebsocketConsumer):
         and change his/her status to Online
         """
         await self.accept(subprotocol='graphql-ws')
-        await self.channel_layer.group_add("online_users", self.channel_name)
+        await self.channel_layer.group_add("users", self.channel_name)
 
         self.subscription_server = ChannelsSubscriptionServer(
             schema=graphene_settings.SCHEMA
@@ -161,7 +161,7 @@ class GraphQLSubscriptionConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, content):
         """ Disconnect user and change his/her status to Offline """
-        await self.channel_layer.group_discard("online_users", self.channel_name)
+        await self.channel_layer.group_discard("users", self.channel_name)
         if self.connection_context:
             await subscription_server.on_close(self.connection_context)
         
@@ -180,12 +180,13 @@ class GraphQLSubscriptionConsumer(AsyncJsonWebsocketConsumer):
     async def send_status(self):
         """ Send updated info about users' statuses to public Websocket channel """
         users = serializers.serialize('json', get_user_model().objects.all())
+        users = json.dumps(users)
         await self.channel_layer.group_send(
-            'online_users',
+            'users',
             {
                 "type": "user_update",
                 "event": "Change Status",
-                "users": users
+                "data": users
             }
         )
 
@@ -200,7 +201,7 @@ class GraphQLSubscriptionConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def user_update(self, event):
-        await self.send_json(event)
+        await self.send_json(event["data"])
 
     @database_sync_to_async
     def update_user_status(self, user,status):

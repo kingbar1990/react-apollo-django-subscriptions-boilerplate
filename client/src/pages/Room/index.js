@@ -1,19 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Query, Subscription, graphql, compose } from "react-apollo";
+import { Query, Subscription, graphql } from "react-apollo";
+import * as compose from 'lodash.flowright';
+
 import { MDBContainer } from "mdbreact";
 import _ from "lodash";
 
 import {
   getRoom,
   newMessageSubscription,
-  unviewedMessageSubscription,
   User,
   readMessages,
   onFocusSubscription,
-  getRooms
 } from "../../queries";
 
-import StoredMessages from "./StoredMessages"; 
 import { DATA_PER_PAGE } from "../../constants";
 import UserInfo from "../../components/UserProfile";
 import CreateMessageForm from "../../components/Forms/CreateMessageForm";
@@ -28,9 +27,9 @@ const Room = props => {
     var tempDict = {}
     var keys = Object.keys(localStorage);
     for (let i of keys){
-      if(i.indexOf('message') != -1) {
+      if(i.indexOf('message') !== -1) {
         let item = JSON.parse(localStorage.getItem(i));
-        if(item["room"] == currentRoom){
+        if(item["room"] === currentRoom){
           tempDict[i] = item;
         }
       }
@@ -91,7 +90,7 @@ const Room = props => {
 
   useEffect(() => {
     readRoomMessages();
-  }, []);
+  });
 
   const typing = useRef();
 

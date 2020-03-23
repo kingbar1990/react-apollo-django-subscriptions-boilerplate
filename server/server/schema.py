@@ -103,14 +103,14 @@ class Subscription(graphene.ObjectType):
     async def resolve_online_users(root, info):
         """ Send live-time info about online/offline users to public channel over websockets """
         channel_name = await channel_layer.new_channel()
-        await channel_layer.group_add("online_users", channel_name)
+        await channel_layer.group_add("users", channel_name)
         try:
             while True:
                 online_users = await channel_layer.receive(channel_name)
                 users = get_user_model().objects.only('id', 'email', 'full_name', 'online')
                 yield users
         finally:
-            await channel_layer.group_discard("online_users", channel_name)
+            await channel_layer.group_discard("users", channel_name)
 
             
 schema = graphene.Schema(

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { graphql, compose } from "react-apollo";
+import { graphql} from "react-apollo";
+import * as compose from 'lodash.flowright';
 
 import { MDBContainer, MDBRow } from "mdbreact";
 import Profile from "../../components/UserProfile";

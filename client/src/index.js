@@ -29,7 +29,7 @@ if (token){
   document.cookie = 'authorization=' + token + ';' 
 }
 else {
-  document.cookie = 'authorization=' + '';
+  document.cookie = 'authorization= ';
 }
 
 const wsLink = new WebSocketLink({

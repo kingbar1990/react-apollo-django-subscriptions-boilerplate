@@ -83,7 +83,7 @@ class NavBar extends Component {
                     {({ data, loading }) => {
                       return (!loading && data.hasUnreadedMessages) ||
                         (this.props.me.me.hasUnreadedMessages &&
-                          data == undefined) ? (
+                          data === undefined) ? (
                         <div
                           id="message-badge"
                           style={{ position: "relative" }}

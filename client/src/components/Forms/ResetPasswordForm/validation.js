@@ -1,12 +1,12 @@
-import Yup from "yup";
+import * as yup from 'yup';
 import { MIN_PASSWORD_LENGTH } from "../../../constants";
 
 
-export const ResetPasswordSchema = Yup.object().shape({
-  newPassword1: Yup.string()
+export const ResetPasswordSchema = yup.object().shape({
+  newPassword1: yup.string()
     .min(MIN_PASSWORD_LENGTH, `Password has to be longer than ${MIN_PASSWORD_LENGTH} characters!`)
     .required("Password is required!"),
-  newPassword2: Yup.string()
+  newPassword2: yup.string()
     .min(MIN_PASSWORD_LENGTH, `Password has to be longer than ${MIN_PASSWORD_LENGTH} characters!`)
     .required("Password is required!"),
 });
