@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import datetime
 import os
 
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -90,7 +91,7 @@ ASGI_APPLICATION = 'server.urls.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('DATABASE_NAME', 'boilerplate'),
         'USER': os.environ.get('DATABASE_USER', 'boilerplate'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'boilerplate'),
