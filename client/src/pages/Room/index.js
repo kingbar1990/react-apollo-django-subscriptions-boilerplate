@@ -31,8 +31,6 @@ const Room = props => {
     for (let i of keys){
       if(i.indexOf('message') != -1) {
         let item = JSON.parse(localStorage.getItem(i));
-        console.log(item["room"]);
-        console.log(currentRoom);
         if(item["room"] == currentRoom){
           tempDict[i] = item;
         }

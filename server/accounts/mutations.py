@@ -1,23 +1,25 @@
 import base64
-
+import channels
 import graphene
+
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.files.base import ContentFile
+
 from graphql_jwt.shortcuts import get_token
 from serious_django_graphene import FormMutation, ValidationErrors
 from server.tasks import reset_password_email
-import channels
-
 from asgiref.sync import async_to_sync
 
-from .forms import (SendConfirmationEmailForm, SetNewPasswordForm,
+
+from accounts.forms import (SendConfirmationEmailForm, SetNewPasswordForm,
                     UserEditForm, UserForm)
-from .models import User
-from .schema import UserType
-from .tokens import account_activation_token
+from accounts.models import User
+from accounts.schema import UserType
+from accounts.tokens import account_activation_token
 
 
 class RegisterMutation(FormMutation):
+    """ Mutation to Sign up User """
     class Meta:
         form_class = UserForm
 
@@ -35,6 +37,7 @@ class RegisterMutation(FormMutation):
 
 
 class LoginMutation(FormMutation):
+    """ Mutation to Login User """
     class Meta:
         form_class = AuthenticationForm
 
@@ -49,6 +52,7 @@ class LoginMutation(FormMutation):
 
 
 class UserEditMutation(FormMutation):
+    """ Mutation to Edit User Profile """
     class Meta:
         form_class = UserEditForm
 
@@ -76,6 +80,7 @@ class UserEditMutation(FormMutation):
 
 
 class SendConfirmationEmailMutation(FormMutation):
+    """ Mutation to send email confirmation during reseting password """
     class Meta:
         form_class = SendConfirmationEmailForm
 
@@ -91,6 +96,7 @@ class SendConfirmationEmailMutation(FormMutation):
 
 
 class ResetPasswordMutation(FormMutation):
+    """ Mutation to set new password """
     class Meta:
         form_class = SetNewPasswordForm
 

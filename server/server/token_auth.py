@@ -1,16 +1,20 @@
+import re 
 from channels.auth import AuthMiddlewareStack
+
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
 from django.db import close_old_connections
+
 from graphql_jwt import utils
 
-import re 
 
 class TokenAuthMiddleware:
+    """ Middleware to handle user that is connecting to websocket """
     def __init__(self, inner):
         self.inner = inner
 
     def __call__(self, scope):
+        """ Return user(or AnonymousUser) that tries to connect to websockets """
         headers = dict(scope['headers'])
         user = None
         if b'cookie' in headers:

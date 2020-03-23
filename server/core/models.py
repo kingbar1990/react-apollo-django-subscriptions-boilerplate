@@ -1,10 +1,10 @@
-from accounts.models import User
 from django.contrib.auth import get_user_model
 from django.db import models
 
 
 class Room(models.Model):
-    users = models.ManyToManyField(User, related_name='rooms')
+    """ Model for Chat Room """
+    users = models.ManyToManyField(get_user_model(), related_name='rooms')
     last_message = models.ForeignKey(
         'Message',
         related_name='last_message',
@@ -31,9 +31,10 @@ class Room(models.Model):
 
 
 class Message(models.Model):
+    """ Model for Chat Message """
     text = models.CharField(max_length=255, null=True, blank=True)
     sender = models.ForeignKey(
-        User,
+        get_user_model(),
         related_name='sended_messages',
         null=True,
         on_delete=models.SET_NULL

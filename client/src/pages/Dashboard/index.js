@@ -16,7 +16,6 @@ const Dashboard = props => {
         if (!response.data.createRoom.room.error) {
           props.history.push(`dashboard/${response.data.createRoom.room.id}`)
         } else {
-          console.log(response.data.createRoom.room.error)
         }
       })
   }
@@ -39,11 +38,10 @@ const Dashboard = props => {
           {({ loading, error, data, subscribeToMore }) => {
             if (loading) return "Loading..."
             if (error) return `Error! ${error.message}`
-            console.log(data);
+            
             subscribeToOnlineUsers(subscribeToMore);
 
             return data.users.map(i => {
-              console.log(props.data.me);
               if (props.data.me && i.id !== props.data.me.id) {
                 return (
                   <MDBListGroupItem key={i.id} onClick={() => createRoom(i.id)}>

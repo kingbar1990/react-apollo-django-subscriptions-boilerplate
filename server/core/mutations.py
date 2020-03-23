@@ -1,19 +1,22 @@
 import base64
-
 import graphene
+
+from django.core.files.base import ContentFile
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.core.files.base import ContentFile
 from serious_django_graphene import FormMutation
 
-from .forms import MessageForm, RoomForm
-from .models import Message, Room
-from .schema import MessageType, RoomType
+from core.forms import MessageForm, RoomForm
+from core.models import Message, Room
+from core.schema import MessageType, RoomType
+
 
 channel_layer = get_channel_layer()
 
 
 class CreateRoomMutation(FormMutation):
+    """ Mutation for creating Chat Room """
     class Meta:
         form_class = RoomForm
 
@@ -33,6 +36,7 @@ class CreateRoomMutation(FormMutation):
 
 
 class UpdateRoomMutation(graphene.Mutation):
+    """ Mutation for editing Chat Room """
     class Arguments:
         room_id = graphene.ID(required=True)
         is_typing = graphene.Boolean(required=True)
@@ -55,6 +59,7 @@ class UpdateRoomMutation(graphene.Mutation):
 
 
 class MessageMutationDelete(graphene.Mutation):
+    """ Mutation for deleting Chat Message """
     class Arguments:
         message_id = graphene.ID()
 
@@ -85,6 +90,7 @@ class MessageMutationDelete(graphene.Mutation):
 
 
 class MessageCreateMutation(FormMutation):
+    """ Mutation to create Chat Message """
     class Meta:
         form_class = MessageForm
 
@@ -93,7 +99,6 @@ class MessageCreateMutation(FormMutation):
     @classmethod
     def perform_mutate(cls, form, info):
         message = form.save()
-
         message.sender_id = info.context.user.id
         message.save()
 
@@ -104,15 +109,15 @@ class MessageCreateMutation(FormMutation):
 
         form.cleaned_data['room'].save()
 
+        # Send data over websockets
         async_to_sync(channel_layer.group_send)(
             "new_message_" + str(message.room.id), {"data": message})
-
         async_to_sync(channel_layer.group_send)(
             "notify_" + str(reciever_id), {"data": form.cleaned_data['room']})
-
         async_to_sync(channel_layer.group_send)(
             "has_unreaded_messages_" + str(reciever_id), {"data": True})
 
+        # If there's a file in message - decode it from base64 and save to database
         if form.cleaned_data['file']:
             img_format, img_str = form.cleaned_data.pop(
                 'file'
@@ -130,6 +135,7 @@ class MessageCreateMutation(FormMutation):
 
 
 class MessageUpdateMutation(FormMutation):
+    """ Mutation for editing Chat Message """
     class Meta:
         form_class = MessageForm
 
@@ -140,6 +146,8 @@ class MessageUpdateMutation(FormMutation):
         message = Message.objects.get(id=form.cleaned_data['message_id'])
         message.text = form.cleaned_data['text']
         message.save()
+        
+        # Send message over websockets
         async_to_sync(channel_layer.group_send)(
             "new_message_" + str(message.room.id), {"data": message})
 
@@ -147,6 +155,7 @@ class MessageUpdateMutation(FormMutation):
 
 
 class ReadMessagesMutation(graphene.Mutation):
+    """ Mutation to mark Chat Messages as read """
     class Arguments:
         room_id = graphene.ID(required=True)
 
@@ -174,6 +183,8 @@ class ReadMessagesMutation(graphene.Mutation):
         unreaded_rooms = user.rooms.all()
         unreaded_rooms = unreaded_rooms.filter(last_message__seen=False).exclude(
             last_message__sender_id=user.id)
+
+        # Send True or False over websocket depending on if user has unreaded messages
         if(len(unreaded_rooms) > 0):
             async_to_sync(channel_layer.group_send)(
                 "has_unreaded_messages_" + str(user.id), {"data": True})

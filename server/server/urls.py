@@ -1,17 +1,18 @@
+from graphene_django.views import GraphQLView
+
+from server.token_auth import TokenAuthMiddleware
+from server.channels import GraphQLSubscriptionConsumer
+
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.http import AsgiHandler
 from channels.auth import AuthMiddlewareStack
-from .token_auth import TokenAuthMiddleware
-
-
 
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
-from graphene_django.views import GraphQLView
-from .channels import GraphQLSubscriptionConsumer
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

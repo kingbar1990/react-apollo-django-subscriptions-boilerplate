@@ -6,7 +6,6 @@ import {createMessage} from "../../queries/index"
 
 const StoredMessages = ({message, deleteStoredMessage, message_key, createMessage}) => {
 
-    console.log(message);
     const trySendMessage = () => {
         if(navigator.onLine){
             createMessage({
