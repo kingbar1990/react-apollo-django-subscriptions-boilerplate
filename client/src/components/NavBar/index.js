@@ -11,12 +11,13 @@ import {
 import IosMailOutline from "react-ionicons/lib/IosMailOutline";
 import { Subscription, graphql } from "react-apollo";
 
+import { NavLink } from "react-router-dom"
 import {
   unviewedMessageSubscription,
   User,
   hasUnreadedMessagesSubscription
 } from "../../queries";
-import { DASHBOARD, PROFILE } from "../../constants/routes";
+import { DASHBOARD, PROFILE, HOME } from "../../constants/routes";
 import "./index.css";
 
 class NavBar extends Component {
@@ -62,7 +63,7 @@ class NavBar extends Component {
   render() {
     return (
       <Navbar className="flexible-navbar" light expand="md" scrolling>
-        <NavbarBrand href="/">Landing</NavbarBrand>
+        <MDBNavLink className='mx-2' to={HOME}>Landing</MDBNavLink>
         <MDBNavbarToggler onClick={this.toggleCollapse("navbarCollapse13")} />
         <MDBCollapse
           id="navbarCollapse13"
@@ -71,10 +72,10 @@ class NavBar extends Component {
         >
           <MDBNavbarNav left>
             <MDBNavItem>
-              <MDBNavLink to={DASHBOARD}>Home</MDBNavLink>
+              <MDBNavLink className='mx-2' to={DASHBOARD}>Home</MDBNavLink>
             </MDBNavItem>
             <MDBNavItem>
-              <MDBNavLink to={PROFILE}>Profile</MDBNavLink>
+              <MDBNavLink className='mx-2' to={PROFILE}>Profile</MDBNavLink>
             </MDBNavItem>
             {this.props.me.loading ? null : (
               <MDBNavItem>
