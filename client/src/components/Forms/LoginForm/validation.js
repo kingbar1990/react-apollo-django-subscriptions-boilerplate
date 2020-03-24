@@ -2,11 +2,11 @@ import * as Yup from "yup";
 import { MIN_PASSWORD_LENGTH } from "../../../constants";
 
 
-export const LoginSchema = yup.object().shape({
-  username: yup.string()
+export const LoginSchema = Yup.object().shape({
+  username: Yup.string()
     .email("E-mail is not valid!")
     .required("E-mail is required!"),
-  password: yup.string()
+  password: Yup.string()
     .min(MIN_PASSWORD_LENGTH, `Password has to be longer than ${MIN_PASSWORD_LENGTH} characters!`)
     .required("Password is required!"),
 });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MDBFooter } from "mdbreact";
 import { Mutation, graphql} from "react-apollo";
-import * as compose from 'lodash.flowright';
+import { flowRight as compose }  from 'lodash';
 import { DATA_PER_PAGE } from "../../../constants";
 import { getBase64, debounce } from "../../../utils";
 import { createMessage, getRoom, getType, onFocus } from "../../../queries";

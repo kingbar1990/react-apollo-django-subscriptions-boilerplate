@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Query, Subscription, graphql } from "react-apollo";
-import * as compose from 'lodash.flowright';
+import { flowRight as compose }  from 'lodash';
+
 
 import { MDBContainer } from "mdbreact";
 import _ from "lodash";

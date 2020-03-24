@@ -1,7 +1,8 @@
 import React  from "react"
 import { graphql } from "react-apollo";
 import {createMessage} from "../../queries/index"
-import * as compose from 'lodash.flowright';
+import { flowRight as compose }  from 'lodash';
+
 
 const StoredMessages = ({message, deleteStoredMessage, message_key, createMessage}) => {
 

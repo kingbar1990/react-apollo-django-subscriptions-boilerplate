@@ -1,7 +1,8 @@
 import React from "react"
 import { Query, graphql } from "react-apollo"
 import { MDBListGroup, MDBListGroupItem, MDBContainer } from "mdbreact"
-import * as compose from 'lodash.flowright';
+import { flowRight as compose }  from 'lodash';
+
 
 import { getUsers, createRoom, User, onlineUsersSubsciption } from "../../queries"
 
