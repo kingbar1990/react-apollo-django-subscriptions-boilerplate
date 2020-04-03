@@ -15,6 +15,7 @@ class TokenAuthMiddleware:
 
     def __call__(self, scope):
         """ Return user(or AnonymousUser) that tries to connect to websockets """
+
         headers = dict(scope['headers'])
         user = None
         if b'cookie' in headers:

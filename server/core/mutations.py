@@ -176,7 +176,6 @@ class ReadMessagesMutation(graphene.Mutation):
             message.save()
             async_to_sync(channel_layer.group_send)(
                 "new_message_" + str(room_id), {"data": message})
-        
         async_to_sync(channel_layer.group_send)(
             "notify_" + str(user.id), {"data": Room.objects.get(id=room_id)})
 

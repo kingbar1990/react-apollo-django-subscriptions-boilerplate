@@ -25,7 +25,7 @@ const Login = props => {
         if (!response.data.login.error) {
           const token = response.data.login.token;
           saveData(actions.TOKEN, token);
-          window.location.href = `${actions.FRONTEND_URL}${path.DASHBOARD}`
+          window.location.href = `${actions.FRONTEND_URL}${path.ROOM}`
         } else {
           let errors = {};
           response.data.login.error.validationErrors.map(error => {

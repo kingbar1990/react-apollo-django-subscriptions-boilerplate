@@ -63,6 +63,7 @@ class Subscription(graphene.ObjectType):
         try:
             while True:
                 message = await channel_layer.receive(channel_name)
+                print(message["data"].room)
                 yield message["data"]
         finally:
             await channel_layer.group_discard("new_message_" + str(channel_id), channel_name)

@@ -16,7 +16,7 @@ services:
           - PGHOST=$DATABASE_HOST
       env_file:
           - .env
-      depends_on:
+      links:
           - database
           - redis
           - celery
@@ -24,8 +24,12 @@ services:
   database:
       container_name: database
       image: postgres:latest
-      volumes:
-        - ./initial.sql:/docker-entrypoint-initdb.d/initial.sql
+      env_file:
+        - .env
+      environment:
+        POSTGRES_USER: $DATABASE_USER
+        POSTGRES_PASSWORD: $DATABASE_PASSWORD
+        POSTGRES_NAME: $DATABASE_NAME
 
   client:
       image: node:latest

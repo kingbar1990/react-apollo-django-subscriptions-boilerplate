@@ -42,6 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 def change_user(sender, instance, *args, **kwargs):
     """ Send message to channel if User's status changed """
     users = serializers.serialize('json', User.objects.all())
+    channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         "users",
         {

@@ -26,7 +26,9 @@ class RoomType(DjangoObjectType):
         MessageType,
         first=graphene.Int(),
         skip=graphene.Int(),
-        room=graphene.Int()
+        room=graphene.Int(),
+        first_user=graphene.ID(),
+        second_user=graphene.ID()
     )
 
     class Meta:
@@ -38,10 +40,14 @@ class RoomType(DjangoObjectType):
             user = get_user_model().objects.get(pk=user_id)            
             return self.messages.filter(seen=False, is_deleted=False).exclude(sender=user).count()
 
-    def resolve_messages(self, info, first=None, skip=None, room=None):
+    def resolve_messages(self, info, first=None, skip=None, room=None,first_user=None, second_user=None):
         # Return all messages in room
+        if room:
+            room = Room.objects.get(pk=room)
+        else:
+            room = Room.objects.filter(users=first_user).filter(users=second_user).first()
         qs = Message.objects.filter(
-            room_id=room, is_deleted=False).order_by('time')
+            room=room, is_deleted=False).order_by('time')
         if skip:
             qs = qs[skip:]
         if first:
@@ -51,14 +57,23 @@ class RoomType(DjangoObjectType):
 
 class Query:
     rooms = graphene.List(RoomType, user_id=graphene.Int())
-    room = graphene.Field(RoomType, id=graphene.Int())
+    room = graphene.Field(RoomType, id=graphene.Int(), first_user=graphene.ID(), second_user=graphene.ID())
     type = graphene.Field(RoomType, id=graphene.Int())
     on_focus = graphene.Boolean(focused=graphene.Boolean(), room_id=graphene.ID())
 
-    def resolve_room(self, info, id):
+    def resolve_room(self, info, id=None, first_user=None, second_user=None):
         # Return room with provided ID
-        room = Room.objects.get(id=id)
-
+        if id:
+            room = Room.objects.get(id=id)
+        if first_user and second_user:
+            room = Room.objects.filter(users=first_user).filter(users=second_user).first()            
+        if not room:
+            room = Room.objects.create()
+            user1 = get_user_model().objects.get(pk=first_user)
+            user2 = get_user_model().objects.get(pk=second_user)
+            room.users.add(user1)
+            room.users.add(user2)
+            room.save()
         if room.last_message:
             room.typing = False
             room.last_message.save()

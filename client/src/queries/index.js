@@ -91,25 +91,36 @@ export const getUsers = gql`
       id
       fullName
       email
+      avatar
       online
     }
   }
 `;
 
 export const getRoom = gql`
-  query getRoom($id: Int, $first: Int, $skip: Int) {
-    room(id: $id) {
+  query getRoom(
+    $id: Int
+    $firstUser: ID
+    $secondUser: ID 
+    $first: Int, 
+    $skip: Int
+    ) {
+    room(id: $id, firstUser: $firstUser, secondUser: $secondUser) {
+      id
       users {
         id
         fullName
+        avatar
+        online
       }
-      messages(first: $first, skip: $skip, room: $id) {
+      messages(firstUser: $firstUser, secondUser: $secondUser, first: $first, skip: $skip, room: $id) {
         id
         seen
         text
         isDeleted
         sender {
           id
+          avatar
           fullName
         }
         time
@@ -132,6 +143,7 @@ export const getRooms = gql`
     rooms(userId: $userId) {
       id
       users {
+        id
         fullName
       }
       lastMessage {
@@ -302,6 +314,9 @@ export const newMessageSubscription = gql`
     $channelId: ID!
   ) {
     newMessage(channelId: $channelId) {
+      room{
+        id
+      }
       id
       seen
       text
