@@ -53,8 +53,10 @@ const CreateMessageForm = (props) => {
     const [error, setError] = useState("");
     const [typingStatus, setTypingStatus] = useState(false);
 
-    const handleClearFiles = () => {
-        setFiles({});
+    const handleRemoveFile = (item) => {
+        var tempFilesObj = Object.assign({}, files);
+        delete tempFilesObj[item];
+        setFiles(tempFilesObj);
     }
 
     const handleEditMessage = () => {
@@ -255,7 +257,8 @@ const CreateMessageForm = (props) => {
                                 <div className='d-flex' style={{borderTop: '1px solid #e8e8e8', width: '100%', padding: '5px'}}>
                                     {Object.keys(files).map(item => {
                                         return (
-                                            <div className='mx-2 mt-2'>
+                                            <div className='mx-3 mt-2' style={{position: 'relative'}}>
+                                                <CloseIcon onClick={() => handleRemoveFile(item)} className='ml-auto' style={{position:'absolute', top: '-12px', right: '-18px', width:'18px', height:'18px' , cursor: 'pointer'}} />
                                                 <img src={files[item]['image']} style={{width: "70px", height: "60px", borderRadius: '7px'}} />
                                                 <p className='text-center mb-0 mt-1'>{files[item]['name'].substring(0, 10)}</p>
                                                 <p className='text-center mb-0' style={{opacity: '0.5'}}>
@@ -265,7 +268,6 @@ const CreateMessageForm = (props) => {
                                         );
                                     })}
                                 <CircularProgress id='imageUploadLoading' style={{display:'none', margin: '15px'}} />
-                                <CloseIcon onClick={handleClearFiles} className='ml-auto' style={{width:'40px', height:'40px', cursor: 'pointer'}} />
                             </div>
                             </>
                         )}
