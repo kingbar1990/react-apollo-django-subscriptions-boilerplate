@@ -73,7 +73,7 @@ const Chat = (props) => {
           const firstDialog = [users[0].id, props.me.me.id];
           subscribeToOnlineUsers(subscribeToMore);
           return (
-            <div>
+            <div style={{height: "calc(100vh - 70px)"}}>
               <Helmet>
                 <title>{title}</title>
                 <meta name="description" content={description} />
@@ -82,7 +82,7 @@ const Chat = (props) => {
                 <meta property="twitter:title" content={title} />
                 <meta property="twitter:description" content={description} />
               </Helmet>
-              <div className={classes.root}  style={{paddingBottom: "15px"}}>
+              <div className={classes.root}  style={{paddingBottom: "15px"}} style={{height: "calc(100vh - 70px)", marginBottom: "0"}}>
                 <ContactList
                   total={users.length}
                   itemSelected={chatSelected}

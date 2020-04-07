@@ -6,10 +6,10 @@ import applicationTheme from './styles/theme/applicationTheme'
 const styles = {
   root: {
     width: '100%',
-    minHeight: '100%',
+    minHeight: '100vh',
     marginTop: 0,
     zIndex: 1,
-  },
+  }
 };
 
 export const AppContext = React.createContext();

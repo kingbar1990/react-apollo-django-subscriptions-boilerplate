@@ -47,10 +47,29 @@ class Message(models.Model):
     )
     seen = models.BooleanField(default=True)
     time = models.DateTimeField(auto_now=True)
-    file = models.FileField(
-        upload_to='attachment/', null=True, blank=True
-    )
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return "Message № " + str(self.pk)
+    
+
+class MessageFile(models.Model):
+    """ Model for files in Message """
+    message = models.ForeignKey(
+        Message,
+        related_name='files',
+        on_delete=models.CASCADE
+    )
+    file = models.FileField(
+        upload_to='message-files/'
+    )
+
+    def __str__(self):
+        return self.file.name
+
+    class Meta:
+        verbose_name = 'File in Message'
+        verbose_name = 'Files in Messages'
+
+
+

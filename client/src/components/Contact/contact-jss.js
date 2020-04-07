@@ -7,7 +7,7 @@ import red from '@material-ui/core/colors/red';
 import { lighten, darken, fade } from '@material-ui/core/styles/colorManipulator';
 
 const drawerWidth = 300;
-const drawerHeight = 680;
+const drawerHeight = "calc(100vh - 70px)";
 
 const styles = theme => ({
   root: {
@@ -16,7 +16,7 @@ const styles = theme => ({
     zIndex: 1,
     overflow: 'hidden',
     position: 'relative',
-    borderRadius: theme.rounded.medium,
+    borderRadius: 0,
     boxShadow: theme.shade.light,
     marginBottom: theme.spacing(3),
     [theme.breakpoints.up('sm')]: {

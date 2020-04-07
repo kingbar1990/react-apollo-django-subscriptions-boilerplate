@@ -2,13 +2,14 @@ import base64
 import graphene
 
 from django.core.files.base import ContentFile
+from django.contrib.auth import get_user_model
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from serious_django_graphene import FormMutation
 
 from core.forms import MessageForm, RoomForm
-from core.models import Message, Room
+from core.models import Message, Room, MessageFile
 from core.schema import MessageType, RoomType
 
 
@@ -89,49 +90,45 @@ class MessageMutationDelete(graphene.Mutation):
         return MessageMutationDelete(errors=errors, success=success)
 
 
-class MessageCreateMutation(FormMutation):
+class MessageCreateMutation(graphene.Mutation):
     """ Mutation to create Chat Message """
-    class Meta:
-        form_class = MessageForm
+    class Arguments:
+        files = graphene.List(graphene.String, required=False)
+        text = graphene.String(required=False)
+        sender = graphene.ID()
+        seen = graphene.Boolean()
+        room = graphene.ID()
 
     message = graphene.Field(lambda: MessageType)
-    
-    @classmethod
-    def perform_mutate(cls, form, info):
-        message = form.save()
-        message.sender_id = info.context.user.id
-        message.save()
 
-        room = message.room
+    def mutate(root, info, sender, room, seen, files=None, text=None):
+        user = get_user_model().objects.get(pk=info.context.user.id)
+        room = Room.objects.get(pk=room)
+        message = Message.objects.create(room=room, text=text, sender=user)
+        if files:
+            for f in files:
+                img_format, img_str = f.split(';base64,')
+                ext = img_format.split('/')[-1]
+                file = ContentFile(
+                    base64.b64decode(img_str), name=str(message.id) + ext
+                )
+                mes_file = MessageFile.objects.create(message=message, file=file)
+                mes_file.save()
+
         reciever_id = room.users.exclude(pk=message.sender.pk).first().pk
 
-        form.cleaned_data['room'].last_message = message
-
-        form.cleaned_data['room'].save()
-
+        room.last_message = message
+        room.save()
+        
         # Send data over websockets
         async_to_sync(channel_layer.group_send)(
             "new_message_" + str(message.room.id), {"data": message})
         async_to_sync(channel_layer.group_send)(
-            "notify_" + str(reciever_id), {"data": form.cleaned_data['room']})
+            "notify_" + str(reciever_id), {"data": room})
         async_to_sync(channel_layer.group_send)(
             "has_unreaded_messages_" + str(reciever_id), {"data": True})
 
-        # If there's a file in message - decode it from base64 and save to database
-        if form.cleaned_data['file']:
-            img_format, img_str = form.cleaned_data.pop(
-                'file'
-            ).split(';base64,')
-            ext = img_format.split('/')[-1]
-            file = ContentFile(
-                base64.b64decode(img_str), name=str(message.id) + ext
-            )
-            message.file = file
-            message.save()
-        else:
-            form.cleaned_data.pop('file')
-
-        return cls(message=message)
+        return MessageCreateMutation(message=message)
 
 
 class MessageUpdateMutation(FormMutation):

@@ -17,7 +17,7 @@ import {
   User,
   hasUnreadedMessagesSubscription
 } from "../../queries";
-import { DASHBOARD, PROFILE, HOME } from "../../constants/routes";
+import { DASHBOARD, PROFILE, HOME, SIGN_IN, ROOM } from "../../constants/routes";
 import "./index.css";
 
 class NavBar extends Component {
@@ -62,8 +62,8 @@ class NavBar extends Component {
   };
   render() {
     return (
-      <Navbar className="flexible-navbar" light expand="md" scrolling>
-        <MDBNavLink className='mx-2' to={HOME}>Landing</MDBNavLink>
+      <Navbar className="flexible-navbar" light expand="md" scrolling style={{height: "70px"}}>
+        <MDBNavLink className='mx-2' to={ROOM}>Landing</MDBNavLink>
         <MDBNavbarToggler onClick={this.toggleCollapse("navbarCollapse13")} />
         <MDBCollapse
           id="navbarCollapse13"
@@ -72,14 +72,14 @@ class NavBar extends Component {
         >
           <MDBNavbarNav left>
             <MDBNavItem>
-              <MDBNavLink className='mx-2' to={DASHBOARD}>Home</MDBNavLink>
+              <MDBNavLink className='mx-2' to={ROOM}>Home</MDBNavLink>
             </MDBNavItem>
             <MDBNavItem>
               <MDBNavLink className='mx-2' to={PROFILE}>Profile</MDBNavLink>
             </MDBNavItem>
             {this.props.me.loading ? null : (
               <MDBNavItem>
-                <MDBNavLink to={PROFILE}>
+                <MDBNavLink to={ROOM}>
                   <Subscription subscription={hasUnreadedMessagesSubscription} variables={{userId:this.props.me.me.id}}>
                     {({ data, loading }) => {
                       return (!loading && data.hasUnreadedMessages) ||
@@ -100,7 +100,7 @@ class NavBar extends Component {
               </MDBNavItem>
             )}
             <MDBNavItem>
-              <MDBNavLink to={PROFILE} onClick={this.handleLogout}>
+              <MDBNavLink to={SIGN_IN} onClick={this.handleLogout}>
                 Log out
               </MDBNavLink>
             </MDBNavItem>

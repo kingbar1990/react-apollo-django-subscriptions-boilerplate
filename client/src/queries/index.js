@@ -48,6 +48,7 @@ export const login = gql`
       token
       user {
         id
+        avatar
         email
         fullName
       }
@@ -118,13 +119,15 @@ export const getRoom = gql`
         seen
         text
         isDeleted
+        files{
+          file
+        }
         sender {
           id
           avatar
           fullName
         }
         time
-        file
       }
     }
   }
@@ -149,6 +152,7 @@ export const getRooms = gql`
       lastMessage {
         id
         sender {
+          avatar
           id
         }
         seen
@@ -163,33 +167,26 @@ export const createMessage = gql`
     $text: String!
     $sender: ID!
     $room: ID!
-    $file: String
+    $files: [String]
   ) {
     createMessage(
       text: $text
       sender: $sender
       room: $room
       seen: false
-      file: $file
+      files: $files
     ) {
       message {
         id
         text
+        files{
+          file
+        }
         sender {
           id
           fullName
         }
         time
-        file
-      }
-      error {
-        __typename
-        ... on ValidationErrors {
-          validationErrors {
-            field
-            messages
-          }
-        }
       }
     }
   }
@@ -318,6 +315,9 @@ export const newMessageSubscription = gql`
         id
       }
       id
+      files{
+        file
+      }
       seen
       text
       time
@@ -326,7 +326,6 @@ export const newMessageSubscription = gql`
         id
         fullName
       }
-      file
     }
   }
 `;

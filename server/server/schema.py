@@ -19,7 +19,7 @@ from core.models import Message
 from core.mutations import (
     CreateRoomMutation, MessageCreateMutation,
     MessageMutationDelete, MessageUpdateMutation,
-    ReadMessagesMutation, UpdateRoomMutation
+    ReadMessagesMutation, UpdateRoomMutation,
 )
 
 
@@ -63,7 +63,6 @@ class Subscription(graphene.ObjectType):
         try:
             while True:
                 message = await channel_layer.receive(channel_name)
-                print(message["data"].room)
                 yield message["data"]
         finally:
             await channel_layer.group_discard("new_message_" + str(channel_id), channel_name)
@@ -80,15 +79,15 @@ class Subscription(graphene.ObjectType):
             await channel_layer.group_discard("notify_" + str(user_id), channel_name)
 
     async def resolve_on_focus(root, info, room_id):
-        """ Send send notification to user if his pen pal is typing message """
+        """ Send send notification to chat if someone is typing message """
         channel_name = await channel_layer.new_channel()
-        await channel_layer.group_add("focused_" + str(room_id), channel_name)
+        await channel_layer.group_add("focused_" + str(room_id) + '_' + str(info.context['user'].id), channel_name)
         try:
             while True:
                 focused = await channel_layer.receive(channel_name)
                 yield focused['data']
         finally:
-            await channel_layer.group_discard("focused_" + str(room_id), channel_name)
+            await channel_layer.group_discard("focused_" + str(room_id) + '_' + str(info.context['user'].id), channel_name)
 
     async def resolve_has_unreaded_messages(root, info, user_id):
         """ Send notification for user if he has new unreaded message or he read messages """

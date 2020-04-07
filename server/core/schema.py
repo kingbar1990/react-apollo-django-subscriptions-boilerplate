@@ -6,17 +6,26 @@ from django.contrib.auth import get_user_model
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-from core.models import Message, Room
+from core.models import Message, Room, MessageFile
 
 
 channel_layer = get_channel_layer()
 
 
+class MessageFileType(DjangoObjectType):
+    class Meta:
+        model = MessageFile
+
+
 class MessageType(DjangoObjectType):
     """ Message object type for GraphQL """
+    files = graphene.List(MessageFileType)
+
     class Meta:
         model = Message
-
+    
+    def resolve_files(self, info):
+        return self.files.all()
 
 
 class RoomType(DjangoObjectType):
@@ -91,10 +100,10 @@ class Query:
         # Return all rooms for provided user ID
         return Room.objects.filter(users__id=user_id)
 
-    def resolve_on_focus(self, info, room_id=None, focused=False):
+    def resolve_on_focus(self, info, room_id=None, focused=None):
         # Return True or False depending on if user typing message
-        if focused and room_id:
-            async_to_sync(channel_layer.group_send)("focused_" + str(room_id), {"data": True})
-            return True
-        async_to_sync(channel_layer.group_send)("focused_" + str(room_id), {"data": False})
+        if focused is not None and room_id and info.context.user:
+            penpal = Room.objects.get(pk=room_id).users.exclude(pk=info.context.user.pk).first()
+            async_to_sync(channel_layer.group_send)("focused_" + str(room_id) + '_' + str(penpal.pk), {"data": focused})
+            return focused
         return False

@@ -59,7 +59,7 @@ class ContactList extends React.Component {
               <Avatar alt="avatar" src={`${BACKEND_URL}${MEDIA_URL}${data.avatar}`} className={classes.avatar} />
             ):
             (
-              <Avatar alt="avatar" src="https://www.w3schools.com/howto/img_avatar.png" className={classes.avatar} />
+              <Avatar alt="avatar" src="https://www.w3schools.com/howto/img_avatar.png"  className={classes.avatar} />
             )}
           </ListItemAvatar>
           <ListItemText primary={data.fullName} secondary={data.fullName} />
@@ -76,7 +76,7 @@ class ContactList extends React.Component {
             paper: classes.drawerPaper,
           }}
         >
-          <div>
+          <div id='qwe'>
             <div className={classNames(classes.toolbar, clippedRight && classes.clippedRight)}>
               <div className={classes.flex}>
                 <div className={classes.searchWrapper}>
