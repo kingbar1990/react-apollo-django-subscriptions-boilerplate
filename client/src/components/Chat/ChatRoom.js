@@ -8,8 +8,8 @@ import Typography from '@material-ui/core/Typography';
 //import Type from '../../styles/components/';
 import ChatHeader from './ChatHeader';
 import styles from './chatStyle-jss';
-import { Query, graphql, withApollo, Subscription } from "react-apollo";
-import { getRoom, newMessageSubscription, readMessages, onFocusSubscription } from "../../queries/index";
+import { Query, graphql, withApollo, Subscription, useMutation } from "react-apollo";
+import { getRoom, newMessageSubscription, readMessages, onFocusSubscription, deleteMessage } from "../../queries/index";
 import { useQuery } from "@apollo/react-hooks";
 import {flowRight as compose} from "lodash";
 import { BACKEND_URL, MEDIA_URL } from '../../constants/index';
@@ -34,7 +34,8 @@ const ChatRoom = props => {
   const [modalImg, setModalImg] = useState('');
   const [inputOnFocus, setInputOnFocus] = useState(false);
   const [storedMessages, setStoredMessages] = useState(Object.assign({}, getAllLocalStorageItems()))
-
+  const [messageAction, setMessageAction] = useState(null);
+  const [deleteMes, {data: deleteMessageData}] = useMutation(deleteMessage);
 
   function getAllLocalStorageItems() {
     var tempDict = {}
@@ -50,6 +51,19 @@ const ChatRoom = props => {
     return tempDict;
   }
   
+  const handleDeleteMessage = async () => {
+    const result = await deleteMes({
+      variables: {
+        messageId: messageAction[0].id
+      }
+    })
+
+    if (result.data.deleteMessage.success){
+      messageAction[1].remove();
+      setMessageAction(null);
+    }
+  }
+
   const deleteStoredMessage = (message_id) => {
     localStorage.removeItem(message_id);
     var newDict = getAllLocalStorageItems();
@@ -106,6 +120,10 @@ const ChatRoom = props => {
       }
     });
   };
+
+  const clearMessageAction = () => {
+    setMessageAction(null);
+  }
 
   const formatDate = (date) => {
     date = new Date(date);
@@ -171,13 +189,21 @@ const ChatRoom = props => {
       );
     })*/
 
+    const handleSetMessageAction = (message, obj) => {
+      if (obj.children[2].children.length > 1){
+        var child = obj.children[2].children[1].children[0];
+        setMessageAction([message, obj, child]);
+      }
+    }
+
+
     const getRoomData = (roomData) => {
       var counter = 0;
       if (roomData.room.messages.length > 0){
         return roomData.room.messages.map(message => {
           counter = 0;
           return (
-            <li className={message.sender.id === me.id ? classes.to : classes.from} key={message.id}>
+            <li onClick={message.sender.id === me.id ? ((e) => handleSetMessageAction(message, e.currentTarget)) : undefined} style={{cursor: 'pointer'}} className={message.sender.id === me.id ? classes.to : classes.from} key={message.id}>
               <time dateTime={message.time}>{formatDate(message.time)}</time>
                 {message.sender.avatar ? (
                   <Avatar alt="avatar" src={`${BACKEND_URL}${MEDIA_URL}${message.sender.avatar}`} className={classes.avatar} />
@@ -302,10 +328,14 @@ const ChatRoom = props => {
                 <CreateMessageForm
                   addToStoredMessages={addToStoredMessages}
                   classes={classes} 
+                  me={me}
                   currentRoom={data.room} 
                   setInputOnFocus={setInputOnFocus} 
                   inputOnFocus={inputOnFocus}
+                  messageAction={messageAction}
+                  handleDeleteMessage={handleDeleteMessage}
                   readRoomMessages={readRoomMessages}
+                  clearMessageAction={clearMessageAction}
                   {...data.room}
                 />
               </div>

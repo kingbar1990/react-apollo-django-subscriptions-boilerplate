@@ -9,11 +9,24 @@ import { Mutation, graphql, useMutation} from "react-apollo";
 import { flowRight as compose }  from 'lodash';
 import { DATA_PER_PAGE } from "../../../constants/index"
 import { getBase64, debounce } from "../../../utils";
-import { createMessage, getRoom, getType, onFocus } from "../../../queries";
+import { createMessage, getRoom, getType, onFocus, deleteMessage,updateMessage } from "../../../queries";
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import { CircularProgress } from '@material-ui/core';
 import imageCompression from "browser-image-compression";
 import CloseIcon from '@material-ui/icons/Close';
+import { Button } from '@material-ui/core';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import EditIcon from '@material-ui/icons/Edit';
+
+
+const buttonDeleteStyles = {
+    borderRadius: '10px',
+    backgroundColor: '#e87173',
+    fontWeight: '400',
+    textTransform: 'none',
+    display: 'block'
+}
+const buttonEditStyles = Object.assign({}, buttonDeleteStyles, {backgroundColor: '#6ea7f4'})
 
 
 const CreateMessageForm = (props) => {
@@ -26,9 +39,15 @@ const CreateMessageForm = (props) => {
         setInputOnFocus,
         readRoomMessages,
         addToStoredMessages,
-        onFocusQuery
+        onFocusQuery,
+        messageAction,
+        handleDeleteMessage,
+        clearMessageAction,
+        me
     } = props;
-    
+
+    const [editMessage, {data: editMessageData}] = useMutation(updateMessage);
+
     const [value, setValue] = useState("");
     const [files, setFiles] = useState({});
     const [error, setError] = useState("");
@@ -36,6 +55,24 @@ const CreateMessageForm = (props) => {
 
     const handleClearFiles = () => {
         setFiles({});
+    }
+
+    const handleEditMessage = () => {
+        setValue(messageAction[2].innerHTML);
+    }
+
+    const editMessageComplete = async () => {
+        var result = await editMessage({
+            variables: {
+                text: value,
+                sender: me.id,
+                room: currentRoom.id,
+                messageId: messageAction[0].id
+            }
+        })
+        
+        setValue("");
+        clearMessageAction();
     }
     
     const handleFileChange = async (e) => {
@@ -178,6 +215,19 @@ const CreateMessageForm = (props) => {
                         margin: '0'
                     }}
                     >
+                        {messageAction && (
+                            <div style={{display: 'flex', borderBottom: '1px solid #e8e8e8', flexBasis: '100%'}}>
+                            <Button onClick={handleDeleteMessage} style={buttonDeleteStyles} className='m-2 px-3 py-1' variant="contained" color='secondary'>
+                                <DeleteOutlineIcon />
+                                Delete
+                            </Button>
+                            <Button onClick={handleEditMessage} style={buttonEditStyles} className='m-2 px-3 py-1' variant='contained' color='primary'>
+                                <EditIcon />
+                                Edit
+                            </Button>
+                            <CloseIcon onClick={clearMessageAction} className='ml-auto' style={{display: 'block', width:'40px', height:'40px', cursor: 'pointer'}} />
+                            </div>
+                        )}
                         <span style={{display: 'inline', width: '40px'}} className="image-upload">
                             <label htmlFor="file-input" className='mb-0'>
                                 <PhotoCameraIcon className='mr-2' style={{color: '#ccc', cursor: 'pointer'}} />
@@ -185,7 +235,6 @@ const CreateMessageForm = (props) => {
                             <input onChange={handleFileChange} id="file-input" multiple type="file" style={{display: 'none' }}/>
                         </span>
                         <MessageField
-                        files={files}
                         onClick={() => readRoomMessages(currentRoom.id)}
                         onChange={handleInputChange}
                         placeholder="Type a message"
@@ -193,7 +242,7 @@ const CreateMessageForm = (props) => {
                         onKeyPress={(e) => { if (e.key === 'Enter'){  createTask()}}}
                         value={value}
                         />
-                        <Tooltip id="tooltip-send" onClick={() => { createTask();}} title="Send" style={{width: '50px'}}>
+                        <Tooltip id="tooltip-send" onClick={() => {messageAction ? editMessageComplete() : createTask();}} title="Send" style={{width: '50px'}}>
                             <div>
                                 <IconButton mini="true" color="secondary" disabled={value === '' && Object.keys(files).length === 0} aria-label="send" className={classes.sendBtn}>
                                     <Send />
