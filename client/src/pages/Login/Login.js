@@ -8,7 +8,7 @@ import * as actions from "../../constants";
 import * as path from "../../constants/routes";
 import { Helmet } from 'react-helmet';
 import { withStyles } from '@material-ui/core/styles';
-import LoginForm from '../../components/Forms/LoginForm/newLogin';
+import LoginForm from '../../components/Forms/LoginForm/loginForm';
 import styles from '../../components/Forms/LoginForm/user-jss';
 
 const Login = (props) => {

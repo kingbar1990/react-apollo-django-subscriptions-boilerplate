@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ArrowBack from '@material-ui/icons/ArrowBack';
 import styles from '../Contact/contact-jss';
 import { BACKEND_URL, MEDIA_URL } from "../../constants/index";
 
@@ -21,7 +16,6 @@ const ChatHeader = (props) => {
   } = props;
   
   const penPal = room.users.find(item => item.id !== me.id);
-
 
   useEffect (() => {
     const ctn = document.getElementById('roomContainer');

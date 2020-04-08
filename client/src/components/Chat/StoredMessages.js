@@ -13,15 +13,25 @@ const StoredMessages = (props) => {
         deleteStoredMessage,
         message_key,
         createMessage,
-        me,
         openModal,
-        closeModal,
-        formatDate,
         classes,
         room,
         types
     } = props;
 
+    var counter = 0;
+
+    // Count images in attached files
+    var messageImagesLength = 0;
+    if (message.files){
+        for(let i in message.files){
+            if (types.find(item => message.files[i].name.split('.')[1].indexOf(item) !== -1)){
+              messageImagesLength += 1;
+            }
+        }
+    }
+
+    // Get list of attached files
     const getArrayFiles = () => {
         var arr = []
         if (message.files){
@@ -29,10 +39,10 @@ const StoredMessages = (props) => {
                 arr.push(message.files[i].image);
             }
         }
-        
         return arr;
     }
 
+    // Try to resend message
     const trySendMessage = () => {
         if(navigator.onLine){
             createMessage({
@@ -47,16 +57,6 @@ const StoredMessages = (props) => {
         }
     }
     
-    var counter = 0;
-    var messageImagesLength = 0;
-    if (message.files){
-        for(let i in message.files){
-            if (types.find(item => message.files[i].name.split('.')[1].indexOf(item) !== -1)){
-              messageImagesLength += 1;
-            }
-        }
-    }
-    
     return (
         <li className={classes.to} key={message.id}>
             <div className='d-flex justify-content-between' style={{fontSize:'12px', position: 'absolute', bottom:'-30px', right:'50px'}}>
@@ -64,9 +64,9 @@ const StoredMessages = (props) => {
                 <p onClick={() => trySendMessage()} style={{color: '#fc8789', cursor: 'pointer'}}>Failed to send, click to retry</p>
             </div>
             {message.sender.avatar ? (
-            <Avatar alt="avatar" src={`${BACKEND_URL}${MEDIA_URL}${message.sender.avatar}`} className={classes.avatar} />
+                <Avatar alt="avatar" src={`${BACKEND_URL}${MEDIA_URL}${message.sender.avatar}`} className={classes.avatar} />
             ):
-            <Avatar alt="avatar" src="https://www.w3schools.com/howto/img_avatar.png"  className={classes.avatar} />
+                <Avatar alt="avatar" src="https://www.w3schools.com/howto/img_avatar.png"  className={classes.avatar} />
             }
         <div className={classes.talk}>
             <div className='ml-auto' style={{width: 'max-content'}}>

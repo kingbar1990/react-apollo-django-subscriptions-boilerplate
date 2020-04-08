@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { Formik, Form, Field } from "formik";
@@ -12,27 +11,14 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import AllInclusive from '@material-ui/icons/AllInclusive';
-import Brightness5 from '@material-ui/icons/Brightness5';
-import People from '@material-ui/icons/People';
 import ArrowForward from '@material-ui/icons/ArrowForward';
 import Paper from '@material-ui/core/Paper';
-import Icon from '@material-ui/core/Icon';
 import Hidden from '@material-ui/core/Hidden';
 import { Checkbox } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import styles from './user-jss';
 import { ContentDivider } from '../../Divider/index';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import { LoginSchema } from "./validation";
-
-// validation functions
-const required = value => (value === null ? 'Required' : undefined);
-const email = value => (
-  value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
-    ? 'Invalid email'
-    : undefined
-);
 
 const LinkBtn = React.forwardRef(function LinkBtn(props, ref) { // eslint-disable-line
   return <NavLink to={props.to} {...props} innerRef={ref} />; // eslint-disable-line
@@ -52,7 +38,6 @@ const LoginForm = (props) => {
 
     const {
       classes,
-      handleSubmit,
       pristine,
       submitting,
       deco,

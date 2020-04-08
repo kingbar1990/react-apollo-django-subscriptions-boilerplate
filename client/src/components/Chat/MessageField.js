@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+import React from 'react';
 
 
 const MessageField = (props) => {

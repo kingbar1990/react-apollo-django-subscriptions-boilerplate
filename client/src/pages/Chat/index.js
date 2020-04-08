@@ -1,69 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Query, graphql } from "react-apollo"
 import { flowRight as compose }  from 'lodash';
 import { getUsers, User, onlineUsersSubsciption } from "../../queries/index";
-//import { bindActionCreators } from 'redux';
-//import { connect } from 'react-redux';
-//import contactData from '../../data/ContactData';
-//import chatData from '../../data/ChatData';
 import { Helmet } from 'react-helmet';
-//import brand from 'dan-api/dummy/brand';
 import  ContactList  from "../../components/Contact/ContactList";
 import   ChatRoom   from "../../components/Chat/ChatRoom";
-//import { fetchAction, searchAction } from 'dan-actions/ContactActions';
-/*import {
-  fetchChatAction,
-  showChatAction,
-  sendAction,
-  hideDetailAction,
-  deleteAction
-} from 'dan-actions/ChatActions';*/
 
 import styles from '../../components/Contact/contact-jss';
 
 const Chat = (props) => {
-  /*useEffect = () => {
-    //const { fetchChatData, fetchContactData } = this.props;
-    //fetchChatData(chatData);
-    //fetchContactData(contactData);
-  }*/
-    //const title = brand.name + ' - Chat App';
-    const title = 'Chat App'
-    const description = 'Chat Description'
-    //const description = brand.desc;
-    const [currentRoom, setCurrentRoom] = useState(null);
+  const {
+    classes,
+    showDetail,
+    hideDetail,
+    keyword,
+    search,
+    chatSelected,
+    sendMessage,
+    remove,
+    showMobileDetail
+  } = props;
+
+  const title = 'Chat App'
+  const description = 'Chat Description'
+  const [currentRoom, setCurrentRoom] = useState(null);
+  
+  // Change current room
+  const changeRoom = (firstUser, secondUser) => {
+    setCurrentRoom([firstUser, secondUser]);
+  }
+
+  // Subscribe to get info about new users online statuses
+  const subscribeToOnlineUsers = subscribeToMore => {
+    subscribeToMore({
+      document: onlineUsersSubsciption,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        return Object.assign({}, prev, {
+          users: [...subscriptionData.data.onlineUsers]
+        });
+      }
+    });
+  };
+
     
-    const changeRoom = (firstUser, secondUser) => {
-      setCurrentRoom([firstUser, secondUser]);
-    }
-
-    const subscribeToOnlineUsers = subscribeToMore => {
-      subscribeToMore({
-        document: onlineUsersSubsciption,
-        updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData.data) return prev;
-          return Object.assign({}, prev, {
-            users: [...subscriptionData.data.onlineUsers]
-          });
-        }
-      });
-    };
-
-    const {
-      classes,
-      //dataContact,
-      showDetail,
-      hideDetail,
-      keyword,
-      search,
-      //dataChat,
-      chatSelected,
-      sendMessage,
-      remove,
-      showMobileDetail
-    } = props;
-    if (props.me.me !== undefined){
+  if (props.me.me !== undefined){
     return (
       <Query query={getUsers}>
         {({loading, error, data, subscribeToMore}) => {
@@ -111,38 +93,11 @@ const Chat = (props) => {
         }}
       </Query>
     );
-    }
-    else{
-      return 'Loading...'
-    }
   }
-
-
-const reducerContact = 'contact';
-const reducerChat = 'chat';
-const mapStateToProps = state => ({
-  force: state, // force state from reducer
-  dataContact: state.getIn([reducerContact, 'contactList']),
-  dataChat: state.getIn([reducerChat, 'activeChat']),
-  chatSelected: state.getIn([reducerChat, 'chatSelected']),
-  showMobileDetail: state.getIn([reducerChat, 'showMobileDetail']),
-  keyword: state.getIn([reducerContact, 'keywordValue']),
-});
-
-const dispatchToProps = dispatch => ({
-  //fetchContactData: bindActionCreators(fetchAction, dispatch),
-  //hideDetail: () => dispatch(hideDetailAction),
-  //fetchChatData: bindActionCreators(fetchChatAction, dispatch),
-  //showDetail: bindActionCreators(showChatAction, dispatch),
-  //search: bindActionCreators(searchAction, dispatch),
-  //sendMessage: bindActionCreators(sendAction, dispatch),
-  //remove: () => dispatch(deleteAction),
-});
-
-/*const ChatMapped = connect(
-  mapStateToProps,
-  dispatchToProps
-)(Chat);*/
+  else{
+    return 'Loading...'
+  }
+}
 
 export default compose(
   withStyles(styles),

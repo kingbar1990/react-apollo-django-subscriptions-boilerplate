@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import styles from '../../components/Forms/LoginForm/user-jss';
 import RegisterForm from "../../components/Forms/LoginForm/registerForm";
@@ -13,15 +12,6 @@ import * as path from "../../constants/routes";
 
 
 const Register = (props) => {
-
-    const [values, setValues] = useState({
-        fullName: '',
-        email: '',
-        password1: '',
-        password2: '',
-        error: ''
-    });
-
     const submitForm = (values, {setErrors}) => {
         const { fullName, email, password1, password2 } = values;
         props
@@ -71,10 +61,6 @@ const Register = (props) => {
     </div>
     );
 }
-
-Register.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default compose(
     withStyles(styles),
