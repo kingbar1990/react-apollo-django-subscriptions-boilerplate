@@ -17,6 +17,8 @@ import CreateMessageForm from '../../components/Forms/CreateMessageForm/new';
 import { Modal } from '@material-ui/core';
 import StoredMessages from "./StoredMessages";
 import _ from "lodash";
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+
 
 const ChatRoom = props => {
   const {
@@ -31,6 +33,18 @@ const ChatRoom = props => {
     me
   } = props;
 
+  const types = [
+    'gif', 
+    'jpeg',
+    'pjpeg',
+    'png',
+    'svg+xml',
+    'tiff',
+    'vnd.microsoft.icon',
+    'vnd.wap.wbmp',
+    'webp'
+  ]
+
   const [modalImg, setModalImg] = useState('');
   const [inputOnFocus, setInputOnFocus] = useState(false);
   const [storedMessages, setStoredMessages] = useState(Object.assign({}, getAllLocalStorageItems()))
@@ -43,21 +57,18 @@ const ChatRoom = props => {
     for (let i of keys){
       if(i.indexOf('message') !== -1) {
         let item = JSON.parse(localStorage.getItem(i));
-        if(item["room"] === currentRoom[0]){
           tempDict[i] = item;
-        }
       }
     }
     return tempDict;
   }
-  
+
   const handleDeleteMessage = async () => {
     const result = await deleteMes({
       variables: {
         messageId: messageAction[0].id
       }
     })
-
     if (result.data.deleteMessage.success){
       messageAction[1].remove();
       setMessageAction(null);
@@ -70,17 +81,22 @@ const ChatRoom = props => {
     setStoredMessages(newDict);
   }
 
-  const addToStoredMessages = (text, room, sender, avatar) => {
+  const addToStoredMessages = (text, room, sender, files) => {
     let randomInt = Math.round(Math.random() * 10000000)
     localStorage.setItem(
       `message_${randomInt}`, 
-      JSON.stringify({"text": text, "room": room, "sender": sender, "file": avatar}))
+      JSON.stringify({"text": text, "room": room.id, "sender": sender, "files": files}))
     var newDict = getAllLocalStorageItems();
     setStoredMessages(newDict);
   }
 
-  const openModal = (imgSrc) => {
-    setModalImg(`${BACKEND_URL}${MEDIA_URL}${imgSrc}`);
+  const openModal = (imgSrc, status) => {
+    if (status == 'online'){
+      setModalImg(`${BACKEND_URL}${MEDIA_URL}${imgSrc}`);
+    }
+    else if (status == 'offline'){
+      setModalImg(imgSrc);
+    }
   }
 
   const closeModal = () => {
@@ -88,11 +104,13 @@ const ChatRoom = props => {
   }
 
   const readRoomMessages = (roomId) => {
-    props.readMessages({
-      variables: {
-        roomId: roomId
-      },
-    });
+    if (navigator.onLine){
+      props.readMessages({
+        variables: {
+          roomId: roomId
+        },
+      });
+    }
   };
 
   const subscribeToNewMessage = (subscribeToMore, room_id) => {
@@ -189,8 +207,8 @@ const ChatRoom = props => {
       );
     })*/
 
-    const handleSetMessageAction = (message, obj) => {
-      if (obj.children[2].children.length > 1){
+    const handleSetMessageAction = (message, obj, child) => {
+      if (obj.children[2].children.length > 1 && child.className !== 'file-link'){
         var child = obj.children[2].children[1].children[0];
         setMessageAction([message, obj, child]);
       }
@@ -199,29 +217,37 @@ const ChatRoom = props => {
 
     const getRoomData = (roomData) => {
       var counter = 0;
+      var messageImagesLength = 0;
       if (roomData.room.messages.length > 0){
         return roomData.room.messages.map(message => {
           counter = 0;
+          messageImagesLength = 0;
+          for(let i of message.files){
+            if (types.find(item => i.file.split('/')[1].indexOf(item) !== -1)){
+              messageImagesLength += 1;
+            }
+          }
           return (
-            <li onClick={message.sender.id === me.id ? ((e) => handleSetMessageAction(message, e.currentTarget)) : undefined} style={{cursor: 'pointer'}} className={message.sender.id === me.id ? classes.to : classes.from} key={message.id}>
+            <li onClick={message.sender.id === me.id ? ((e) => handleSetMessageAction(message, e.currentTarget, e.target)) : undefined} style={{cursor: 'pointer'}} className={message.sender.id === me.id ? classes.to : classes.from} key={message.id}>
               <time dateTime={message.time}>{formatDate(message.time)}</time>
                 {message.sender.avatar ? (
                   <Avatar alt="avatar" src={`${BACKEND_URL}${MEDIA_URL}${message.sender.avatar}`} className={classes.avatar} />
                 ):
                 <Avatar alt="avatar" src="https://www.w3schools.com/howto/img_avatar.png"  className={classes.avatar} />
                 }
-              <div className={classes.talk}>
+              <div className={classes.talk + ' message-content'}>
                 <div className='ml-auto' style={{width: 'max-content'}}>
                   {message.files.map(item => {
-                    if (counter === 0 && message.files.length > 4){
+                    var type = types.find(qwe => item.file.split('/')[1].indexOf(qwe) !== -1)
+                    if (counter === 0 && messageImagesLength > 4 && type){
                       counter += 1;
                       return(
-                        <div className='mb-1'  style={{overflow: 'hidden', height:'120px', display: 'block'}}>
-                          <img onClick={() => openModal(item.file)} style={{cursor: 'pointer', borderRadius: '11px 11px', height:'auto', minHeight:'120px', width:'337px'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
+                        <div className='mb-1' key={item.file}  style={{overflow: 'hidden', height:'120px', display: 'block'}}>
+                          <img onClick={() => openModal(item.file, 'online')} style={{cursor: 'pointer', borderRadius: '11px 11px', height:'auto', minHeight:'120px', width:'337px'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
                         </div>
                       )
                     }
-                    else if(counter !== 0 && message.files.length === 5){
+                    else if(counter !== 0 && messageImagesLength === 5 && type){
                       counter += 1;
                       var imgStyle = {cursor: 'pointer', height:'100px', minWidth: '85px', width:'auto'}
                       if (counter === 2){
@@ -231,27 +257,37 @@ const ChatRoom = props => {
                         imgStyle['borderBottomRightRadius'] = '11px';
                       }
                       return(
-                        <div style={{padding: '0 3px', overflow: 'hidden', width: '85px', display: 'inline-block'}}>
-                          <img onClick={() => openModal(item.file)} style={imgStyle} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
+                        <div key={item.file} style={{padding: '0 3px', overflow: 'hidden', width: '85px', display: 'inline-block'}}>
+                          <img onClick={() => openModal(item.file, 'online')} style={imgStyle} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
                         </div>
                       )
                     }
-                    else {
+                    else if(type){
                       counter += 1;
                       return(
-                        <div style={{overflow: 'hidden', display: 'inline-block'}}>
-                          <img onClick={() => openModal(item.file)} style={{cursor:'pointer', margin: '0 3px', borderRadius:'5px', height:'120px', minWidth: '80px', maxWidth: '150px', width:'auto'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
+                        <div key={item.file} style={{overflow: 'hidden', display: 'inline-block'}}>
+                          <img onClick={() => openModal(item.file, 'online')} style={{cursor:'pointer', margin: '0 3px', borderRadius:'5px', height:'120px', minWidth: '80px', maxWidth: '150px', width:'auto'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
+                        </div>
+                      )
+                    }
+                  })}
+                  {message.files.map(item => {
+                    var type = types.find(qwe => item.file.split('/')[1].indexOf(qwe) !== -1);
+                    if (type === undefined){
+                      return (
+                        <div key={item.file} className='p-1 my-1 ml-auto' style={{borderRadius: '7px', width: 'max-content', overflow: 'hidden'}}>
+                          <a className='file-link' href={`${BACKEND_URL}${MEDIA_URL}${item.file}`}>
+                            <InsertDriveFileIcon style={{width:'18px', height:'18px'}} className='mr-2 mb-1' />
+                            {item.file.split('/')[1]}
+                          </a>
                         </div>
                       )
                     }
                   })}
                 </div>
-                {message.text && (
-                  <p>
-                    <span>{message.text}</span>
+                <p style={message.text ? {} : {display: 'none'}}>
+                  <span>{message.text}</span>
                 </p>
-                )}
-                
               </div>
             </li>
           )
@@ -305,9 +341,13 @@ const ChatRoom = props => {
                 <ul className={classes.chatList} id="roomContainer">
                   {getRoomData(data)}
                   {Object.keys(storedMessages).map(item => {
-                    return(
-                      <StoredMessages classes={classes} formatDate={formatDate} openModal={openModal} closeModal={closeModal} me={me} deleteStoredMessage={deleteStoredMessage} key={item} message_key={item} message={storedMessages[item]}/>
-                    )
+                    console.log(data.room.users);
+                    console.log(storedMessages[item].room);
+                    if(data.room.users.find(user => user.id == storedMessages[item].room)){
+                      return(
+                        <StoredMessages types={types} room={data.room} classes={classes} formatDate={formatDate} openModal={openModal} closeModal={closeModal} me={me} deleteStoredMessage={deleteStoredMessage} key={item} message_key={item} message={storedMessages[item]}/>
+                      )
+                    }
                   })}
                   <Subscription subscription={onFocusSubscription} variables={{roomId: data.room.id}}>
                     {({ data, loading }) => {
@@ -329,6 +369,7 @@ const ChatRoom = props => {
                   addToStoredMessages={addToStoredMessages}
                   classes={classes} 
                   me={me}
+                  types={types}
                   currentRoom={data.room} 
                   setInputOnFocus={setInputOnFocus} 
                   inputOnFocus={inputOnFocus}

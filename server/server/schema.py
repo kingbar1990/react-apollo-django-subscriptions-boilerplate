@@ -79,7 +79,7 @@ class Subscription(graphene.ObjectType):
             await channel_layer.group_discard("notify_" + str(user_id), channel_name)
 
     async def resolve_on_focus(root, info, room_id):
-        """ Send send notification to chat if someone is typing message """
+        """ Send send notification to chat if penpal is typing message """
         channel_name = await channel_layer.new_channel()
         await channel_layer.group_add("focused_" + str(room_id) + '_' + str(info.context['user'].id), channel_name)
         try:

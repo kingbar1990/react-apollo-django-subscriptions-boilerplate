@@ -13,6 +13,7 @@ channel_layer = get_channel_layer()
 
 
 class MessageFileType(DjangoObjectType):
+    """ Object type for files in messages """
     class Meta:
         model = MessageFile
 

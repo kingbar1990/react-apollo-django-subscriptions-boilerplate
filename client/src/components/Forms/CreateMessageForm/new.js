@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Send from '@material-ui/icons/Send';
@@ -17,6 +17,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import { Button } from '@material-ui/core';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import EditIcon from '@material-ui/icons/Edit';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 
 const buttonDeleteStyles = {
@@ -26,6 +28,7 @@ const buttonDeleteStyles = {
     textTransform: 'none',
     display: 'block'
 }
+
 const buttonEditStyles = Object.assign({}, buttonDeleteStyles, {backgroundColor: '#6ea7f4'})
 
 
@@ -43,11 +46,23 @@ const CreateMessageForm = (props) => {
         messageAction,
         handleDeleteMessage,
         clearMessageAction,
-        me
+        me,
     } = props;
 
-    const [editMessage, {data: editMessageData}] = useMutation(updateMessage);
+    const types = [
+        'image/gif', 
+        'image/jpeg',
+        'image/pjpeg',
+        'image/png',
+        'image/svg+xml',
+        'image/tiff',
+        'image/vnd.microsoft.icon',
+        'image/vnd.wap.wbmp',
+        'image/webp'
+      ]
 
+    const [editMessage, {data: editMessageData}] = useMutation(updateMessage);
+    const fileInput = useRef(null);
     const [value, setValue] = useState("");
     const [files, setFiles] = useState({});
     const [error, setError] = useState("");
@@ -78,25 +93,16 @@ const CreateMessageForm = (props) => {
     }
     
     const handleFileChange = async (e) => {
-        const types = [
-            'image/gif', 
-            'image/jpeg',
-            'image/pjpeg',
-            'image/png',
-            'image/svg+xml',
-            'image/tiff',
-            'image/vnd.microsoft.icon',
-            'image/vnd.wap.wbmp',
-            'image/webp'
-          ]
           var fileImage = e.target.files[0];
           var options = {
             maxSizeMB: 1, 
             maxWidthOrHeight: 1280,
             useWebWorker: true
           }
-      
-          if (types.indexOf(fileImage.type) !== -1 &&  fileImage.size >= 1048576){
+          fileInput.current.value = '';
+
+          var type = types.indexOf(fileImage.type)  === -1 ? 'file' : 'image';
+          if (type === 'image' &&  fileImage.size >= 1048576){
               var loading = document.getElementById("imageUploadLoading")
               if (loading) loading.style.display = "block";
             fileImage = await imageCompression(fileImage, options);
@@ -117,6 +123,7 @@ const CreateMessageForm = (props) => {
             loading = document.getElementById("imageUploadLoading");
             if(loading) loading.style.display = "none";
           }
+
           await getBase64(fileImage).then((file) =>  {
               var max = 0;
               for(let i of Object.keys(files)){
@@ -129,7 +136,7 @@ const CreateMessageForm = (props) => {
               }else{
                   size = `${Math.round(size/1024)} mb`
               }
-              obj[max+1] = {'image': file, 'name': fileImage['name'], 'size': size} 
+              obj[max+1] = {'image': file, 'name': fileImage['name'], 'size': size, 'type': type} 
             setFiles(obj);
           }
           );
@@ -162,6 +169,7 @@ const CreateMessageForm = (props) => {
         return arr;
     }
 
+
     return (
         <Mutation
             mutation={createMessage}
@@ -191,7 +199,8 @@ const CreateMessageForm = (props) => {
             onError={() => {
                 if (!navigator.onLine){
                 setError("No Internet Connection!");
-                addToStoredMessages(value, currentRoom.users[0].id, users[0].id, files);
+                var penpal = currentRoom.users.find(item => item.id !== me.id);
+                addToStoredMessages(value, penpal, users[0], files);
                 setValue("");
                 setFiles({});
                 }
@@ -232,16 +241,16 @@ const CreateMessageForm = (props) => {
                         )}
                         <span style={{display: 'inline', width: '40px'}} className="image-upload">
                             <label htmlFor="file-input" className='mb-0'>
-                                <PhotoCameraIcon className='mr-2' style={{color: '#ccc', cursor: 'pointer'}} />
+                                <AttachFileIcon className='mr-2' style={{color: '#ccc', cursor: 'pointer'}} />
                             </label>
-                            <input onChange={handleFileChange} id="file-input" multiple type="file" style={{display: 'none' }}/>
+                            <input onChange={handleFileChange} ref={fileInput} id="file-input" multiple type="file" style={{display: 'none' }}/>
                         </span>
                         <MessageField
                         onClick={() => readRoomMessages(currentRoom.id)}
                         onChange={handleInputChange}
                         placeholder="Type a message"
                         fieldType="input"
-                        onKeyPress={(e) => { if (e.key === 'Enter'){  createTask()}}}
+                        onKeyPress={(e) => { if (e.key === 'Enter'){ messageAction ? editMessageComplete() : createTask()}}}
                         value={value}
                         />
                         <Tooltip id="tooltip-send" onClick={() => {messageAction ? editMessageComplete() : createTask();}} title="Send" style={{width: '50px'}}>
@@ -257,9 +266,15 @@ const CreateMessageForm = (props) => {
                                 <div className='d-flex' style={{borderTop: '1px solid #e8e8e8', width: '100%', padding: '5px'}}>
                                     {Object.keys(files).map(item => {
                                         return (
-                                            <div className='mx-3 mt-2' style={{position: 'relative'}}>
+                                            <div className='mx-3 mt-2 text-center' style={{position: 'relative'}}>
                                                 <CloseIcon onClick={() => handleRemoveFile(item)} className='ml-auto' style={{position:'absolute', top: '-12px', right: '-18px', width:'18px', height:'18px' , cursor: 'pointer'}} />
-                                                <img src={files[item]['image']} style={{width: "70px", height: "60px", borderRadius: '7px'}} />
+                                                {files[item]['type'] == 'image' ? (
+                                                    <img src={files[item]['image']} style={{width: "70px", height: "60px", borderRadius: '7px'}} />
+                                                ):
+                                                (
+                                                    <InsertDriveFileIcon style={{width: "70px", height: "60px", borderRadius: '7px'}}/>
+                                                )
+                                                }
                                                 <p className='text-center mb-0 mt-1'>{files[item]['name'].substring(0, 10)}</p>
                                                 <p className='text-center mb-0' style={{opacity: '0.5'}}>
                                                     {files[item]['size']}

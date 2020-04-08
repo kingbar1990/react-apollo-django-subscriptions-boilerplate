@@ -102,8 +102,11 @@ class MessageCreateMutation(graphene.Mutation):
     message = graphene.Field(lambda: MessageType)
 
     def mutate(root, info, sender, room, seen, files=None, text=None):
+        """ Create message if there's file or text or both """
         user = get_user_model().objects.get(pk=info.context.user.id)
         room = Room.objects.get(pk=room)
+        if not files and not text:
+            return None
         message = Message.objects.create(room=room, text=text, sender=user)
         if files:
             for f in files:
