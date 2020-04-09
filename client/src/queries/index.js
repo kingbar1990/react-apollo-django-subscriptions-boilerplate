@@ -121,6 +121,7 @@ export const getRoom = gql`
         isDeleted
         files{
           file
+          size
         }
         sender {
           id
@@ -181,6 +182,7 @@ export const createMessage = gql`
         text
         files{
           file
+          size
         }
         sender {
           id
@@ -317,6 +319,7 @@ export const newMessageSubscription = gql`
       id
       files{
         file
+        size
       }
       seen
       text

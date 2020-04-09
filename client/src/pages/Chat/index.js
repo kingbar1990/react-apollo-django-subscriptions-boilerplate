@@ -52,7 +52,7 @@ const Chat = (props) => {
           if (loading) return 'Loading ...';
           if (error) return `Error ${error}`;
           const users = data.users.filter(item => item.id !== props.me.me.id);
-          const firstDialog = [users[0].id, props.me.me.id];
+          const firstDialog = users.length > 0 ? [users[0].id, props.me.me.id] : null;
           subscribeToOnlineUsers(subscribeToMore);
           return (
             <div style={{height: "calc(100vh - 70px)"}}>

@@ -1,5 +1,6 @@
 import base64
 import graphene
+import random
 
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
@@ -107,13 +108,16 @@ class MessageCreateMutation(graphene.Mutation):
         room = Room.objects.get(pk=room)
         if not files and not text:
             return None
+
         message = Message.objects.create(room=room, text=text, sender=user)
+
         if files:
             for f in files:
+                file_name, f = f.split('#name#')
                 img_format, img_str = f.split(';base64,')
                 ext = img_format.split('/')[-1]
                 file = ContentFile(
-                    base64.b64decode(img_str), name=str(message.id) + ext
+                    base64.b64decode(img_str), name=file_name.split('.')[0] + str(random.randint(100000,999999999)) + ext
                 )
                 mes_file = MessageFile.objects.create(message=message, file=file)
                 mes_file.save()

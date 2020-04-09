@@ -163,7 +163,7 @@ const CreateMessageForm = (props) => {
     const getArrayFiles = () => {
         var arr = []
         for (let i of Object.keys(files)){
-            arr.push(files[i]['image']);
+            arr.push(files[i]['name'] + '#name#' + files[i]['image']);
         }
         return arr;
     }

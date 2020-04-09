@@ -14,8 +14,15 @@ channel_layer = get_channel_layer()
 
 class MessageFileType(DjangoObjectType):
     """ Object type for files in messages """
+    size = graphene.Int()
+
     class Meta:
         model = MessageFile
+    
+    def resolve_size(self, info):
+        return self.file.size
+    
+
 
 
 class MessageType(DjangoObjectType):

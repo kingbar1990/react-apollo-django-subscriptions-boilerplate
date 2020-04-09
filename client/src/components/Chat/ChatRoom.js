@@ -8,12 +8,15 @@ import styles from './chatStyle-jss';
 import { Query, graphql, withApollo, Subscription, useMutation } from "react-apollo";
 import { getRoom, newMessageSubscription, readMessages, onFocusSubscription, deleteMessage } from "../../queries/index";
 import {flowRight as compose} from "lodash";
-import { BACKEND_URL, MEDIA_URL } from '../../constants/index';
+import { BACKEND_URL, MEDIA_URL, VIDEO_TYPES, IMAGE_TYPES, VIDEO_REGULAR_LINKS } from '../../constants/index';
 import CreateMessageForm from '../../components/Forms/CreateMessageForm/index';
 import { Modal } from '@material-ui/core';
 import StoredMessages from "./StoredMessages";
 import _ from "lodash";
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import ReactPlayer from 'react-player';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import Card from '@material-ui/core/Card';
 
 
 const ChatRoom = props => {
@@ -27,19 +30,6 @@ const ChatRoom = props => {
     currentRoom,
     me
   } = props;
-
-  // Image types
-  const types = [
-    'gif', 
-    'jpeg',
-    'pjpeg',
-    'png',
-    'svg+xml',
-    'tiff',
-    'vnd.microsoft.icon',
-    'vnd.wap.wbmp',
-    'webp'
-  ]
 
   const [modalImg, setModalImg] = useState('');
   const [inputOnFocus, setInputOnFocus] = useState(false);
@@ -99,6 +89,9 @@ const ChatRoom = props => {
     else if (status == 'offline'){
       setModalImg(imgSrc);
     }
+    else if (status = 'external') {
+      setModalImg(imgSrc);
+    }
   }
 
   // Close modal window
@@ -146,7 +139,9 @@ const ChatRoom = props => {
 
   // Select message and show block with edit/delete buttons
   const handleSetMessageAction = (message, obj, child) => {
-    if (obj.children[2].children.length > 1 && child.className !== 'file-link'){
+
+    if (obj.children[2].children.length > 1 && child.className !== 'file-link' && child.parentNode.className !== 'videoPlayer'
+      && child.className.indexOf('preventEdit') === -1){
       var child = obj.children[2].children[1].children[0];
       setMessageAction([message, obj, child]);
     }
@@ -182,16 +177,37 @@ const ChatRoom = props => {
     return month + ', ' + day + ' ' + year + ' ' + hours + ':' + minutes; 
   }
 
+  // Convert size integer to string like '2mb' or '328kb'...
+  const getSizeString = (size) => {
+    size = size / 1024
+    if (size < 1024){
+      size = `${Math.round(size)} kb`;
+    }
+    else{
+        size = `${Math.round(size/1024)} mb`;
+    }
+    return size;
+  }
+
+  // Format file name
+  const formatFileName = (name) => {
+    name = name.split('/')[1];
+    name = name.replace(name.match(/\d+/gi)[0], '.');
+    return name;
+  }
+
   // Render HTML code with messages
   const getRoomData = (roomData) => {
     var counter = 0;
     var messageImagesLength = 0;
+    var messageSideClass = '';
     if (roomData.room.messages.length > 0){
       return roomData.room.messages.map(message => {
         counter = 0;
+        messageSideClass = message.sender.id === me.id ? 'ml-auto' : 'mr-auto';
         messageImagesLength = 0;
         for(let i of message.files){
-          if (types.find(item => i.file.split('/')[1].indexOf(item) !== -1)){
+          if (IMAGE_TYPES.find(item => i.file.split('/')[1].indexOf(item) !== -1)){
             messageImagesLength += 1;
           }
         }
@@ -204,9 +220,9 @@ const ChatRoom = props => {
                 <Avatar alt="avatar" src="https://www.w3schools.com/howto/img_avatar.png"  className={classes.avatar} />
               }
             <div className={classes.talk + ' message-content'}>
-              <div className='ml-auto' style={{width: 'max-content'}}>
+              <div className={messageSideClass} style={{width: 'max-content'}}>
                 {message.files.map(item => {
-                  var type = types.find(qwe => item.file.split('/')[1].indexOf(qwe) !== -1)
+                  var type = IMAGE_TYPES.find(qwe => item.file.split('/')[1].indexOf(qwe) !== -1)
                   if (counter === 0 && messageImagesLength > 4 && type){
                     counter += 1;
                     return(
@@ -233,28 +249,85 @@ const ChatRoom = props => {
                   else if(type){
                     counter += 1;
                     return(
-                      <div key={item.file} style={{overflow: 'hidden', display: 'inline-block'}}>
-                        <img onClick={() => openModal(item.file, 'online')} style={{cursor:'pointer', margin: '0 3px', borderRadius:'5px', height:'120px', minWidth: '80px', maxWidth: '150px', width:'auto'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
+                      <div key={item.file} style={{overflow: 'hidden', minWidth: '80px', maxWidth: '150px', display: 'inline-block'}}>
+                        <img onClick={() => openModal(item.file, 'online')} style={{cursor:'pointer', margin: '0 3px', borderRadius:'5px', height:'120px', width:'auto'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
                       </div>
                     )
                   }
                 })}
                 {message.files.map(item => {
-                  var type = types.find(qwe => item.file.split('/')[1].indexOf(qwe) !== -1);
+                  var type = IMAGE_TYPES.find(qwe => item.file.split('/')[1].indexOf(qwe) !== -1);
                   if (type === undefined){
-                    return (
-                      <div key={item.file} className='p-1 my-1 ml-auto' style={{borderRadius: '7px', width: 'max-content', overflow: 'hidden'}}>
-                        <a className='file-link' href={`${BACKEND_URL}${MEDIA_URL}${item.file}`}>
-                          <InsertDriveFileIcon style={{width:'18px', height:'18px'}} className='mr-2 mb-1' />
-                          {item.file.split('/')[1]}
-                        </a>
-                      </div>
-                    )
+                    type = VIDEO_TYPES.find(qwe => item.file.split('/')[1].indexOf(qwe) !== -1);
+                    if (type === undefined){
+                      return (
+                        <div key={item.file} className={`p-1 my-1 ${messageSideClass}`} style={{borderRadius: '7px', width: 'max-content', overflow: 'hidden'}}>
+                          <a className='file-link' href={`${BACKEND_URL}${MEDIA_URL}${item.file}`}>
+                            <InsertDriveFileIcon style={{width:'18px', height:'18px'}} className='mr-2 mb-1' />
+                            {item.file.split('/')[1]}
+                          </a>
+                        </div>
+                      )
+                    }
+                    else{
+                      return (
+                        <Card className='p-3'>
+                          <a className='file-link' href={`${BACKEND_URL}${MEDIA_URL}${item.file}`} download={formatFileName(item.file)}>
+                            <div className='preventEdit d-flex'>
+                              <div className='preventEdit'>
+                                <CloudDownloadIcon />
+                              </div>
+                              <div>
+                                <p className='preventEdit mb-0 mt-0 ml-2' style={{top: '-7px'}}>{formatFileName(item.file)}
+                                  <span className='preventEdit' style={{opacity: '0.5'}}>{getSizeString(item.size)}</span>
+                                </p>
+                              </div>
+                            </div>
+                          </a>
+                          <ReactPlayer 
+                            style={{borderRadius:'5px'}} 
+                            width={432} 
+                            height={243} 
+                            controls={true} 
+                            className='videoPlayer' 
+                            url={`${BACKEND_URL}${MEDIA_URL}${item.file}`} 
+                          />
+                        </Card>
+                      )
+                    }
                   }
                 })}
               </div>
               <p style={message.text ? {} : {display: 'none'}}>
                 <span>{message.text}</span>
+
+                {(message.text && message.text.match(VIDEO_REGULAR_LINKS['youtube'])) &&
+                (
+                  <>
+                    <ReactPlayer 
+                      config={{
+                        youtube: {
+                          playerVars: { showinfo: 1 }
+                        }
+                      }} 
+                      width={432} 
+                      height={243} 
+                      controls={true} 
+                      className={`videoPlayer ${messageSideClass} mt-2`}
+                      url={`${message.text.match(VIDEO_REGULAR_LINKS['youtube'])}`} 
+                    />
+                  </>
+                )}
+                {(message.text && message.text.match(/https?[://.\w]+\.(jpg|png|gif|jpeg|pjpeg|svg+xml|tiff|vnd.microsoft.icon|vnd.wap.wbmp|webp)+/)) &&
+                (
+                  <Card style={{minWidth: '80px', maxWidth: '250px', maxHeight:'150px', overflow:'hidden'}} className={`preventEdit p-3 mt-2 ${messageSideClass}`}>
+                    <img 
+                      className='preventEdit' 
+                      src={message.text.match(/https?[://.\w]+\.(jpg|png|gif|jpeg|pjpeg|svg+xml|tiff|vnd.microsoft.icon|vnd.wap.wbmp|webp)+/)[0]}
+                      onClick={(e) => { console.log(e.currentTarget.src); openModal(e.currentTarget.src, 'external') }} 
+                    />
+                  </Card>
+                )}
               </p>
             </div>
           </li>
@@ -278,82 +351,87 @@ const ChatRoom = props => {
     }
   };
 
-
-  return (
-    <Query 
-      query={getRoom}
-      variables={{firstUser: currentRoom[0], secondUser: currentRoom[1]}}
-    >
-      {({ loading, error, data, subscribeToMore }) => {
-        if (loading) return 'Loading...';
-        if (error) return `Error ${error}`;
-        readRoomMessages(data.room.id);
-        subscribeToNewMessage(subscribeToMore, data.room.id);
-        return (
-          <>
-          <Modal 
-            open={Boolean(modalImg)}
-            onClose={closeModal}
-          >
-          <img className='img-fluid' style={{width: '600px', border: 'none', outline: 'none', borderRadius: '5px', maxHeight: '90vh', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}} src={modalImg} />
-          </Modal>
-            <div style={{paddingBottom: "12px"}} className={classNames(classes.root, classes.content, showMobileDetail ? classes.detailPopup : '')}>
-              <ChatHeader
-                dataContact={dataContact}
-                chatSelected={chatSelected}
-                remove={remove}
-                room={data.room}
-                showMobileDetail={showMobileDetail}
-                hideDetail={hideDetail}
-                me={me}
-              />
-              <ul className={classes.chatList} id="roomContainer">
-                {getRoomData(data)}
-                {Object.keys(storedMessages).map(item => {
-                  console.log(data.room.users);
-                  console.log(storedMessages[item].room);
-                  if(data.room.users.find(user => user.id == storedMessages[item].room)){
-                    return(
-                      <StoredMessages types={types} room={data.room} classes={classes} formatDate={formatDate} openModal={openModal} closeModal={closeModal} me={me} deleteStoredMessage={deleteStoredMessage} key={item} message_key={item} message={storedMessages[item]}/>
-                    )
-                  }
-                })}
-                <Subscription subscription={onFocusSubscription} variables={{roomId: data.room.id}}>
-                  {({ data, loading }) => {
-                    deleteTyping();
-                    return !loading && data.onFocus ? (
-                      <li className="grey-text ml-3 mb-3"
-                      id="typing"
-                      ref={typing}  
-                      hidden={false}>
-                        <span style={{color: '#b3b3b3'}}>Typing...</span>
-                      </li>
-                    ) : (
-                      ""
-                    );
-                  }}
-                </Subscription>
-              </ul>
-              <CreateMessageForm
-                addToStoredMessages={addToStoredMessages}
-                classes={classes} 
-                me={me}
-                types={types}
-                currentRoom={data.room} 
-                setInputOnFocus={setInputOnFocus} 
-                inputOnFocus={inputOnFocus}
-                messageAction={messageAction}
-                handleDeleteMessage={handleDeleteMessage}
-                readRoomMessages={readRoomMessages}
-                clearMessageAction={clearMessageAction}
-                {...data.room}
-              />
-            </div>
-          </>
-        )
-      }}
-    </Query>
-  );
+  if (currentRoom) {
+    return (
+      <Query 
+        query={getRoom}
+        variables={{firstUser: currentRoom[0], secondUser: currentRoom[1]}}
+      >
+        {({ loading, error, data, subscribeToMore }) => {
+          if (loading) return 'Loading...';
+          if (error) return `Error ${error}`;
+          readRoomMessages(data.room.id);
+          subscribeToNewMessage(subscribeToMore, data.room.id);
+          return (
+            <>
+            <Modal 
+              open={Boolean(modalImg)}
+              onClose={closeModal}
+            >
+            <img className='img-fluid' style={{width: '600px', border: 'none', outline: 'none', borderRadius: '5px', maxHeight: '90vh', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}} src={modalImg} />
+            </Modal>
+              <div style={{paddingBottom: "12px"}} className={classNames(classes.root, classes.content, showMobileDetail ? classes.detailPopup : '')}>
+                <ChatHeader
+                  dataContact={dataContact}
+                  chatSelected={chatSelected}
+                  remove={remove}
+                  room={data.room}
+                  showMobileDetail={showMobileDetail}
+                  hideDetail={hideDetail}
+                  me={me}
+                />
+                <ul className={classes.chatList} id="roomContainer">
+                  {getRoomData(data)}
+                  {Object.keys(storedMessages).map(item => {
+                    if(data.room.users.find(user => user.id == storedMessages[item].room)){
+                      return(
+                        <StoredMessages types={IMAGE_TYPES} room={data.room} classes={classes} formatDate={formatDate} openModal={openModal} closeModal={closeModal} me={me} deleteStoredMessage={deleteStoredMessage} key={item} message_key={item} message={storedMessages[item]}/>
+                      )
+                    }
+                  })}
+                  <Subscription subscription={onFocusSubscription} variables={{roomId: data.room.id}}>
+                    {({ data, loading }) => {
+                      deleteTyping();
+                      return !loading && data.onFocus ? (
+                        <li className="grey-text ml-3 mb-3"
+                        id="typing"
+                        ref={typing}  
+                        hidden={false}>
+                          <span style={{color: '#b3b3b3'}}>Typing...</span>
+                        </li>
+                      ) : (
+                        ""
+                      );
+                    }}
+                  </Subscription>
+                </ul>
+                <CreateMessageForm
+                  addToStoredMessages={addToStoredMessages}
+                  classes={classes} 
+                  me={me}
+                  types={IMAGE_TYPES}
+                  currentRoom={data.room} 
+                  setInputOnFocus={setInputOnFocus} 
+                  inputOnFocus={inputOnFocus}
+                  messageAction={messageAction}
+                  handleDeleteMessage={handleDeleteMessage}
+                  readRoomMessages={readRoomMessages}
+                  clearMessageAction={clearMessageAction}
+                  {...data.room}
+                />
+              </div>
+            </>
+          )
+        }}
+      </Query>
+    );
+  }
+  else {
+    return (
+      <>
+      </>
+    );
+  }
 }
 
 export default compose(
