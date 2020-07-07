@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import Typography from '@material-ui/core/Typography';
 import ChatHeader from './ChatHeader';
 import styles from './chatStyle-jss';
-import { Query, graphql, withApollo, Subscription, useMutation } from "react-apollo";
+import { Query, graphql, Subscription, useMutation } from "react-apollo";
 import { getRoom, newMessageSubscription, readMessages, onFocusSubscription, deleteMessage } from "../../queries/index";
 import {flowRight as compose} from "lodash";
 import { BACKEND_URL, MEDIA_URL, VIDEO_TYPES, IMAGE_TYPES, VIDEO_REGULAR_LINKS } from '../../constants/index';
@@ -139,11 +139,16 @@ const ChatRoom = props => {
 
   // Select message and show block with edit/delete buttons
   const handleSetMessageAction = (message, obj, child) => {
-
-    if (obj.children[2].children.length > 1 && child.className !== 'file-link' && child.parentNode.className !== 'videoPlayer'
+    if (obj.children[2].children.length > 1 && child.className !== 'message-image' && child.className !== 'message-link' && child.className !== 'file-link' && child.parentNode.className !== 'videoPlayer'
       && child.className.indexOf('preventEdit') === -1){
       var child = obj.children[2].children[1].children[0];
-      setMessageAction([message, obj, child]);
+
+      if (messageAction && JSON.stringify(messageAction[0]) == JSON.stringify(message)){
+        setMessageAction(null);
+      } 
+      else {
+        setMessageAction([message, obj, child]);
+      }
     }
   }
 
@@ -196,6 +201,18 @@ const ChatRoom = props => {
     return name;
   }
 
+  // Find links in text and put them into <a> tag
+  const renderMessageText = (text) => {
+    var expression = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
+    var matches = text.match(expression);
+    if (matches) {
+      for (let i of matches){
+        text = text.replace(i, `<a target='_blank' class='message-link' style='color:blue' href=${i}>${i}</a>`)
+      }
+    }
+    return text;
+  }
+
   // Render HTML code with messages
   const getRoomData = (roomData) => {
     var counter = 0;
@@ -227,7 +244,7 @@ const ChatRoom = props => {
                     counter += 1;
                     return(
                       <div className='mb-1' key={item.file}  style={{overflow: 'hidden', height:'120px', display: 'block'}}>
-                        <img onClick={() => openModal(item.file, 'online')} style={{cursor: 'pointer', borderRadius: '11px 11px', height:'auto', minHeight:'120px', width:'337px'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
+                        <img className='message-image' onClick={() => openModal(item.file, 'online')} style={{cursor: 'pointer', borderRadius: '11px 11px', height:'auto', minHeight:'120px', width:'337px'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
                       </div>
                     )
                   }
@@ -242,7 +259,7 @@ const ChatRoom = props => {
                     }
                     return(
                       <div key={item.file} style={{padding: '0 3px', overflow: 'hidden', width: '85px', display: 'inline-block'}}>
-                        <img onClick={() => openModal(item.file, 'online')} style={imgStyle} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
+                        <img className='message-image' onClick={() => openModal(item.file, 'online')} style={imgStyle} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
                       </div>
                     )
                   }
@@ -250,7 +267,7 @@ const ChatRoom = props => {
                     counter += 1;
                     return(
                       <div key={item.file} style={{overflow: 'hidden', minWidth: '80px', maxWidth: '150px', display: 'inline-block'}}>
-                        <img onClick={() => openModal(item.file, 'online')} style={{cursor:'pointer', margin: '0 3px', borderRadius:'5px', height:'120px', width:'auto'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
+                        <img className='message-image' onClick={() => openModal(item.file, 'online')} style={{cursor:'pointer', margin: '0 3px', borderRadius:'5px', height:'120px', width:'auto'}} src={`${BACKEND_URL}${MEDIA_URL}${item.file}`} />
                       </div>
                     )
                   }
@@ -299,8 +316,7 @@ const ChatRoom = props => {
                 })}
               </div>
               <p style={message.text ? {} : {display: 'none'}}>
-                <span>{message.text}</span>
-
+                <span dangerouslySetInnerHTML={{__html: renderMessageText(message.text)}}></span>
                 {(message.text && message.text.match(VIDEO_REGULAR_LINKS['youtube'])) &&
                 (
                   <>

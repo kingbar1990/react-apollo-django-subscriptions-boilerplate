@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import classNames from 'classnames';
@@ -6,15 +6,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import SearchIcon from '@material-ui/icons/Search';
-import PermContactCalendar from '@material-ui/icons/PermContactCalendar';
-import Add from '@material-ui/icons/Add';
-import Star from '@material-ui/icons/Star';
-import IconButton from '@material-ui/core/IconButton';
 import styles from './contact-jss';
 import { BACKEND_URL, MEDIA_URL } from '../../constants/index';
 
