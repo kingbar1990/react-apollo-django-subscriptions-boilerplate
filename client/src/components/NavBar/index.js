@@ -1,69 +1,85 @@
-import React, { Component } from 'react'
+import React, { useState } from "react";
 import {
   Navbar,
-  NavbarBrand,
   MDBNavbarToggler,
   MDBNavItem,
   MDBNavLink,
   MDBCollapse,
   MDBNavbarNav
-} from 'mdbreact'
+} from "mdbreact";
+import IosMailOutline from "react-ionicons/lib/IosMailOutline";
+import { Subscription, graphql } from "react-apollo";
 
-import { DASHBOARD, PROFILE } from '../../constants/routes'
+import {
+  User,
+  hasUnreadedMessagesSubscription
+} from "../../queries";
+import { PROFILE, SIGN_IN, ROOM } from "../../constants/routes";
+import "./index.css";
 
-export default class NavBar extends Component {
-  state = {
-    open: false,
-    collapseID: ''
-  }
+const NavBar = (props) => {
+  const [collapseID, setCollapseId] = useState("");
 
-  handleClick = () => {
-    this.setState({ open: !this.state.open })
-  }
+  const toggleCollapse = varCollapseID => () => {
+    if (collapseID !== varCollapseID){
+      setCollapseId(varCollapseID);
+    }
+    else{
+      setCollapseId("");
+    }
+  };
 
-  handleClose = () => {
-    this.setState({ open: false })
-  }
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
 
-  toggleCollapse = collapseID => () => {
-    this.setState(state => {
-      if (state.collapseID !== collapseID) {
-        return { collapseID: collapseID }
-      }
-      return { collapseID: '' }
-    })
-  }
-
-  handleLogout = () => {
-    localStorage.removeItem('token')
-    window.location.href = '/login'
-  }
-
-  render() {
-    return (
-      <Navbar className="flexible-navbar" light expand="md" scrolling>
-        <NavbarBrand href="/">Landing</NavbarBrand>
-        <MDBNavbarToggler onClick={this.toggleCollapse('navbarCollapse13')} />
-        <MDBCollapse
-          id="navbarCollapse13"
-          isOpen={this.state.collapseID}
-          navbar
-        >
-          <MDBNavbarNav left>
+  return (
+    <Navbar className="flexible-navbar" light expand="md" scrolling style={{height: "70px"}}>
+      <MDBNavbarToggler onClick={toggleCollapse("navbarCollapse13")} />
+      <MDBCollapse
+        id="navbarCollapse13"
+        isOpen={collapseID}
+        navbar
+      >
+        <MDBNavbarNav left>
+          <MDBNavItem>
+            <MDBNavLink className='mx-2' to={ROOM}>Home</MDBNavLink>
+          </MDBNavItem>
+          <MDBNavItem>
+            <MDBNavLink className='mx-2' to={PROFILE}>Profile</MDBNavLink>
+          </MDBNavItem>
+          {props.me.loading ? null : (
             <MDBNavItem>
-              <MDBNavLink to={DASHBOARD}>Home</MDBNavLink>
-            </MDBNavItem>
-            <MDBNavItem>
-              <MDBNavLink to={PROFILE}>Profile</MDBNavLink>
-            </MDBNavItem>
-            <MDBNavItem>
-              <MDBNavLink to={PROFILE} onClick={this.handleLogout}>
-                Log out
+              <MDBNavLink to={ROOM}>
+                <Subscription subscription={hasUnreadedMessagesSubscription} variables={{userId:props.me.me.id}}>
+                  {({ data, loading }) => {
+                    return (!loading && data.hasUnreadedMessages) ||
+                      (props.me.me.hasUnreadedMessages &&
+                        data === undefined) ? (
+                      <div
+                        id="message-badge"
+                        style={{ position: "relative" }}
+                      >
+                        <IosMailOutline fontSize="30px" color="#000000" />
+                      </div>
+                    ) : (
+                      <IosMailOutline fontSize="30px" color="#000000" />
+                    );
+                  }}
+                </Subscription>
               </MDBNavLink>
             </MDBNavItem>
-          </MDBNavbarNav>
-        </MDBCollapse>
-      </Navbar>
-    )
-  }
+          )}
+          <MDBNavItem>
+            <MDBNavLink to={SIGN_IN} onClick={handleLogout}>
+              Log out
+            </MDBNavLink>
+          </MDBNavItem>
+        </MDBNavbarNav>
+      </MDBCollapse>
+    </Navbar>
+  );
 }
+
+export default graphql(User, { name: "me" })(NavBar);

@@ -7,9 +7,31 @@ a {
   color: inherit;
 }
 
+.videoPlayer iframe, .videoPlayer video{
+  border-radius: 5px;
+}
+
 body.modal-open {
   overflow: hidden;
 }
+
+.dot-online, .dot-offline{
+  height: 9px;
+  width: 9px;
+  display: inline-block;
+  margin-right:10px;
+  border-radius: 50%;
+  line-height: 1.5;
+}
+
+.dot-online {
+  background-color: green;
+}
+
+.dot-offline {
+  background-color: red;
+}
+
 
 .styles-card {
   width: 22rem;

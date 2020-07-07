@@ -1,15 +1,16 @@
-from accounts.forms import LongCharField
 from django import forms
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
 
-from .models import Message, Room
+from accounts.forms import LongCharField
+
+from core.models import Message, Room
 
 
 class MessageForm(ModelForm):
+    """ Form for chat messages """
     message_id = forms.IntegerField(required=False)
-    file = LongCharField(widget=TextInput, required=False)
-
+    
     class Meta:
         model = Message
         fields = [
@@ -18,6 +19,7 @@ class MessageForm(ModelForm):
 
 
 class RoomForm(ModelForm):
+    """ Form for Chat Room """
     class Meta:
         model = Room
         fields = [

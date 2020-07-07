@@ -1,14 +1,17 @@
 from django import forms
-from django.contrib.auth.forms import (
-    PasswordResetForm, UserCreationForm, SetPasswordForm
-)
 from django.core.exceptions import ObjectDoesNotExist
-from accounts.models import User
 from django.forms.widgets import TextInput
+from django.contrib.auth import get_user_model
 from django.core import validators
+from django.contrib.auth.forms import (
+    PasswordResetForm, 
+    UserCreationForm, 
+    SetPasswordForm
+)
 
 
 class LongCharField(forms.Field):
+    """ Custom Field for validating files from client """
     def __init__(
         self, max_length=10**10, min_length=None, strip=True, empty_value='',
         **kwargs
@@ -30,41 +33,44 @@ class LongCharField(forms.Field):
 
 
 class UserForm(UserCreationForm):
+    """ Form for user Sign up """
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ['email', 'full_name']
 
 
 class UserEditForm(forms.Form):
+    """ Form for editing profile """
     full_name = forms.CharField(max_length=64, required=False)
     email = forms.EmailField()
     avatar = LongCharField(widget=TextInput, required=False)
 
     def clean_email(self):
         email = self.cleaned_data['email']
-
         try:
-            User.objects.get(email=email)
+            get_user_model().objects.get(email=email)
         except ObjectDoesNotExist as e:
             raise forms.ValidationError(e)
         return email
 
 
 class SendConfirmationEmailForm(PasswordResetForm):
+    """ Form for sending email confirmation to reset password """
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('email',)
 
     def clean_email(self):
         email = self.cleaned_data['email']
         try:
-            User.objects.get(email=email)
+            get_user_model().objects.get(email=email)
         except ObjectDoesNotExist as e:
             raise forms.ValidationError(e)
         return email
 
 
 class SetNewPasswordForm(SetPasswordForm):
+    """ Form for setting new password """
     user_id = forms.IntegerField()
     confirm_token = forms.CharField()
 
@@ -72,10 +78,11 @@ class SetNewPasswordForm(SetPasswordForm):
         super(SetPasswordForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('new_password1', 'new_password2', 'user_id', 'token')
 
     def clean_new_password2(self):
+        # Check if passwords match
         password1 = self.cleaned_data.get('new_password1')
         password2 = self.cleaned_data.get('new_password2')
         if password1 and password2:

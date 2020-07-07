@@ -57,4 +57,4 @@ const UserEditForm = props => {
   )
 }
 
-export default UserEditForm
+export default UserEditForm;

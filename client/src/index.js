@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { ApolloClient } from 'apollo-client'
 import { BrowserRouter } from 'react-router-dom'
-import { HttpLink } from 'apollo-link-http'
+import { createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloProvider } from 'react-apollo'
 import { setContext } from 'apollo-link-context'
@@ -20,24 +20,35 @@ import * as serviceWorker from './serviceWorker'
 
 const cache = new InMemoryCache()
 
-const httpLink = new HttpLink({
+const httpLink = new createHttpLink({
   uri: 'http://localhost:8000/graphql/'
 })
 
+const token = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token')).token : ''
+if (token){
+  document.cookie = 'authorization=' + token + ';' 
+}
+else {
+  document.cookie = 'authorization= ';
+}
+
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:8000/subscriptions`,
+  uri: `ws://localhost:8000/subscriptions?token=СЮДОЙ ТОКЕН`,
   options: {
     reconnect: true,
-    connectionParams: {
-      authToken: localStorage.getItem(TOKEN)
+    connectionParams: () => {
+      return {
+        authToken: token
+      }
     }
   }
 })
 
+
 const authLink = setContext((_, { headers }) => {
   let data = ''
   try {
-    const token = localStorage.getItem(TOKEN)
+    const token = localStorage.getItem(TOKEN);
     data = token ? JSON.parse(token).token : ''
   } catch (error) {}
   return {
@@ -62,10 +73,11 @@ const client = new ApolloClient({
   link
 })
 
+
 ReactDOM.render(
   <ApolloProvider client={client}>
     <BrowserRouter>
-      <App />
+        <App />
     </BrowserRouter>
   </ApolloProvider>,
   document.getElementById('root')

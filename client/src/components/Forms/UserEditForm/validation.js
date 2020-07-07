@@ -1,4 +1,4 @@
-import Yup from "yup";
+import * as Yup from "yup";
 
 export const UserFormValidate = Yup.object().shape({
   email: Yup.string()

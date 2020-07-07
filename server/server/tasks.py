@@ -4,6 +4,7 @@ from django.core.mail import EmailMessage
 
 from accounts.models import User
 from accounts.tokens import account_activation_token
+
 from celery import shared_task
 
 
@@ -14,6 +15,7 @@ def hello():
 
 @shared_task(name='reset_password_email')
 def reset_password_email(email):
+    """ Generate and send email when reseting password """
     try:
         user = User.objects.get(email=email)
     except ObjectDoesNotExist as e:

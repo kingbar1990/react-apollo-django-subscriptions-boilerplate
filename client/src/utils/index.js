@@ -2,6 +2,7 @@ export const saveData = (key, token) => {
   const timestamp = +new Date();
   const data = JSON.stringify({ token: token, timestamp });
   window.localStorage.setItem(key, data);
+  document.cookie = 'authorization=' + token;
 };
 
 export const getBase64 = file =>

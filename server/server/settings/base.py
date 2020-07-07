@@ -13,9 +13,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import datetime
 import os
 
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = 15242880
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -90,7 +91,7 @@ ASGI_APPLICATION = 'server.urls.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('DATABASE_NAME', 'boilerplate'),
         'USER': os.environ.get('DATABASE_USER', 'boilerplate'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'boilerplate'),
@@ -140,6 +141,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
+# Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 

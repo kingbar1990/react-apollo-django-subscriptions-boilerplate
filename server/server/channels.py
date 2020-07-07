@@ -1,17 +1,28 @@
 import asyncio
 import json
 from inspect import isawaitable
+from graphene_django.settings import graphene_settings
+
+from django.core import serializers
+from django.utils.functional import Promise
+from django.conf import settings
+from django.contrib.auth import get_user_model
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from django.conf import settings
-from graphene_django.settings import graphene_settings
+from channels.db import database_sync_to_async
+
 from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphql_ws_django.base import (BaseConnectionContext,
-                                    BaseSubscriptionServer,
-                                    ConnectionClosedException)
-from graphql_ws_django.constants import (GQL_COMPLETE, GQL_CONNECTION_ACK,
-                                         GQL_CONNECTION_ERROR)
 from graphql_ws_django.observable_aiter import setup_observable_extension
+from graphql_ws_django.base import (
+    BaseConnectionContext,
+    BaseSubscriptionServer,
+    ConnectionClosedException
+)
+from graphql_ws_django.constants import (
+    GQL_COMPLETE, GQL_CONNECTION_ACK,
+    GQL_CONNECTION_ERROR
+)
+
 
 setup_observable_extension()
 
@@ -129,7 +140,12 @@ subscription_server = ChannelsSubscriptionServer(
 
 class GraphQLSubscriptionConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        """ 
+        Authenticate websocket after connection if user is authenticated
+        and change his/her status to Online
+        """
         await self.accept(subprotocol='graphql-ws')
+        await self.channel_layer.group_add("users", self.channel_name)
 
         self.subscription_server = ChannelsSubscriptionServer(
             schema=graphene_settings.SCHEMA
@@ -138,13 +154,40 @@ class GraphQLSubscriptionConsumer(AsyncJsonWebsocketConsumer):
             ws=self, request_context=self.scope
         )
 
+        user = self.scope['user']
+        if user.is_authenticated:
+            await self.update_user_status(user,True)
+            await self.send_status()
+
     async def disconnect(self, content):
+        """ Disconnect user and change his/her status to Offline """
+        await self.channel_layer.group_discard("users", self.channel_name)
         if self.connection_context:
             await subscription_server.on_close(self.connection_context)
+        
+        user = self.scope['user']
+        if user.is_authenticated:
+            await self.update_user_status(user,False)
+            await self.send_status()
+
 
     async def receive_json(self, content):
         asyncio.ensure_future(
             subscription_server.on_message(self.connection_context, content)
+        )
+
+
+    async def send_status(self):
+        """ Send updated info about users' statuses to public Websocket channel """
+        users = serializers.serialize('json', get_user_model().objects.all())
+        users = json.dumps(users)
+        await self.channel_layer.group_send(
+            'users',
+            {
+                "type": "user_update",
+                "event": "Change Status",
+                "data": users
+            }
         )
 
     @classmethod
@@ -155,3 +198,11 @@ class GraphQLSubscriptionConsumer(AsyncJsonWebsocketConsumer):
             await asyncio.wait(json_promise_encoder.pending_promises)
             e = json_promise_encoder.encode(content)
         return e
+
+
+    async def user_update(self, event):
+        await self.send_json(event["data"])
+
+    @database_sync_to_async
+    def update_user_status(self, user,status):
+        return get_user_model().objects.filter(pk=user.pk).update(online=status)

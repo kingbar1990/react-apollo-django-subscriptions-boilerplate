@@ -1,59 +1,99 @@
 import graphene
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from graphene_django.types import DjangoObjectType
 
-from .models import Message, Room
+from django.contrib.auth import get_user_model
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+from core.models import Message, Room, MessageFile
+
 
 channel_layer = get_channel_layer()
 
 
+class MessageFileType(DjangoObjectType):
+    """ Object type for files in messages """
+    size = graphene.Int()
+
+    class Meta:
+        model = MessageFile
+    
+    def resolve_size(self, info):
+        return self.file.size
+    
+
+
+
 class MessageType(DjangoObjectType):
+    """ Message object type for GraphQL """
+    files = graphene.List(MessageFileType)
+
     class Meta:
         model = Message
+    
+    def resolve_files(self, info):
+        return self.files.all()
 
 
 class RoomType(DjangoObjectType):
-    unviewed_messages = graphene.Int()
+    """ Room object type for GraphQL """
+    unviewed_messages = graphene.Int(user_id=graphene.Int())
     messages = graphene.List(
         MessageType,
         first=graphene.Int(),
         skip=graphene.Int(),
-        room=graphene.Int()
+        room=graphene.Int(),
+        first_user=graphene.ID(),
+        second_user=graphene.ID()
     )
 
     class Meta:
         model = Room
 
-    def resolve_unviewed_messages(self, info):
-        return Room.objects.filter(id=self.id, last_message__seen=False).count()
+    def resolve_unviewed_messages(self, info, user_id=None):
+        # Return count of unread messages
+        if user_id:
+            user = get_user_model().objects.get(pk=user_id)            
+            return self.messages.filter(seen=False, is_deleted=False).exclude(sender=user).count()
 
-    def resolve_messages(self, info, first=None, skip=None, room=None):
-        qs = Message.objects.filter(room_id=room).order_by('time')
-
+    def resolve_messages(self, info, first=None, skip=None, room=None,first_user=None, second_user=None):
+        # Return all messages in room
+        if room:
+            room = Room.objects.get(pk=room)
+        else:
+            room = Room.objects.filter(users=first_user).filter(users=second_user).first()
+        qs = Message.objects.filter(
+            room=room, is_deleted=False).order_by('time')
         if skip:
             qs = qs[skip:]
-
         if first:
             qs = qs[:first]
-
         return qs
 
 
 class Query:
     rooms = graphene.List(RoomType, user_id=graphene.Int())
-    room = graphene.Field(RoomType, id=graphene.Int())
+    room = graphene.Field(RoomType, id=graphene.Int(), first_user=graphene.ID(), second_user=graphene.ID())
     type = graphene.Field(RoomType, id=graphene.Int())
+    on_focus = graphene.Boolean(focused=graphene.Boolean(), room_id=graphene.ID())
 
-    def resolve_room(self, info, id):
-        room = Room.objects.get(id=id)
+    def resolve_room(self, info, id=None, first_user=None, second_user=None):
+        # Return room with provided ID
+        if id:
+            room = Room.objects.get(id=id)
+        if first_user and second_user:
+            room = Room.objects.filter(users=first_user).filter(users=second_user).first()            
+        if not room:
+            room = Room.objects.create()
+            user1 = get_user_model().objects.get(pk=first_user)
+            user2 = get_user_model().objects.get(pk=second_user)
+            room.users.add(user1)
+            room.users.add(user2)
+            room.save()
         if room.last_message:
-            room.last_message.seen = True
             room.typing = False
             room.last_message.save()
-
-        async_to_sync(channel_layer.group_send)(
-            "notify", {"data": room})
 
         return room
 
@@ -62,10 +102,16 @@ class Query:
         room.typing = True
         room.save()
 
-        async_to_sync(channel_layer.group_send)(
-            "notify", {"data": room})
-
         return room
 
     def resolve_rooms(self, info, user_id):
+        # Return all rooms for provided user ID
         return Room.objects.filter(users__id=user_id)
+
+    def resolve_on_focus(self, info, room_id=None, focused=None):
+        # Return True or False depending on if user typing message
+        if focused is not None and room_id and info.context.user:
+            penpal = Room.objects.get(pk=room_id).users.exclude(pk=info.context.user.pk).first()
+            async_to_sync(channel_layer.group_send)("focused_" + str(room_id) + '_' + str(penpal.pk), {"data": focused})
+            return focused
+        return False
