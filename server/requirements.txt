@@ -1,7 +1,7 @@
 black==19.3b0
 django==3.0.4
 psycopg2-binary==2.8.4
-Pillow==7.0.0
+Pillow==8.1.1
 django-cors-headers==3.2.1
 django-jwt-auth==0.0.2
 daphne==2.4.1
