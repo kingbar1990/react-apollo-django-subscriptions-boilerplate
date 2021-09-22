@@ -1,5 +1,5 @@
 black==19.3b0
-django==3.0.4
+django==3.1.13
 psycopg2-binary==2.8.4
 Pillow==7.0.0
 django-cors-headers==3.2.1
