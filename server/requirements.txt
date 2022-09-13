@@ -19,7 +19,7 @@ serious-django-graphene==0.5.1
 django-graphql-jwt==0.3.0
 celery==4.4.2
 redis==3.4.1
-flower==0.9.3
+flower==1.2.0
 Rx<3
 six==1.14.0
 channels==2.4.0
